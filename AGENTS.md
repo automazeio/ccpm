@@ -1,112 +1,60 @@
-# Agents
+# AGENTS.md for the NioPD System
 
-Specialized agents that do heavy work and return concise summaries to preserve context.
+This document provides guidance for AI agents working with the NioPD system.
 
-## Core Philosophy
+## 1. System Overview
 
-> “Don't anthropomorphize subagents. Use them to organize your prompts and elide context. Subagents are best when they can do lots of work but then provide small amounts of information back to the main conversation thread.”
->
-> – Adam Wolff, Anthropic
+NioPD is an AI-powered assistant system for Product Managers. It is designed to automate and assist with the core PM workflow, from defining high-level initiatives to tracking success metrics.
 
-## Available Agents
+The system is file-based and command-driven. All data is stored in markdown files within the `.niopd/data/` directory, and the AI's behavior is guided by a series of command prompts and agent definitions.
 
-### 🔍 `code-analyzer`
-- **Purpose**: Hunt bugs across multiple files without polluting main context
-- **Pattern**: Search many files → Analyze code → Return bug report
-- **Usage**: When you need to trace logic flows, find bugs, or validate changes
-- **Returns**: Concise bug report with critical findings only
+## 2. Core Philosophy: Agent-Driven Synthesis
 
-### 📄 `file-analyzer`
-- **Purpose**: Read and summarize verbose files (logs, outputs, configs)
-- **Pattern**: Read files → Extract insights → Return summary
-- **Usage**: When you need to understand log files or analyze verbose output
-- **Returns**: Key findings and actionable insights (80-90% size reduction)
+NioPD relies on specialized agents to perform complex synthesis tasks. Unlike a general-purpose chatbot, NioPD uses agents to transform one type of document into another (e.g., turning feedback into a PRD, or turning initiatives into a roadmap).
 
-### 🧪 `test-runner`
-- **Purpose**: Execute tests without dumping output to main thread
-- **Pattern**: Run tests → Capture to log → Analyze results → Return summary
-- **Usage**: When you need to run tests and understand failures
-- **Returns**: Test results summary with failure analysis
+Your primary role as an agent is to follow the instructions defined in the `commands/` and `agents/` directories to execute these transformations accurately.
 
-### 🔀 `parallel-worker`
-- **Purpose**: Coordinate multiple parallel work streams for an issue
-- **Pattern**: Read analysis → Spawn sub-agents → Consolidate results → Return summary
-- **Usage**: When executing parallel work streams in a worktree
-- **Returns**: Consolidated status of all parallel work
+## 3. Available Agents
 
-## Why Agents?
+### 🤖 `feedback-synthesizer`
+- **Purpose:** To process raw user feedback and identify key themes, pain points, and feature requests.
+- **Input:** A file containing user feedback.
+- **Output:** A structured markdown summary of the feedback.
 
-Agents are **context firewalls** that protect the main conversation from information overload:
+### 🤖 `presentation-builder`
+- **Purpose:** To create concise, high-level project updates for business stakeholders.
+- **Input:** An initiative file and its corresponding PRD file.
+- **Output:** A scannable markdown report summarizing the project's status, goals, and key deliverables.
 
-```
-Without Agent:
-Main thread reads 10 files → Context explodes → Loses coherence
+### 🤖 `roadmap-generator`
+- **Purpose:** To create a visual, high-level product roadmap from all active initiatives.
+- **Input:** All files in the `.niopd/data/initiatives/` directory.
+- **Output:** A markdown file containing a Mermaid Gantt chart.
 
-With Agent:
-Agent reads 10 files → Main thread gets 1 summary → Context preserved
-```
+### 🤖 `kpi-tracker`
+- **Purpose:** To report on the status of an initiative's Key Performance Indicators (KPIs).
+- **Input:** A single initiative file.
+- **Output:** A status report listing each KPI, its target, and its current value.
 
-## How Agents Preserve Context
+## 4. The Command Workflow
 
-1. **Heavy Lifting** - Agents do the messy work (reading files, running tests, implementing features)
-2. **Context Isolation** - Implementation details stay in the agent, not the main thread
-3. **Concise Returns** - Only essential information returns to main conversation
-4. **Parallel Execution** - Multiple agents can work simultaneously without context collision
+The entire NioPD system is operated through a series of `/niopd:` commands. Each command has a corresponding definition file in `.niopd/commands/`.
 
-## Example Usage
+When a user runs a command (e.g., `/niopd:draft-prd`), you must:
+1.  Read the corresponding command file (e.g., `.niopd/commands/draft-prd.md`).
+2.  Follow the **Preflight Checklist** to validate inputs.
+3.  Follow the **Instructions** step-by-step. This may involve invoking one of the agents listed above.
+4.  Produce the output file in the location specified by the command.
 
-```bash
-# Analyzing code for bugs
-Task: "Search for memory leaks in the codebase"
-Agent: code-analyzer
-Returns: "Found 3 potential leaks: [concise list]"
-Main thread never sees: The hundreds of files examined
+## 5. Development and Testing Instructions
 
-# Running tests
-Task: "Run authentication tests"
-Agent: test-runner
-Returns: "2/10 tests failed: [failure summary]"
-Main thread never sees: Verbose test output and logs
+### How to Extend NioPD
+- **Adding a new command:** Create a new `.md` file in `.niopd/commands/`.
+- **Adding a new agent:** Create a new agent definition in `.niopd/agents/`. The new agent should have a single, clear purpose.
+- **Adding a new template:** Add a new template file to `.niopd/templates/`.
 
-# Parallel implementation
-Task: "Implement issue #1234 with parallel streams"
-Agent: parallel-worker
-Returns: "Completed 4/4 streams, 15 files modified"
-Main thread never sees: Individual implementation details
-```
-
-## Creating New Agents
-
-New agents should follow these principles:
-
-1. **Single Purpose** - Each agent has one clear job
-2. **Context Reduction** - Return 10-20% of what you process
-3. **No Roleplay** - Agents aren't "experts", they're task executors
-4. **Clear Pattern** - Define input → processing → output pattern
-5. **Error Handling** - Gracefully handle failures and report clearly
-
-## Anti-Patterns to Avoid
-
-❌ **Creating "specialist" agents** (database-expert, api-expert)
-   Agents don't have different knowledge - they're all the same model
-
-❌ **Returning verbose output**
-   Defeats the purpose of context preservation
-
-❌ **Making agents communicate with each other**
-   Use a coordinator agent instead (like parallel-worker)
-
-❌ **Using agents for simple tasks**
-   Only use agents when context reduction is valuable
-
-## Integration with PM System
-
-Agents integrate seamlessly with the PM command system:
-
-- `/pm:issue-analyze` → Identifies work streams
-- `/pm:issue-start` → Spawns parallel-worker agent
-- parallel-worker → Spawns multiple sub-agents
-- Sub-agents → Work in parallel in the worktree
-- Results → Consolidated back to main thread
-
-This creates a hierarchy that maximizes parallelism while preserving context at every level.
+### Testing
+- The current implementation of NioPD is file-based and designed for simulation.
+- To test any workflow, you must first create the necessary prerequisite files in the `.niopd/data/` subdirectories (e.g., create an initiative file before you can test drafting a PRD).
+- After running a test, always verify the content of the output file to ensure the agent and command worked as expected.
+- **Crucially, always clean up test artifacts** by deleting the files you created in the `.niopd/data/` directories before submitting your work.
