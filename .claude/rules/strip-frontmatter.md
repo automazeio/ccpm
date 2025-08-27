@@ -38,9 +38,10 @@ Always strip frontmatter when:
 # Bad - includes frontmatter
 gh issue create --body-file task.md
 
-# Good - strips frontmatter
+# Good - strips frontmatter and specifies repo
+REPO=$(git remote get-url origin | sed 's/.*github.com[:/]\(.*\)\.git/\1/')
 sed '1,/^---$/d; 1,/^---$/d' task.md > /tmp/clean.md
-gh issue create --body-file /tmp/clean.md
+gh issue create --repo "$REPO" --body-file /tmp/clean.md
 ```
 
 ### Posting a comment
