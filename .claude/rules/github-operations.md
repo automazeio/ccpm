@@ -19,7 +19,9 @@ gh issue view {number} --json state,title,labels,body
 
 ### Create Issue
 ```bash
-gh issue create --title "{title}" --body-file {file} --label "{labels}"
+# Always specify repo to avoid defaulting to wrong repository
+REPO=$(git remote get-url origin | sed 's/.*github.com[:/]\(.*\)\.git/\1/')
+gh issue create --repo "$REPO" --title "{title}" --body-file {file} --label "{labels}"
 ```
 
 ### Update Issue
