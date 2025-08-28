@@ -1,0 +1,121 @@
+name: Release Testing
+
+on:
+  # Trigger on release creation
+  release:
+    types: [ created, published ]
+  
+  # Trigger on tags
+  push:
+    tags:
+      - 'v*'
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to test (e.g., v1.0.0)'
+        required: false
+        default: 'latest'
+
+env:
+  CCPM_CI: true
+  CCPM_RELEASE_TEST: true
+
+jobs:
+  release-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            name: Ubuntu
+            install-script: ./install/ccpm.sh
+          - os: macos-latest  
+            name: macOS
+            install-script: ./install/ccpm.sh
+          - os: windows-latest
+            name: Windows
+            install-script: .\install\ccpm.bat
+
+    name: Release Test on ${{ matrix.name }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Set up environment
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            choco install make -y
+          fi
+          
+          # Make scripts executable on Unix-like systems
+          if [ "${{ runner.os }}" != "Windows" ]; then
+            find . -name "*.sh" -type f -exec chmod +x {} \;
+          fi
+
+      - name: Run full test suite
+        shell: bash
+        run: |
+          echo "=== Running Full Release Test Suite ==="
+          make check-system
+          make info
+          make test
+          make validate
+
+      - name: Test installation process
+        shell: bash
+        run: |
+          echo "=== Testing Installation Process ==="
+          
+          # Create clean environment for install testing
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            temp_dir=$(mktemp -d -t ccpm-release-XXXXXX)
+          else
+            temp_dir=$(mktemp -d)
+          fi
+          
+          echo "Testing installation in: $temp_dir"
+          cp -r install/ "$temp_dir/"
+          cd "$temp_dir"
+          
+          # Test install script exists and is executable
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            if [ -f "install/ccpm.bat" ]; then
+              echo "✅ Windows install script found"
+            else
+              echo "❌ Windows install script missing"
+              exit 1
+            fi
+          else
+            if [ -x "install/ccpm.sh" ]; then
+              echo "✅ Unix install script found and executable"
+            else
+              echo "❌ Unix install script missing or not executable"
+              exit 1
+            fi
+          fi
+
+      - name: Generate release report
+        if: always()
+        run: |
+          echo "=== Release Test Report for ${{ matrix.name }} ==="
+          echo "Platform: ${{ runner.os }}"
+          echo "Runner: ${{ matrix.os }}"
+          echo "Test Status: ${{ job.status }}"
+          echo "Timestamp: $(date)"
+          
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ All release tests passed on ${{ matrix.name }}"
+          else
+            echo "❌ Some release tests failed on ${{ matrix.name }}"
+          fi

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 epic_name="$1"
 

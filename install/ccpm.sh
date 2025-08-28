@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 REPO_URL="https://github.com/automazeio/ccpm.git"
 TARGET_DIR="."
@@ -14,3 +14,4 @@ else
     echo "Error: Failed to clone repository."
     exit 1
 fi
+

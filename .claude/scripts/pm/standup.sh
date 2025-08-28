@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "📅 Daily Standup - $(date '+%Y-%m-%d')"
 echo "================================"

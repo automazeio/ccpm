@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script to run tests with automatic log redirection
 # Supports multiple languages and test frameworks

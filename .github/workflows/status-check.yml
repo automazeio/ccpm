@@ -1,0 +1,88 @@
+name: Status Check
+
+# This workflow provides a simple status check that can be required for PRs
+# It runs faster checks and can be used as a gate before the full CI suite
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  quick-check:
+    runs-on: ubuntu-latest
+    name: Quick Status Check
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Make scripts executable
+        run: |
+          find . -name "*.sh" -type f -exec chmod +x {} \;
+      
+      - name: Basic validation
+        run: |
+          echo "=== Quick Status Check ==="
+          
+          # Check that required files exist
+          echo "Checking required files..."
+          
+          required_files=(
+            "Makefile"
+            "install/ccpm.sh"  
+            "install/ccpm.bat"
+            ".claude/scripts/test-and-log.sh"
+          )
+          
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "❌ $file missing"
+              exit 1
+            fi
+          done
+      
+      - name: Makefile syntax check
+        run: |
+          echo "=== Checking Makefile syntax ==="
+          make --dry-run help > /dev/null && echo "✅ Makefile syntax OK" || (echo "❌ Makefile syntax error" && exit 1)
+      
+      - name: Shell script syntax check
+        run: |
+          echo "=== Checking shell script syntax ==="
+          
+          # Check bash scripts
+          find . -name "*.sh" -type f | while read -r script; do
+            echo "Checking $script..."
+            bash -n "$script" && echo "✅ $script syntax OK" || (echo "❌ $script syntax error" && exit 1)
+          done
+      
+      - name: Check for portable shebangs
+        run: |
+          echo "=== Checking for portable shebangs ==="
+          
+          # Find shell scripts and check their shebangs
+          hardcoded_shebangs=$(find . -name "*.sh" -type f -exec grep -l "^#!/bin/bash" {} \; 2>/dev/null || true)
+          
+          if [ -n "$hardcoded_shebangs" ]; then
+            echo "❌ Found hardcoded shebangs in:"
+            echo "$hardcoded_shebangs"
+            echo "These should use '#!/usr/bin/env bash' for portability"
+            exit 1
+          else
+            echo "✅ All shell scripts use portable shebangs"
+          fi
+      
+      - name: Quick system test
+        run: |
+          echo "=== Quick system test ==="
+          make info
+          make check-system
