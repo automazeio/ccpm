@@ -346,7 +346,7 @@ Focus on building, not managing. Intelligent prioritization, automatic context l
 Teams using this system report:
 - **89% less time** lost to context switching – you'll use `/compact` and `/clear` a LOT less
 - **5-8 parallel tasks** vs 1 previously – editing/testing multiple files at the same time
-- **75% reduction** in bug rates – due to the breaking down features into detailed tasks 
+- **75% reduction** in bug rates – due to the breaking down features into detailed tasks
 - **Up to 3x faster** feature delivery – based on feature size and complexity
 
 ## Example Flow
@@ -382,12 +382,25 @@ Teams using this system report:
 
 ### Quick Setup (2 minutes)
 
-1. **Clone this repository into your project**:
+1. **Install this repository into your project**:
+
+   #### Unix/Linux/macOS
+
    ```bash
    cd path/to/your/project/
-   git clone https://github.com/automazeio/ccpm.git .
+   curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.sh | bash
+   # or: wget -qO- https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.sh | bash
+   ```
+
+   #### Windows (PowerShell)
+   ```bash
+   cd path/to/your/project/
+   iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.bat | iex
    ```
    > ⚠️ **IMPORTANT**: If you already have a `.claude` directory, clone this repository to a different directory and copy the contents of the cloned `.claude` directory to your project's `.claude` directory.
+
+   See full/other installation options in the [installation guide ›](https://github.com/automazeio/ccpm/tree/main/install)
+
 
 2. **Initialize the PM system**:
    ```bash
@@ -460,7 +473,7 @@ Claude Code PM was developed at [Automaze](https://automaze.io) **for developers
 
 If Claude Code PM helps your team ship better software:
 
-- ⭐ **[Star this repository](https://github.com/your-username/claude-code-pm)** to show your support
+- ⭐ **[Star this repository](https://github.com/automazeio/ccpm)** to show your support
 - 🐦 **[Follow @aroussi on X](https://x.com/aroussi)** for updates and tips
 
 
@@ -469,3 +482,9 @@ If Claude Code PM helps your team ship better software:
 > [!TIP]
 > **Ship faster with Automaze.** We partner with founders to bring their vision to life, scale their business, and optimize for success.
 > **[Visit Automaze to book a call with me ›](https://automaze.io)**
+
+---
+
+## Star History
+
+![Star History Chart](https://api.star-history.com/svg?repos=automazeio/ccpm)

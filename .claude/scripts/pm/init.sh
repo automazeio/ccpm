@@ -92,6 +92,19 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
   if git remote -v | grep -q origin; then
     remote_url=$(git remote get-url origin)
     echo "  ✅ Remote configured: $remote_url"
+    
+    # Check if remote is the CCPM template repository
+    if [[ "$remote_url" == *"automazeio/ccpm"* ]] || [[ "$remote_url" == *"automazeio/ccpm.git"* ]]; then
+      echo ""
+      echo "  ⚠️ WARNING: Your remote origin points to the CCPM template repository!"
+      echo "  This means any issues you create will go to the template repo, not your project."
+      echo ""
+      echo "  To fix this:"
+      echo "  1. Fork the repository or create your own on GitHub"
+      echo "  2. Update your remote:"
+      echo "     git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+      echo ""
+    fi
   else
     echo "  ⚠️ No remote configured"
     echo "  Add with: git remote add origin <url>"

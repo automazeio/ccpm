@@ -21,6 +21,17 @@ Push local updates as GitHub issue comments for transparent audit trail.
 Before proceeding, complete these validation steps.
 Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
 
+0. **Repository Protection Check:**
+   Follow `/rules/github-operations.md` - check remote origin:
+   ```bash
+   remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+   if [[ "$remote_url" == *"automazeio/ccpm"* ]]; then
+     echo "❌ ERROR: Cannot sync to CCPM template repository!"
+     echo "Update your remote: git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+     exit 1
+   fi
+   ```
+
 1. **GitHub Authentication:**
    - Run: `gh auth status`
    - If not authenticated, tell user: "❌ GitHub CLI not authenticated. Run: gh auth login"
