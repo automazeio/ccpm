@@ -388,14 +388,14 @@ Teams using this system report:
 
    ```bash
    cd path/to/your/project/
-   curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.sh | bash
-   # or: wget -qO- https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.sh | bash
+   curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh | bash
+   # or: wget -qO- https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh | bash
    ```
 
    #### Windows (PowerShell)
    ```bash
    cd path/to/your/project/
-   iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.bat | iex
+   iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.bat | iex
    ```
    > ⚠️ **IMPORTANT**: If you already have a `.claude` directory, clone this repository to a different directory and copy the contents of the cloned `.claude` directory to your project's `.claude` directory.
 
