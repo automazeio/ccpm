@@ -1,13 +1,20 @@
-# !/bin/bash
+#!/bin/bash
+set -euo pipefail
+
+# Load cross-platform utilities 
+source "$(dirname "$0")/../utils.sh" 2>/dev/null || {
+  echo "Warning: Could not load utility functions, proceeding with basic functionality" >&2
+}
+
 # Check if PRD directory exists
 if [ ! -d ".claude/prds" ]; then
-  echo "📁 No PRD directory found. Create your first PRD with: /pm:prd-new <feature-name>"
+  echo "[PRD] No PRD directory found. Create your first PRD with: /pm:prd-new <feature-name>"
   exit 0
 fi
 
 # Check for PRD files
 if ! ls .claude/prds/*.md >/dev/null 2>&1; then
-  echo "📁 No PRDs found. Create your first PRD with: /pm:prd-new <feature-name>"
+  echo "[PRD] No PRDs found. Create your first PRD with: /pm:prd-new <feature-name>"
   exit 0
 fi
 
@@ -22,65 +29,65 @@ echo ""
 echo ""
 
 
-echo "📋 PRD List"
-echo "==========="
+echo "PRD LIST"
+echo "========"
 echo ""
 
 # Display by status groups
-echo "🔍 Backlog PRDs:"
+echo "BACKLOG PRDs:"
 for file in .claude/prds/*.md; do
   [ -f "$file" ] || continue
-  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
+  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//' || true)
   if [ "$status" = "backlog" ] || [ "$status" = "draft" ] || [ -z "$status" ]; then
-    name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//')
-    desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//')
+    name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//' || true)
+    desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//' || true)
     [ -z "$name" ] && name=$(basename "$file" .md)
     [ -z "$desc" ] && desc="No description"
-    # echo "   📋 $name - $desc"
-    echo "   📋 $file - $desc"
-    ((backlog_count++))
+    # echo "   PRD $name - $desc"
+    echo "   PRD $file - $desc"
+    backlog_count=$((backlog_count + 1))
   fi
-  ((total_count++))
+  total_count=$((total_count + 1))
 done
 [ $backlog_count -eq 0 ] && echo "   (none)"
 
 echo ""
-echo "🔄 In-Progress PRDs:"
+echo "IN-PROGRESS PRDs:"
 for file in .claude/prds/*.md; do
   [ -f "$file" ] || continue
-  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
+  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//' || true)
   if [ "$status" = "in-progress" ] || [ "$status" = "active" ]; then
-    name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//')
-    desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//')
+    name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//' || true)
+    desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//' || true)
     [ -z "$name" ] && name=$(basename "$file" .md)
     [ -z "$desc" ] && desc="No description"
-    # echo "   📋 $name - $desc"
-    echo "   📋 $file - $desc"
-    ((in_progress_count++))
+    # echo "   PRD $name - $desc"
+    echo "   PRD $file - $desc"
+    in_progress_count=$((in_progress_count + 1))
   fi
 done
 [ $in_progress_count -eq 0 ] && echo "   (none)"
 
 echo ""
-echo "✅ Implemented PRDs:"
+echo "IMPLEMENTED PRDs:"
 for file in .claude/prds/*.md; do
   [ -f "$file" ] || continue
-  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
+  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//' || true)
   if [ "$status" = "implemented" ] || [ "$status" = "completed" ] || [ "$status" = "done" ]; then
-    name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//')
-    desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//')
+    name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//' || true)
+    desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//' || true)
     [ -z "$name" ] && name=$(basename "$file" .md)
     [ -z "$desc" ] && desc="No description"
-    # echo "   📋 $name - $desc"
-    echo "   📋 $file - $desc"
-    ((implemented_count++))
+    # echo "   PRD $name - $desc"
+    echo "   PRD $file - $desc"
+    implemented_count=$((implemented_count + 1))
   fi
 done
 [ $implemented_count -eq 0 ] && echo "   (none)"
 
 # Display summary
 echo ""
-echo "📊 PRD Summary"
+echo "PRD SUMMARY"
 echo "   Total PRDs: $total_count"
 echo "   Backlog: $backlog_count"
 echo "   In-Progress: $in_progress_count"

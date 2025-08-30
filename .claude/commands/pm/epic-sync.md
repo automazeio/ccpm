@@ -272,11 +272,13 @@ while IFS=: read -r task_file task_number; do
 
   # Update frontmatter with GitHub URL and current timestamp
   current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  
+  # Use cross-platform sed to update the github and updated fields
+  source .claude/scripts/utils.sh
+  cross_platform_sed_backup "/^github:/c\github: $github_url" "$new_name"
+  cross_platform_sed_backup "/^updated:/c\updated: $current_date" "$new_name"
+  # Backup files are automatically managed by cross_platform_sed_backup
 
-  # Use sed to update the github and updated fields
-  sed -i.bak "/^github:/c\github: $github_url" "$new_name"
-  sed -i.bak "/^updated:/c\updated: $current_date" "$new_name"
-  rm "${new_name}.bak"
 done < /tmp/task-mapping.txt
 ```
 
@@ -316,10 +318,11 @@ repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
 epic_url="https://github.com/$repo/issues/$epic_number"
 current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-# Update epic frontmatter
-sed -i.bak "/^github:/c\github: $epic_url" .claude/epics/$ARGUMENTS/epic.md
-sed -i.bak "/^updated:/c\updated: $current_date" .claude/epics/$ARGUMENTS/epic.md
-rm .claude/epics/$ARGUMENTS/epic.md.bak
+# Update epic frontmatter - cross-platform approach
+source .claude/scripts/utils.sh
+cross_platform_sed_backup "/^github:/c\github: $epic_url" .claude/epics/$ARGUMENTS/epic.md
+cross_platform_sed_backup "/^updated:/c\updated: $current_date" .claude/epics/$ARGUMENTS/epic.md
+# Backup files are automatically managed by cross_platform_sed_backup
 ```
 
 #### 5b. Update Tasks Created Section

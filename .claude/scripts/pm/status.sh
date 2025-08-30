@@ -1,39 +1,51 @@
 #!/bin/bash
+set -euo pipefail
+
+# Load cross-platform utilities for better error handling
+# Turn off errexit temporarily to handle missing utils.sh gracefully
+set +e
+source "$(dirname "${BASH_SOURCE[0]:-$0}")/../utils.sh" 2>/dev/null || {
+  echo "Warning: Could not load utility functions, proceeding with basic functionality" >&2
+}
+set -e
 
 echo "Getting status..."
 echo ""
 echo ""
 
 
-echo "📊 Project Status"
+echo "PROJECT STATUS"
 echo "================"
 echo ""
 
-echo "📄 PRDs:"
+echo "PRDs:"
 if [ -d ".claude/prds" ]; then
-  total=$(ls .claude/prds/*.md 2>/dev/null | wc -l)
+  # Use more robust counting that works across platforms
+  total=$(find .claude/prds -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
   echo "  Total: $total"
 else
   echo "  No PRDs found"
 fi
 
 echo ""
-echo "📚 Epics:"
+echo "EPICS:"
 if [ -d ".claude/epics" ]; then
-  total=$(ls -d .claude/epics/*/ 2>/dev/null | wc -l)
+  # Use more robust directory counting
+  total=$(find .claude/epics -maxdepth 1 -type d ! -path ".claude/epics" 2>/dev/null | wc -l | tr -d ' ')
   echo "  Total: $total"
 else
   echo "  No epics found"
 fi
 
 echo ""
-echo "📝 Tasks:"
+echo "TASKS:"
 if [ -d ".claude/epics" ]; then
-  total=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
-  open=$(find .claude/epics -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
-  closed=$(find .claude/epics -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
+  # Use more robust task counting with better cross-platform support
+  total=$(find .claude/epics -name "[0-9]*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+  open=$(find .claude/epics -name "[0-9]*.md" -type f -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l | tr -d ' ')
+  closed=$(find .claude/epics -name "[0-9]*.md" -type f -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l | tr -d ' ')
   echo "  Open: $open"
-  echo "  Closed: $closed"
+  echo "  Closed: $closed" 
   echo "  Total: $total"
 else
   echo "  No tasks found"

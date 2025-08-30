@@ -39,9 +39,9 @@ python "$TEST_PATH" > "$LOG_FILE" 2>&1
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then
-    echo "✅ Test completed successfully. Log saved to $LOG_FILE"
+    echo "[DONE] Test completed successfully. Log saved to $LOG_FILE"
 else
-    echo "❌ Test failed with exit code $EXIT_CODE. Check $LOG_FILE for details"
+    echo "[ERROR] Test failed with exit code $EXIT_CODE. Check $LOG_FILE for details"
 fi
 
 exit $EXIT_CODE

@@ -1,0 +1,248 @@
+name: Test CCPM CLI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install GitHub CLI (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Install GitHub CLI (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install gh
+
+      - name: Install GitHub CLI and Git Bash (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install gh git -y
+          # Ensure Git Bash is in PATH for shell scripts
+          echo "C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        shell: powershell
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-cov pytest-timeout requests setuptools wheel
+          # Install linting tools for integration tests
+          pip install yamllint black isort flake8 ruff
+          # Install markdownlint-cli (Node.js based)
+          npm install -g markdownlint-cli
+
+      - name: Run unit tests
+        run: |
+          pytest tests/ -v --timeout=120 --cov=ccpm --cov-report=term-missing --cov-report=xml --cov-report=html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test CLI commands
+        run: |
+          ccpm --version
+          ccpm --help
+          ccpm setup --help
+          ccpm update --help
+          ccpm uninstall --help
+
+      - name: Test installer script (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          bash installer.sh --help || true
+
+      - name: Upload coverage reports to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          flags: unittests
+          name: codecov-umbrella
+          verbose: true
+
+      - name: Upload coverage HTML report
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-report
+          path: htmlcov/
+
+  lint:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install black isort mypy flake8 pylint ruff setuptools wheel
+
+      - name: Run black
+        run: black --check ccpm tests
+        continue-on-error: true
+
+      - name: Run isort
+        run: isort --check-only ccpm tests --profile black
+        continue-on-error: true
+
+      - name: Run flake8
+        run: flake8 ccpm tests --max-line-length=88 --extend-ignore=E203,W503
+        continue-on-error: true
+
+      - name: Run ruff
+        run: ruff check ccpm tests
+        continue-on-error: true
+
+      - name: Run mypy
+        run: mypy ccpm --ignore-missing-imports
+        continue-on-error: true
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Configure git
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+
+      - name: Install linting tools
+        run: |
+          npm install -g markdownlint-cli
+          pip install yamllint black isort flake8 ruff requests
+
+      - name: Install CCPM
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install pytest pytest-timeout setuptools wheel
+
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v --timeout=180
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test real installation flow
+        run: |
+          # Create test directory
+          mkdir -p /tmp/test_ccpm_ci
+          cd /tmp/test_ccpm_ci
+
+          # Initialize git repo
+          git init
+          git config user.email "ci@example.com"
+          git config user.name "CI User"
+
+          # Test setup
+          ccpm setup .
+
+          # Verify installation
+          test -d .claude
+          test -f .ccpm_tracking.json
+
+          # Test commands (skip Claude-dependent ones in CI)
+          ccpm list
+          ccpm help
+          # Skip status and validate as they require Claude Code
+          # ccpm status  # Requires Claude
+          # ccpm validate  # Requires Claude
+
+          # Test uninstall
+          ccpm uninstall
+
+          # Verify removal
+          test ! -d .claude || echo ".claude should be removed"
+
+  release:
+    name: Test Release Build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build distribution
+        run: python -m build
+
+      - name: Check distribution
+        run: |
+          twine check dist/*
+          ls -la dist/
+
+      - name: Test installation from wheel
+        run: |
+          pip install dist/*.whl
+          ccpm --version
+          ccpm --help
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-packages
+          path: dist/

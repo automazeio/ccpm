@@ -1,9 +1,10 @@
 #!/bin/bash
+set -euo pipefail
 
-epic_name="$1"
+epic_name="${1:-}"
 
 if [ -z "$epic_name" ]; then
-  echo "❌ Please provide an epic name"
+  echo "ERROR Please provide an epic name"
   echo "Usage: /pm:epic-show <epic-name>"
   exit 1
 fi
@@ -16,17 +17,17 @@ epic_dir=".claude/epics/$epic_name"
 epic_file="$epic_dir/epic.md"
 
 if [ ! -f "$epic_file" ]; then
-  echo "❌ Epic not found: $epic_name"
+  echo "ERROR Epic not found: $epic_name"
   echo ""
   echo "Available epics:"
   for dir in .claude/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
+    [ -d "$dir" ] && echo "  * $(basename "$dir")"
   done
   exit 1
 fi
 
 # Display epic details
-echo "📚 Epic: $epic_name"
+echo "EPIC Epic: $epic_name"
 echo "================================"
 echo ""
 
@@ -36,7 +37,7 @@ progress=$(grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//')
 github=$(grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//')
 created=$(grep "^created:" "$epic_file" | head -1 | sed 's/^created: *//')
 
-echo "📊 Metadata:"
+echo "STATUS Metadata:"
 echo "  Status: ${status:-planning}"
 echo "  Progress: ${progress:-0%}"
 [ -n "$github" ] && echo "  GitHub: $github"
@@ -44,7 +45,7 @@ echo "  Created: ${created:-unknown}"
 echo ""
 
 # Show tasks
-echo "📝 Tasks:"
+echo "NOTE Tasks:"
 task_count=0
 open_count=0
 closed_count=0
@@ -58,15 +59,17 @@ for task_file in "$epic_dir"/[0-9]*.md; do
   parallel=$(grep "^parallel:" "$task_file" | head -1 | sed 's/^parallel: *//')
 
   if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
-    echo "  ✅ #$task_num - $task_name"
-    ((closed_count++))
+    echo "  OK #$task_num - $task_name"
+    closed_count=$((closed_count + 1))
   else
-    echo "  ⬜ #$task_num - $task_name"
-    [ "$parallel" = "true" ] && echo -n " (parallel)"
-    ((open_count++))
+    # Construct full output string to avoid dangling output
+    output_line="  OPEN #$task_num - $task_name"
+    [ "$parallel" = "true" ] && output_line="$output_line (parallel)"
+    echo "$output_line"
+    open_count=$((open_count + 1))
   fi
 
-  ((task_count++))
+  task_count=$((task_count + 1))
 done
 
 if [ $task_count -eq 0 ]; then
@@ -75,7 +78,7 @@ if [ $task_count -eq 0 ]; then
 fi
 
 echo ""
-echo "📈 Statistics:"
+echo "STATISTICS:"
 echo "  Total tasks: $task_count"
 echo "  Open: $open_count"
 echo "  Closed: $closed_count"
@@ -83,9 +86,9 @@ echo "  Closed: $closed_count"
 
 # Next actions
 echo ""
-echo "💡 Actions:"
-[ $task_count -eq 0 ] && echo "  • Decompose into tasks: /pm:epic-decompose $epic_name"
-[ -z "$github" ] && [ $task_count -gt 0 ] && echo "  • Sync to GitHub: /pm:epic-sync $epic_name"
-[ -n "$github" ] && [ "$status" != "completed" ] && echo "  • Start work: /pm:epic-start $epic_name"
+echo "TIP Actions:"
+[ $task_count -eq 0 ] && echo "  * Decompose into tasks: /pm:epic-decompose $epic_name"
+[ -z "$github" ] && [ $task_count -gt 0 ] && echo "  * Sync to GitHub: /pm:epic-sync $epic_name"
+[ -n "$github" ] && [ "$status" != "completed" ] && echo "  * Start work: /pm:epic-start $epic_name"
 
 exit 0

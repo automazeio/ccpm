@@ -1,18 +1,19 @@
 #!/bin/bash
+set -euo pipefail
 
 echo "Getting status..."
 echo ""
 echo ""
 
-epic_name="$1"
+epic_name="${1:-}"
 
 if [ -z "$epic_name" ]; then
-  echo "❌ Please specify an epic name"
+  echo "ERROR Please specify an epic name"
   echo "Usage: /pm:epic-status <epic-name>"
   echo ""
   echo "Available epics:"
   for dir in .claude/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
+    [ -d "$dir" ] && echo "  * $(basename "$dir")"
   done
   exit 1
 else
@@ -21,16 +22,16 @@ else
   epic_file="$epic_dir/epic.md"
 
   if [ ! -f "$epic_file" ]; then
-    echo "❌ Epic not found: $epic_name"
+    echo "ERROR Epic not found: $epic_name"
     echo ""
     echo "Available epics:"
     for dir in .claude/epics/*/; do
-      [ -d "$dir" ] && echo "  • $(basename "$dir")"
+      [ -d "$dir" ] && echo "  * $(basename "$dir")"
     done
     exit 1
   fi
 
-  echo "📚 Epic Status: $epic_name"
+  echo "EPIC Epic Status: $epic_name"
   echo "================================"
   echo ""
 
@@ -48,17 +49,17 @@ else
   # Use find to safely iterate over task files
   for task_file in "$epic_dir"/[0-9]*.md; do
     [ -f "$task_file" ] || continue
-    ((total++))
+    total=$((total + 1))
 
     task_status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
     deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//')
 
     if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
-      ((closed++))
+      closed=$((closed + 1))
     elif [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
-      ((blocked++))
+      blocked=$((blocked + 1))
     else
-      ((open++))
+      open=$((open + 1))
     fi
   done
 
@@ -69,22 +70,22 @@ else
     empty=$((20 - filled))
 
     echo -n "Progress: ["
-    [ $filled -gt 0 ] && printf '%0.s█' $(seq 1 $filled)
-    [ $empty -gt 0 ] && printf '%0.s░' $(seq 1 $empty)
+    [ $filled -gt 0 ] && printf '%0.s#' $(seq 1 $filled)
+    [ $empty -gt 0 ] && printf '%0.s-' $(seq 1 $empty)
     echo "] $percent%"
   else
     echo "Progress: No tasks created"
   fi
 
   echo ""
-  echo "📊 Breakdown:"
+  echo "STATUS Breakdown:"
   echo "  Total tasks: $total"
-  echo "  ✅ Completed: $closed"
-  echo "  🔄 Available: $open"
-  echo "  ⏸️ Blocked: $blocked"
+  echo "  OK Completed: $closed"
+  echo "  IN-PROGRESS Available: $open"
+  echo "  BLOCKED: $blocked"
 
   [ -n "$github" ] && echo ""
-  [ -n "$github" ] && echo "🔗 GitHub: $github"
+  [ -n "$github" ] && echo "GitHub: $github"
 fi
 
 exit 0

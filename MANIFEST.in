@@ -1,0 +1,5 @@
+include README.md
+include LICENSE
+recursive-include ccpm/claude_template *
+global-exclude __pycache__
+global-exclude *.py[co]

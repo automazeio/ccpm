@@ -38,7 +38,7 @@ Specialized agents that do heavy work and return concise summaries to preserve c
 
 Agents are **context firewalls** that protect the main conversation from information overload:
 
-```
+```text
 Without Agent:
 Main thread reads 10 files → Context explodes → Loses coherence
 

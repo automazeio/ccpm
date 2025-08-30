@@ -1,6 +1,7 @@
 #!/bin/bash
+set -euo pipefail
 
-echo "📄 PRD Status Report"
+echo "PRD PRD Status Report"
 echo "===================="
 echo ""
 
@@ -22,10 +23,10 @@ for file in .claude/prds/*.md; do
   status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
 
   case "$status" in
-    backlog|draft|"") ((backlog++)) ;;
-    in-progress|active) ((in_progress++)) ;;
-    implemented|completed|done) ((implemented++)) ;;
-    *) ((backlog++)) ;;
+    backlog|draft|"") backlog=$((backlog + 1)) ;;
+    in-progress|active) in_progress=$((in_progress + 1)) ;;
+    implemented|completed|done) implemented=$((implemented + 1)) ;;
+    *) backlog=$((backlog + 1)) ;;
   esac
 done
 
@@ -34,30 +35,30 @@ echo ""
 echo ""
 
 # Display chart
-echo "📊 Distribution:"
+echo "STATUS Distribution:"
 echo "================"
 
 echo ""
-echo "  Backlog:     $(printf '%-3d' $backlog) [$(printf '%0.s█' $(seq 1 $((backlog*20/total))))]"
-echo "  In Progress: $(printf '%-3d' $in_progress) [$(printf '%0.s█' $(seq 1 $((in_progress*20/total))))]"
-echo "  Implemented: $(printf '%-3d' $implemented) [$(printf '%0.s█' $(seq 1 $((implemented*20/total))))]"
+echo "  Backlog:     $(printf '%-3d' $backlog) [$(printf '%0.s#' $(seq 1 $((backlog*20/total))))]"
+echo "  In Progress: $(printf '%-3d' $in_progress) [$(printf '%0.s#' $(seq 1 $((in_progress*20/total))))]"
+echo "  Implemented: $(printf '%-3d' $implemented) [$(printf '%0.s#' $(seq 1 $((implemented*20/total))))]"
 echo ""
 echo "  Total PRDs: $total"
 
 # Recent activity
 echo ""
-echo "📅 Recent PRDs (last 5 modified):"
+echo "DATE Recent PRDs (last 5 modified):"
 ls -t .claude/prds/*.md 2>/dev/null | head -5 | while read file; do
   name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//')
   [ -z "$name" ] && name=$(basename "$file" .md)
-  echo "  • $name"
+  echo "  * $name"
 done
 
 # Suggestions
 echo ""
-echo "💡 Next Actions:"
-[ $backlog -gt 0 ] && echo "  • Parse backlog PRDs to epics: /pm:prd-parse <name>"
-[ $in_progress -gt 0 ] && echo "  • Check progress on active PRDs: /pm:epic-status <name>"
-[ $total -eq 0 ] && echo "  • Create your first PRD: /pm:prd-new <name>"
+echo "TIP Next Actions:"
+[ $backlog -gt 0 ] && echo "  * Parse backlog PRDs to epics: /pm:prd-parse <name>"
+[ $in_progress -gt 0 ] && echo "  * Check progress on active PRDs: /pm:epic-status <name>"
+[ $total -eq 0 ] && echo "  * Create your first PRD: /pm:prd-new <name>"
 
 exit 0

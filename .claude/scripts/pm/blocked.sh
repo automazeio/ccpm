@@ -1,9 +1,10 @@
 #!/bin/bash
+set -euo pipefail
 echo "Getting tasks..."
 echo ""
 echo ""
 
-echo "🚫 Blocked Tasks"
+echo "[BLOCKED] Blocked Tasks"
 echo "================"
 echo ""
 
@@ -27,7 +28,7 @@ for epic_dir in .claude/epics/*/; do
       task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
       task_num=$(basename "$task_file" .md)
 
-      echo "⏸️ Task #$task_num - $task_name"
+      echo "[PAUSED] Task #$task_num - $task_name"
       echo "   Epic: $epic_name"
       echo "   Blocked by: [$deps]"
 
@@ -43,7 +44,7 @@ for epic_dir in .claude/epics/*/; do
 
       [ -n "$open_deps" ] && echo "   Waiting for:$open_deps"
       echo ""
-      ((found++))
+      found=$((found + 1))
     fi
   done
 done
@@ -51,9 +52,9 @@ done
 if [ $found -eq 0 ]; then
   echo "No blocked tasks found!"
   echo ""
-  echo "💡 All tasks with dependencies are either completed or in progress."
+  echo "TIP All tasks with dependencies are either completed or in progress."
 else
-  echo "📊 Total blocked: $found tasks"
+  echo "STATUS Total blocked: $found tasks"
 fi
 
 exit 0

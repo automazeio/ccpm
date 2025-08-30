@@ -1,39 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash .claude/scripts/test-and-log.sh:*)",
-      "Bash(.claude/scripts/test-and-log.sh:*)",
-      "Bash(bash .claude/scripts/pm/*)",
-      "Bash(.claude/scripts/pm/*)",
-
-      "Bash(cat *)",
-      "Bash(cat:*)",
-      "Bash(composer *)",
-      "Bash(fi)",
-      "Bash(find *)",
-      "Bash(gh *)",
-      "Bash(git *)",
-      "Bash(grep *)",
-      "Bash(kill:*)",
-      "Bash(ln:*)",
-      "Bash(ls *)",
-      "Bash(mv *)",
-      "Bash(npm *)",
-      "Bash(npx *)",
-      "Bash(pnpm *)",
-      "Bash(pytest *)",
-      "Bash(python *)",
-      "Bash(rm *)",
-      "Bash(ruff check *)",
-      "Bash(ruff check:*)",
-      "Bash(sed *)",
-      "Bash(sed:*)",
-      "Bash(then)",
-      "Bash(touch *)",
-      "Bash(tree *)",
-      "List(**)",
-      "WebFetch(domain:github.com)",
-      "WebSearch"
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(markdownlint:*)",
+      "Bash(python -m pytest tests/integration/test_documentation_quality.py::TestLinkValidation::test_all_links_accessible tests/integration/test_permission_compliance.py::TestSecurityValidation::test_repository_references -v)",
+      "Bash(python -m pytest tests/integration/test_documentation_quality.py::TestMarkdownQuality::test_readme_passes_all_lint_rules tests/integration/test_documentation_quality.py::TestLinkValidation::test_all_links_accessible tests/integration/test_permission_compliance.py::TestSecurityValidation::test_repository_references -v)",
+      "Bash(python -m pytest tests/ -x -q)",
+      "Bash(python -m black:*)",
+      "Bash(python -m pytest tests/integration/test_documentation_quality.py::TestLinkValidation::test_all_links_accessible -v)",
+      "Bash(python -m isort:*)",
+      "Bash(python -m flake8:*)",
+      "Bash(python:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh run watch:*)",
+      "Bash(git add:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "/tmp/ccpm"
     ]
   }
 }
