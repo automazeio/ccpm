@@ -1,5 +1,35 @@
 #!/bin/bash
 
+# Show help message
+show_help() {
+  echo "Usage: init.sh [OPTIONS]"
+  echo ""
+  echo "Initialize the Claude Code PM system in the current repository."
+  echo ""
+  echo "Options:"
+  echo "  --skip-labels    Skip GitHub label setup during initialization"
+  echo "  --help          Show this help message"
+  echo ""
+  exit 0
+}
+
+# Parse command line arguments
+SKIP_LABELS=false
+for arg in "$@"; do
+  case $arg in
+    --skip-labels)
+      SKIP_LABELS=true
+      shift
+      ;;
+    --help|-h)
+      show_help
+      ;;
+    *)
+      # Unknown option
+      ;;
+  esac
+done
+
 echo "Initializing..."
 echo ""
 echo ""
@@ -51,6 +81,31 @@ else
   echo "  ⚠️ GitHub not authenticated"
   echo "  Running: gh auth login"
   gh auth login
+fi
+
+# Set up GitHub labels (unless --skip-labels flag is set)
+echo ""
+if [ "$SKIP_LABELS" = true ]; then
+  echo "🏷️  Skipping GitHub labels setup (--skip-labels flag provided)"
+else
+  echo "🏷️  Setting up GitHub labels..."
+  
+  # Check if we're in a git repository with a remote
+  if git rev-parse --git-dir > /dev/null 2>&1 && git remote -v | grep -q origin; then
+    # Source the labels utility script
+    if source "$(dirname "$0")/labels-ensure.sh" 2>/dev/null; then
+      # Call the function to ensure standard labels
+      if ensure_standard_labels 2>/dev/null; then
+        echo "  ✅ GitHub labels configured successfully"
+      else
+        echo "  ⚠️ Label setup completed with warnings (check output above)"
+      fi
+    else
+      echo "  ⚠️ Could not load labels utility script"
+    fi
+  else
+    echo "  ⚠️ Skipping label setup (no git repository or remote configured)"
+  fi
 fi
 
 # Check for gh-sub-issue extension
@@ -148,6 +203,21 @@ echo "📊 System Status:"
 gh --version | head -1
 echo "  Extensions: $(gh extension list | wc -l) installed"
 echo "  Auth: $(gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated')"
+
+# Show label setup status
+if [ "$SKIP_LABELS" = true ]; then
+  echo "  Labels: Skipped (--skip-labels flag)"
+elif git rev-parse --git-dir > /dev/null 2>&1 && git remote -v | grep -q origin; then
+  if gh label list >/dev/null 2>&1; then
+    label_count=$(gh label list --json name -q '.[].name' 2>/dev/null | wc -l)
+    echo "  Labels: $label_count configured"
+  else
+    echo "  Labels: Setup attempted (check output above)"
+  fi
+else
+  echo "  Labels: Not applicable (no git remote)"
+fi
+
 echo ""
 echo "🎯 Next Steps:"
 echo "  1. Create your first PRD: /pm:prd-new <feature-name>"
