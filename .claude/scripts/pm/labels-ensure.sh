@@ -2,10 +2,19 @@
 # labels-ensure.sh - Core label management utility for CCPM
 # 
 # This script provides functions to check for existing GitHub labels and create missing ones.
-# It implements file-based caching with 5-minute TTL to improve performance.
+# It implements enhanced file-based caching with configurable TTL to improve performance.
+#
+# Features:
+# - Repository-specific cache files with full owner/name format
+# - Configurable TTL via CCPM_LABEL_CACHE_TTL environment variable (default: 5 minutes)
+# - Automatic cache refresh when expired
+# - Force cache refresh functionality
+# - Cache invalidation after label creation
+# - Multi-repository support
 #
 # Usage: Source this script in other scripts to access label management functions
 # Example: source .claude/scripts/pm/labels-ensure.sh
+# Example with custom TTL: CCPM_LABEL_CACHE_TTL=10 source .claude/scripts/pm/labels-ensure.sh
 
 # Color codes for standard CCPM labels
 declare -A STANDARD_LABELS
@@ -38,23 +47,21 @@ LABEL_DESCRIPTIONS=(
 # Get cache file path based on current repository
 get_cache_file() {
     local repo_name
-    repo_name=$(gh repo view --json name -q '.name' 2>/dev/null || echo "unknown")
+    repo_name=$(gh repo view --json nameWithOwner -q '.nameWithOwner' 2>/dev/null | tr '/' '-' || echo "unknown")
     echo "/tmp/ccpm-labels-cache-${repo_name}.txt"
 }
 
-# Check if cache is valid (less than 5 minutes old)
+# Check if cache is valid (configurable TTL, defaults to 5 minutes)
 is_cache_valid() {
     local cache_file="$1"
+    local ttl="${CCPM_LABEL_CACHE_TTL:-5}"  # TTL in minutes, default 5
     
     if [[ ! -f "$cache_file" ]]; then
         return 1
     fi
     
-    local cache_age
-    cache_age=$(($(date +%s) - $(stat -c %Y "$cache_file" 2>/dev/null || echo 0)))
-    
-    # Cache is valid if less than 300 seconds (5 minutes) old
-    [[ $cache_age -lt 300 ]]
+    # Use find -mmin for TTL check as specified in requirements
+    [[ $(find "$cache_file" -mmin -"$ttl" 2>/dev/null) ]]
 }
 
 # Refresh the label cache by fetching current labels from GitHub
@@ -72,6 +79,31 @@ refresh_label_cache() {
         # Remove invalid cache file
         rm -f "$cache_file"
         return 1
+    fi
+}
+
+# Force refresh the label cache, ignoring TTL
+force_refresh_cache() {
+    local cache_file
+    cache_file=$(get_cache_file)
+    
+    echo "Force refreshing label cache..."
+    
+    # Remove existing cache file to force refresh
+    rm -f "$cache_file"
+    
+    # Refresh the cache
+    refresh_label_cache
+}
+
+# Clear the label cache (used after label creation)
+clear_label_cache() {
+    local cache_file
+    cache_file=$(get_cache_file)
+    
+    if [[ -f "$cache_file" ]]; then
+        rm -f "$cache_file"
+        echo "Label cache cleared"
     fi
 }
 
@@ -125,10 +157,6 @@ create_label() {
     
     if gh label create "${create_args[@]}" 2>/dev/null; then
         echo "✓ Successfully created label: $label_name"
-        # Invalidate cache after successful creation
-        local cache_file
-        cache_file=$(get_cache_file)
-        rm -f "$cache_file"
         return 0
     else
         echo "Warning: Failed to create label '$label_name' (may already exist)" >&2
@@ -155,6 +183,11 @@ ensure_standard_labels() {
         fi
     done
     
+    # Clear cache once if any labels were created to ensure consistency
+    if [[ $created_count -gt 0 ]]; then
+        clear_label_cache
+    fi
+    
     echo "Standard labels status: $created_count created, $((total_count - created_count)) already existed"
 }
 
@@ -175,7 +208,10 @@ ensure_epic_label() {
     echo "Ensuring epic label exists: $epic_label"
     
     if ! check_label_exists "$epic_label"; then
-        create_label "$epic_label" "$color" "$description"
+        if create_label "$epic_label" "$color" "$description"; then
+            # Clear cache after successful epic label creation
+            clear_label_cache
+        fi
     else
         echo "✓ Epic label already exists: $epic_label"
     fi
