@@ -53,7 +53,34 @@ if [[ "$remote_url" == *"automazeio/ccpm"* ]] || [[ "$remote_url" == *"automazei
 fi
 ```
 
-### 1. Create Epic Issue
+### 1. Ensure Labels Exist
+
+Source labels utility and ensure required labels exist:
+```bash
+# Source the labels utility script
+if [[ -f "$(dirname "$0")/labels-ensure.sh" ]]; then
+  source "$(dirname "$0")/labels-ensure.sh" 2>/dev/null
+elif [[ -f ".claude/scripts/pm/labels-ensure.sh" ]]; then
+  source ".claude/scripts/pm/labels-ensure.sh" 2>/dev/null
+else
+  echo "⚠️ Warning: labels-ensure.sh not found, labels may need manual creation"
+fi
+
+# Check if label functions are available
+if command -v ensure_standard_labels >/dev/null 2>&1; then
+  echo "🏷️ Checking standard labels..."
+  ensure_standard_labels || echo "⚠️ Warning: Some standard labels may not have been created"
+  
+  # Sanitize epic name for label (replace spaces and special chars with hyphens)
+  epic_label_name=$(echo "$ARGUMENTS" | sed 's/[^a-zA-Z0-9-]/-/g' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
+  echo "🏷️ Checking epic label: epic:$epic_label_name..."
+  ensure_epic_label "$epic_label_name" || echo "⚠️ Warning: Epic label may not have been created"
+else
+  echo "⚠️ Warning: Label utility functions not available, proceeding without label checks"
+fi
+```
+
+### 2. Create Epic Issue
 
 Strip frontmatter and prepare GitHub issue body:
 ```bash
@@ -106,17 +133,18 @@ else
   epic_type="feature"
 fi
 
-# Create epic issue with labels
+# Create epic issue with labels (use sanitized epic name)
+epic_label_name_for_issue=${epic_label_name:-$ARGUMENTS}
 epic_number=$(gh issue create \
   --title "Epic: $ARGUMENTS" \
   --body-file /tmp/epic-body.md \
-  --label "epic,epic:$ARGUMENTS,$epic_type" \
+  --label "epic,epic:$epic_label_name_for_issue,$epic_type" \
   --json number -q .number)
 ```
 
 Store the returned issue number for epic frontmatter update.
 
-### 2. Create Task Sub-Issues
+### 3. Create Task Sub-Issues
 
 Check if gh-sub-issue is available:
 ```bash
@@ -153,13 +181,13 @@ if [ "$task_count" -lt 5 ]; then
         --parent "$epic_number" \
         --title "$task_name" \
         --body-file /tmp/task-body.md \
-        --label "task,epic:$ARGUMENTS" \
+        --label "task,epic:$epic_label_name_for_issue" \
         --json number -q .number)
     else
       task_number=$(gh issue create \
         --title "$task_name" \
         --body-file /tmp/task-body.md \
-        --label "task,epic:$ARGUMENTS" \
+        --label "task,epic:$epic_label_name_for_issue" \
         --json number -q .number)
     fi
 
@@ -209,13 +237,13 @@ Task:
     3. Create sub-issue using:
        - If gh-sub-issue available:
          gh sub-issue create --parent $epic_number --title "$task_name" \
-           --body-file /tmp/task-body.md --label "task,epic:$ARGUMENTS"
+           --body-file /tmp/task-body.md --label "task,epic:$epic_label_name_for_issue"
        - Otherwise:
          gh issue create --title "$task_name" --body-file /tmp/task-body.md \
-           --label "task,epic:$ARGUMENTS"
+           --label "task,epic:$epic_label_name_for_issue"
     4. Record: task_file:issue_number
 
-    IMPORTANT: Always include --label parameter with "task,epic:$ARGUMENTS"
+    IMPORTANT: Always include --label parameter with "task,epic:$epic_label_name_for_issue"
 
     Return mapping of files to issue numbers.
 ```
@@ -231,7 +259,7 @@ cat /tmp/batch-*/mapping.txt >> /tmp/task-mapping.txt
 # 3. Rename files with proper frontmatter updates
 ```
 
-### 3. Rename Task Files and Update References
+### 4. Rename Task Files and Update References
 
 First, build a mapping of old numbers to new issue IDs:
 ```bash
@@ -280,7 +308,7 @@ while IFS=: read -r task_file task_number; do
 done < /tmp/task-mapping.txt
 ```
 
-### 4. Update Epic with Task List (Fallback Only)
+### 5. Update Epic with Task List (Fallback Only)
 
 If NOT using gh-sub-issue, add task list to epic:
 
@@ -305,11 +333,11 @@ fi
 
 With gh-sub-issue, this is automatic!
 
-### 5. Update Epic File
+### 6. Update Epic File
 
 Update the epic file with GitHub URL, timestamp, and real task IDs:
 
-#### 5a. Update Frontmatter
+#### 6a. Update Frontmatter
 ```bash
 # Get repo info
 repo=$(gh repo view --json nameWithOwner -q .nameWithOwner)
@@ -322,7 +350,7 @@ sed -i.bak "/^updated:/c\updated: $current_date" .claude/epics/$ARGUMENTS/epic.m
 rm .claude/epics/$ARGUMENTS/epic.md.bak
 ```
 
-#### 5b. Update Tasks Created Section
+#### 6b. Update Tasks Created Section
 ```bash
 # Create a temporary file with the updated Tasks Created section
 cat > /tmp/tasks-section.md << 'EOF'
@@ -378,7 +406,7 @@ rm .claude/epics/$ARGUMENTS/epic.md.backup
 rm /tmp/tasks-section.md
 ```
 
-### 6. Create Mapping File
+### 7. Create Mapping File
 
 Create `.claude/epics/$ARGUMENTS/github-mapping.md`:
 ```bash
@@ -406,7 +434,7 @@ echo "" >> .claude/epics/$ARGUMENTS/github-mapping.md
 echo "Synced: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .claude/epics/$ARGUMENTS/github-mapping.md
 ```
 
-### 7. Create Worktree
+### 8. Create Worktree
 
 Follow `/rules/worktree-operations.md` to create development worktree:
 
@@ -421,13 +449,15 @@ git worktree add ../epic-$ARGUMENTS -b epic/$ARGUMENTS
 echo "✅ Created worktree: ../epic-$ARGUMENTS"
 ```
 
-### 8. Output
+### 9. Output
 
 ```
 ✅ Synced to GitHub
+  - Labels: Standard CCPM labels checked/created
+  - Epic label: epic:{epic_label_name} ensured
   - Epic: #{epic_number} - {epic_title}
   - Tasks: {count} sub-issues created
-  - Labels applied: epic, task, epic:{name}
+  - Labels applied: epic, task, epic:{epic_label_name}
   - Files renamed: 001.md → {issue_id}.md
   - References updated: depends_on/conflicts_with now use issue IDs
   - Worktree: ../epic-$ARGUMENTS
