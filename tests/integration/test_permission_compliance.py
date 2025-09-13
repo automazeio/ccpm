@@ -251,7 +251,7 @@ class TestSecurityValidation:
         # The permission system should restrict access to:
         # - System directories outside of project scope
         # - User directories outside of project scope
-        # - Temporary directories outside of /tmp/ccpm
+        # - Temporary directories outside of .claude/workspace
         pass
 
     def test_command_restrictions(self):

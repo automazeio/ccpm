@@ -109,12 +109,13 @@ Regular security reviews should include:
 ### Directory Restrictions
 
 ```json
-"additionalDirectories": ["/tmp/ccpm"]
+"additionalDirectories": [".claude/workspace"]
 ```
 
-- Access limited to project-specific temporary directory
+- Access limited to project-specific workspace directory
 - No access to system directories or user home directories
 - Prevents unauthorized file system access
+- Workspace is local to the project, not in system temp
 
 ### Command Restrictions
 

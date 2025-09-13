@@ -115,7 +115,7 @@
       "WebSearch"
     ],
     "additionalDirectories": [
-      "/tmp/ccpm"
+      ".claude/workspace"
     ]
   }
 }

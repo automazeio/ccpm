@@ -162,6 +162,17 @@ class CCPMInstaller:
         # 11. Update .gitignore
         self._update_gitignore()
 
+        # 12. Create workspace directory for Claude Code
+        workspace_dir = self.claude_dir / "workspace"
+        if not workspace_dir.exists():
+            workspace_dir.mkdir(parents=True, exist_ok=True)
+            safe_print(
+                f"\n{get_emoji('📁', '>>>')} Created workspace directory: .claude/workspace"
+            )
+            # Create a .gitkeep file to ensure the directory is tracked
+            gitkeep = workspace_dir / ".gitkeep"
+            gitkeep.touch()
+
         print_success("\nCCPM setup complete!")
         safe_print("\nNext steps:")
         safe_print("  1. Run 'ccpm init' to initialize the PM system")
@@ -234,6 +245,45 @@ class CCPMInstaller:
             except Exception as tracking_exc:
                 print_warning(f"Failed to update tracking file: {tracking_exc}")
                 # Don't fail the entire update for tracking file issues
+
+            # Ensure workspace directory exists after update
+            workspace_dir = self.claude_dir / "workspace"
+            if not workspace_dir.exists():
+                workspace_dir.mkdir(parents=True, exist_ok=True)
+                safe_print(
+                    f"\n{get_emoji('📁', '>>>')} Created workspace directory: .claude/workspace"
+                )
+                # Create a .gitkeep file to ensure the directory is tracked
+                gitkeep = workspace_dir / ".gitkeep"
+                gitkeep.touch()
+
+            # Migrate settings.local.json from /tmp/ccpm to .claude/workspace
+            settings_file = self.claude_dir / "settings.local.json"
+            if settings_file.exists():
+                try:
+                    import json
+                    with open(settings_file, 'r') as f:
+                        settings = json.load(f)
+
+                    # Check if we need to migrate from /tmp/ccpm
+                    if "additionalDirectories" in settings.get("permissions", {}):
+                        dirs = settings["permissions"]["additionalDirectories"]
+                        if "/tmp/ccpm" in dirs:
+                            # Replace /tmp/ccpm with .claude/workspace
+                            dirs.remove("/tmp/ccpm")
+                            if ".claude/workspace" not in dirs:
+                                dirs.append(".claude/workspace")
+
+                            # Write updated settings
+                            with open(settings_file, 'w') as f:
+                                json.dump(settings, f, indent=2)
+
+                            safe_print(
+                                f"\n{get_emoji('🔄', '>>>')} Migrated settings from /tmp/ccpm to .claude/workspace"
+                            )
+                except Exception as settings_exc:
+                    print_warning(f"Failed to migrate settings: {settings_exc}")
+                    # Don't fail the update for settings migration issues
 
             print_success("\nCCPM updated successfully!")
 
@@ -330,6 +380,7 @@ class CCPMInstaller:
                 "rules",
                 "scripts",
                 "context",
+                "workspace",  # Added workspace directory
             ]
             for dir_name in template_dirs_to_check:
                 dir_path = self.claude_dir / dir_name
@@ -554,6 +605,7 @@ class CCPMInstaller:
             "context/README.md",
             "prds/.gitkeep",
             "epics/.gitkeep",
+            "workspace/.gitkeep",
             "commands/code-rabbit.md",
             "commands/prompt.md",
             "commands/re-init.md",

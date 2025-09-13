@@ -31,7 +31,8 @@
       "Bash(grep:*)",
       "Bash(git stash:*)",
       "Bash(gh:*)",
-      "WebFetch(domain:cli.github.com)"
+      "WebFetch(domain:cli.github.com)",
+      "Read(//private/tmp/test-ccpm-install/.claude/**)"
     ],
     "deny": [],
     "ask": [],

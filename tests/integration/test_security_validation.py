@@ -178,7 +178,7 @@ class TestSecurityModel:
 
                     # Should be scoped to project-related directories
                     assert (
-                        "/tmp/ccpm" in directory
+                        ".claude/workspace" in directory
                         or ".claude" in directory
                         or "ccpm" in directory
                     ), f"Unscoped directory access: {directory}"
