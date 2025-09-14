@@ -36,7 +36,8 @@
       "Bash(chmod:*)",
       "Bash(bash:*)",
       "Bash(find:*)",
-      "Read(//Users/jmanning/**)"
+      "Read(//Users/jmanning/**)",
+      "Bash(ruff check:*)"
     ],
     "deny": [],
     "ask": [],

@@ -9,11 +9,9 @@ especially when markdown files contain only frontmatter.
 import subprocess
 import tempfile
 import os
-import time
 import json
 import pytest
 import uuid
-from pathlib import Path
 
 
 class TestGitHubIssueCreation:
