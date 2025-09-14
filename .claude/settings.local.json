@@ -32,7 +32,10 @@
       "Bash(git stash:*)",
       "Bash(gh:*)",
       "WebFetch(domain:cli.github.com)",
-      "Read(//private/tmp/test-ccpm-install/.claude/**)"
+      "Read(//private/tmp/test-ccpm-install/.claude/**)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],
