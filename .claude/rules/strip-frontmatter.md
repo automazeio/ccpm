@@ -17,7 +17,7 @@ Use the provided utility function that handles empty files:
 
 ```bash
 # Source utility functions
-source "$HOME/.claude/scripts/pm/lib/utils.sh"
+source ".claude/scripts/pm/lib/utils.sh"
 
 # Strip frontmatter safely with default content
 strip_frontmatter_safe "input.md" "output.md" "Content pending."

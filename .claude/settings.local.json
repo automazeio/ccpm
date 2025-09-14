@@ -35,7 +35,8 @@
       "Read(//private/tmp/test-ccpm-install/.claude/**)",
       "Bash(chmod:*)",
       "Bash(bash:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Read(//Users/jmanning/**)"
     ],
     "deny": [],
     "ask": [],

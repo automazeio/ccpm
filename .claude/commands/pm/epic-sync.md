@@ -58,7 +58,7 @@ fi
 Strip frontmatter and prepare GitHub issue body:
 ```bash
 # Source utility functions
-source "$HOME/.claude/scripts/pm/lib/utils.sh"
+source ".claude/scripts/pm/lib/utils.sh"
 
 # Extract content without frontmatter using safe stripping
 strip_frontmatter_safe ".claude/epics/$ARGUMENTS/epic.md" "/tmp/epic-body-raw.md" "Epic implementation details pending."
@@ -218,7 +218,7 @@ Task:
     For each task file:
     1. Extract task name from frontmatter
     2. Strip frontmatter using safe function:
-       source "$HOME/.claude/scripts/pm/lib/utils.sh"
+       source ".claude/scripts/pm/lib/utils.sh"
        strip_frontmatter_safe "$task_file" "/tmp/task-body.md" "Task implementation details pending."
     3. Create sub-issue using:
        - If gh-sub-issue available:

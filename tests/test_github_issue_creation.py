@@ -83,15 +83,25 @@ class TestGitHubIssueCreation:
         try:
             # Source utils and use strip_frontmatter_safe
             test_script = f"""
-            source "$HOME/.claude/scripts/pm/lib/utils.sh"
+            source ".claude/scripts/pm/lib/utils.sh"
             strip_frontmatter_safe "{task_file}" /tmp/test-body.md "Task implementation pending."
 
             # Create issue with the processed body
-            gh issue create \\
+            issue_url=$(gh issue create \\
                 --title "Test: Empty Frontmatter Only" \\
                 --body-file /tmp/test-body.md \\
-                --label "{self.test_label}" \\
-                --json number,body -q '.number + " " + .body'
+                --label "{self.test_label}")
+
+            # Extract issue number from URL
+            issue_num=$(echo "$issue_url" | grep -oE '[0-9]+$')
+
+            # Get the issue body
+            gh issue view "$issue_num" --json body -q '.body' > /tmp/issue-body.txt
+
+            echo "ISSUE_NUM:$issue_num"
+            echo "BODY_START"
+            cat /tmp/issue-body.txt
+            echo "BODY_END"
             """
 
             result = subprocess.run(['bash', '-c', test_script],
@@ -103,9 +113,21 @@ class TestGitHubIssueCreation:
             assert result.returncode == 0, f"Failed to create issue: {result.stderr}"
 
             # Parse output
-            parts = result.stdout.strip().split(' ', 1)
-            issue_num = parts[0]
-            issue_body = parts[1] if len(parts) > 1 else ""
+            output_lines = result.stdout.strip().split('\n')
+            issue_num = None
+            issue_body = ""
+
+            for i, line in enumerate(output_lines):
+                if line.startswith('ISSUE_NUM:'):
+                    issue_num = line.replace('ISSUE_NUM:', '')
+                elif line == 'BODY_START':
+                    # Collect everything between BODY_START and BODY_END
+                    body_lines = []
+                    for j in range(i+1, len(output_lines)):
+                        if output_lines[j] == 'BODY_END':
+                            break
+                        body_lines.append(output_lines[j])
+                    issue_body = '\n'.join(body_lines)
 
             print(f"Created issue #{issue_num}")
             print(f"Issue body: {issue_body}")
@@ -138,7 +160,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "$HOME/.claude/scripts/pm/lib/utils.sh"
+            source ".claude/scripts/pm/lib/utils.sh"
             strip_frontmatter_safe "{task_file}" /tmp/test-malformed.md "Malformed content handling."
 
             # Check what was extracted
@@ -178,7 +200,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "$HOME/.claude/scripts/pm/lib/utils.sh"
+            source ".claude/scripts/pm/lib/utils.sh"
             strip_frontmatter_safe "{task_file}" /tmp/test-large.md "Large content test."
 
             # Count lines and check last line
@@ -244,12 +266,12 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "$HOME/.claude/scripts/pm/lib/utils.sh"
+            source ".claude/scripts/pm/lib/utils.sh"
             strip_frontmatter_safe "{task_file}" /tmp/test-special.md "Special chars test."
 
             # Check content preservation
             grep -q '```bash' /tmp/test-special.md && echo "Code block preserved"
-            grep -q '\$HOME' /tmp/test-special.md && echo "Variables preserved"
+            grep -q '\\$HOME' /tmp/test-special.md && echo "Variables preserved"
             grep -q '🚀' /tmp/test-special.md && echo "Emoji preserved"
 
             # Create issue
@@ -285,7 +307,7 @@ class TestGitHubIssueCreation:
         print("\n=== Testing validate_body_file function ===")
 
         test_script = """
-        source "$HOME/.claude/scripts/pm/lib/utils.sh"
+        source ".claude/scripts/pm/lib/utils.sh"
 
         # Test 1: Non-existent file
         echo "Test 1: Non-existent file"
@@ -344,7 +366,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "$HOME/.claude/scripts/pm/lib/utils.sh"
+            source ".claude/scripts/pm/lib/utils.sh"
 
             echo "Testing file with only frontmatter:"
             if has_content_after_frontmatter "{only_fm}"; then
