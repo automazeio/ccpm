@@ -48,18 +48,26 @@ done
 
 echo ""
 echo "NEXT AVAILABLE TASKS:"
-# Show top 3 available tasks
+# Show top 3 available tasks - optimized with single file read
 count=0
 for epic_dir in .claude/epics/*/; do
   [ -d "$epic_dir" ] || continue
   for task_file in "$epic_dir"[0-9]*.md; do
     [ -f "$task_file" ] || continue
-    status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
+
+    # Read file once and extract all fields
+    eval $(awk '
+      /^status:/ && !status { status=$2 }
+      /^name:/ && !name { gsub(/^name: */, ""); name=$0 }
+      /^depends_on:/ && !deps { gsub(/^depends_on: *\[|\]/, ""); deps=$0 }
+      END {
+        printf "status=\"%s\" task_name=\"%s\" deps=\"%s\"", status, name, deps
+      }
+    ' "$task_file")
+
     [ "$status" != "open" ] && [ -n "$status" ] && continue
 
-    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//')
     if [ -z "$deps" ] || [ "$deps" = "depends_on:" ]; then
-      task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
       task_num=$(basename "$task_file" .md)
       echo "  * #$task_num - $task_name"
       count=$((count + 1))
@@ -71,8 +79,14 @@ done
 echo ""
 echo "QUICK STATS:"
 total_tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
-open_tasks=$(find .claude/epics -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
-closed_tasks=$(find .claude/epics -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
+# Fixed: Handle empty file list gracefully
+if [ "$total_tasks" -gt 0 ]; then
+  open_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *open" 2>/dev/null | wc -l)
+  closed_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *closed" 2>/dev/null | wc -l)
+else
+  open_tasks=0
+  closed_tasks=0
+fi
 echo "  Tasks: $open_tasks open, $closed_tasks closed, $total_tasks total"
 
 exit 0

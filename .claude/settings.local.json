@@ -38,7 +38,13 @@
       "Bash(find:*)",
       "Read(//Users/jmanning/**)",
       "Bash(ruff check:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(.claude/scripts/debug-wrapper.sh:*)",
+      "Read(//tmp/**)",
+      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/status.sh:*)",
+      "Bash(../tests/bash_freezing/test_core.sh)",
+      "Bash(RUN_ONCE=true .claude/scripts/health-check.sh --once)",
+      "Bash(.claude/scripts/pm/status.sh:*)"
     ],
     "deny": [],
     "ask": [],
