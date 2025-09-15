@@ -17,8 +17,13 @@ for epic_dir in .claude/epics/*/; do
   for task_file in "$epic_dir"[0-9]*.md; do
     [ -f "$task_file" ] || continue
 
-    # Read file once and extract all fields
-    eval $(awk '
+    # Read file once and extract all fields safely without eval
+    # Use process substitution to read variables directly
+    {
+      read -r status
+      read -r task_name
+      read -r deps
+    } < <(awk '
       /^status:/ && !status { status=$2 }
       /^name:/ && !name { gsub(/^name: */, ""); name=$0 }
       /^depends_on:/ && !deps {
@@ -27,7 +32,9 @@ for epic_dir in .claude/epics/*/; do
         deps=$0
       }
       END {
-        printf "status=\"%s\" task_name=\"%s\" deps=\"%s\"", status, name, deps
+        print status
+        print name
+        print deps
       }
     ' "$task_file")
 

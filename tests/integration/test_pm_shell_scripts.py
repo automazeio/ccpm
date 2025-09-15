@@ -634,6 +634,432 @@ status: backlog
         ], f"Unexpected return code from subdirectory: {returncode}"
 
 
+class TestBlockedScript:
+    """Test the blocked.sh script with real task dependencies."""
+
+    def test_blocked_no_epics(self, pm_git_repo):
+        """Test blocked script with no epics."""
+        returncode, stdout, stderr = run_pm_script("blocked.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"Blocked script failed: {stderr}"
+        assert "No blocked tasks found" in stdout
+
+    def test_blocked_with_dependencies(self, pm_git_repo):
+        """Test blocked script with tasks that have dependencies."""
+        epic_dir = pm_git_repo / ".claude" / "epics" / "test-epic"
+        epic_dir.mkdir(parents=True)
+
+        # Create epic file
+        (epic_dir / "epic.md").write_text(
+            """---
+name: Test Epic
+status: in-progress
+---
+
+# Test Epic
+"""
+        )
+
+        # Create task with dependencies
+        (epic_dir / "001.md").write_text(
+            """---
+name: Task with Dependencies
+status: open
+depends_on: [002, 003]
+---
+
+# Task 001
+This task depends on other tasks.
+"""
+        )
+
+        # Create dependency tasks
+        (epic_dir / "002.md").write_text(
+            """---
+name: Dependency Task 2
+status: open
+depends_on: []
+---
+
+# Task 002
+"""
+        )
+
+        (epic_dir / "003.md").write_text(
+            """---
+name: Dependency Task 3
+status: completed
+depends_on: []
+---
+
+# Task 003
+"""
+        )
+
+        returncode, stdout, stderr = run_pm_script("blocked.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"Blocked script failed: {stderr}"
+        assert "Task #001 - Task with Dependencies" in stdout
+        assert "Blocked by: [002 003]" in stdout
+        assert "002 (open)" in stdout  # Should show open dependency
+
+
+class TestInProgressScript:
+    """Test the in-progress.sh script with real task statuses."""
+
+    def test_in_progress_no_tasks(self, pm_git_repo):
+        """Test in-progress script with no tasks."""
+        returncode, stdout, stderr = run_pm_script("in-progress.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"In-progress script failed: {stderr}"
+        assert "No in-progress tasks found" in stdout or "IN-PROGRESS TASKS" in stdout
+
+    def test_in_progress_with_tasks(self, pm_git_repo):
+        """Test in-progress script with various task statuses."""
+        epic_dir = pm_git_repo / ".claude" / "epics" / "active-epic"
+        epic_dir.mkdir(parents=True)
+
+        # Create epic
+        (epic_dir / "epic.md").write_text(
+            """---
+name: Active Epic
+status: in-progress
+---
+
+# Active Epic
+"""
+        )
+
+        # Create tasks with different statuses
+        (epic_dir / "001.md").write_text(
+            """---
+name: In Progress Task
+status: in-progress
+depends_on: []
+---
+
+# Task 001
+Currently being worked on.
+"""
+        )
+
+        (epic_dir / "002.md").write_text(
+            """---
+name: Open Task
+status: open
+depends_on: []
+---
+
+# Task 002
+"""
+        )
+
+        (epic_dir / "003.md").write_text(
+            """---
+name: Another In Progress Task
+status: in-progress
+depends_on: []
+---
+
+# Task 003
+Also being worked on.
+"""
+        )
+
+        returncode, stdout, stderr = run_pm_script("in-progress.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"In-progress script failed: {stderr}"
+        assert "IN-PROGRESS TASKS" in stdout
+        assert "Task #001 - In Progress Task" in stdout
+        assert "Task #003 - Another In Progress Task" in stdout
+        assert "Task #002" not in stdout  # Open task should not appear
+
+
+class TestInitScript:
+    """Test the init.sh script for PM system initialization."""
+
+    def test_init_creates_structure(self):
+        """Test init script creates proper directory structure."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            test_repo = Path(tmpdir) / "init_test"
+            test_repo.mkdir()
+
+            # Initialize git repo
+            subprocess.run(["git", "init"], cwd=test_repo, check=True, capture_output=True)
+            subprocess.run(
+                ["git", "config", "user.email", "test@example.com"],
+                cwd=test_repo,
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "Test User"],
+                cwd=test_repo,
+                check=True,
+                capture_output=True,
+            )
+
+            # Run init script
+            returncode, stdout, stderr = run_pm_script("init.sh", cwd=test_repo)
+
+            # Check return code (may be 0 or 1 depending on whether it's already initialized)
+            assert returncode in [0, 1], f"Init script had unexpected return: {stderr}"
+
+            # Check that directories were created
+            assert (test_repo / ".claude").exists() or "already exists" in stdout
+
+            # If successful, check structure
+            if returncode == 0:
+                assert (test_repo / ".claude" / "prds").exists()
+                assert (test_repo / ".claude" / "epics").exists()
+
+    def test_init_idempotent(self, pm_git_repo):
+        """Test that init script is idempotent (safe to run multiple times)."""
+        # First run
+        returncode1, stdout1, stderr1 = run_pm_script("init.sh", cwd=pm_git_repo)
+
+        # Second run should not fail
+        returncode2, stdout2, stderr2 = run_pm_script("init.sh", cwd=pm_git_repo)
+
+        assert returncode2 in [0, 1], f"Init script failed on second run: {stderr2}"
+
+        # Directories should still exist
+        assert (pm_git_repo / ".claude" / "prds").exists()
+        assert (pm_git_repo / ".claude" / "epics").exists()
+
+
+class TestPRDStatusScript:
+    """Test the prd-status.sh script with real PRD files."""
+
+    def test_prd_status_no_prds(self, pm_git_repo):
+        """Test PRD status with no PRD files."""
+        returncode, stdout, stderr = run_pm_script("prd-status.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"PRD status script failed: {stderr}"
+        assert "No PRDs found" in stdout or "PRD STATUS" in stdout
+
+    def test_prd_status_with_prds(self, pm_git_repo):
+        """Test PRD status with various PRD statuses."""
+        prds_dir = pm_git_repo / ".claude" / "prds"
+
+        # Create PRDs with different statuses
+        (prds_dir / "draft-prd.md").write_text(
+            """---
+name: Draft PRD
+status: draft
+description: A draft PRD
+---
+
+# Draft PRD
+"""
+        )
+
+        (prds_dir / "approved-prd.md").write_text(
+            """---
+name: Approved PRD
+status: approved
+description: An approved PRD
+---
+
+# Approved PRD
+"""
+        )
+
+        (prds_dir / "in-progress-prd.md").write_text(
+            """---
+name: In Progress PRD
+status: in-progress
+description: PRD being implemented
+---
+
+# In Progress PRD
+"""
+        )
+
+        returncode, stdout, stderr = run_pm_script("prd-status.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"PRD status script failed: {stderr}"
+        assert "PRD STATUS" in stdout
+        # Should show counts or list by status
+        assert "draft" in stdout.lower() or "Draft PRD" in stdout
+        assert "approved" in stdout.lower() or "Approved PRD" in stdout
+
+
+class TestStandupScript:
+    """Test the standup.sh script for daily standup reports."""
+
+    def test_standup_empty_repo(self, pm_git_repo):
+        """Test standup script with no tasks."""
+        returncode, stdout, stderr = run_pm_script("standup.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"Standup script failed: {stderr}"
+        assert "DAILY STANDUP" in stdout or "No" in stdout
+
+    def test_standup_with_various_tasks(self, pm_git_repo):
+        """Test standup script with tasks in various states."""
+        epic_dir = pm_git_repo / ".claude" / "epics" / "standup-epic"
+        epic_dir.mkdir(parents=True)
+
+        # Create epic
+        (epic_dir / "epic.md").write_text(
+            """---
+name: Standup Epic
+status: in-progress
+---
+
+# Standup Epic
+"""
+        )
+
+        # Create tasks in various states
+        (epic_dir / "001.md").write_text(
+            """---
+name: Yesterday's Task
+status: completed
+depends_on: []
+---
+
+# Task 001
+Completed yesterday.
+"""
+        )
+
+        (epic_dir / "002.md").write_text(
+            """---
+name: Today's Task
+status: in-progress
+depends_on: []
+---
+
+# Task 002
+Working on this today.
+"""
+        )
+
+        (epic_dir / "003.md").write_text(
+            """---
+name: Next Task
+status: open
+depends_on: []
+---
+
+# Task 003
+Ready to start.
+"""
+        )
+
+        (epic_dir / "004.md").write_text(
+            """---
+name: Blocked Task
+status: open
+depends_on: [005]
+---
+
+# Task 004
+Blocked by dependencies.
+"""
+        )
+
+        (epic_dir / "005.md").write_text(
+            """---
+name: Dependency Task
+status: open
+depends_on: []
+---
+
+# Task 005
+"""
+        )
+
+        returncode, stdout, stderr = run_pm_script("standup.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"Standup script failed: {stderr}"
+        assert "DAILY STANDUP" in stdout
+
+        # Should show sections for yesterday, today, blockers, next
+        assert "IN PROGRESS" in stdout or "Today" in stdout.upper()
+        assert "#002 - Today's Task" in stdout
+
+        # Should show next tasks
+        assert "NEXT" in stdout or "Next" in stdout
+
+        # Should show blockers
+        assert "BLOCKED" in stdout or "Blockers" in stdout.upper()
+
+
+class TestNextScript:
+    """Test the next.sh script for next task selection."""
+
+    def test_next_no_tasks(self, pm_git_repo):
+        """Test next script with no available tasks."""
+        returncode, stdout, stderr = run_pm_script("next.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"Next script failed: {stderr}"
+        assert "No available tasks" in stdout or "No open tasks" in stdout
+
+    def test_next_with_priority_tasks(self, pm_git_repo):
+        """Test next script with tasks of different priorities."""
+        epic_dir = pm_git_repo / ".claude" / "epics" / "priority-epic"
+        epic_dir.mkdir(parents=True)
+
+        # Create epic
+        (epic_dir / "epic.md").write_text(
+            """---
+name: Priority Epic
+status: in-progress
+---
+
+# Priority Epic
+"""
+        )
+
+        # Create tasks with no dependencies (ready to start)
+        (epic_dir / "001.md").write_text(
+            """---
+name: First Open Task
+status: open
+depends_on: []
+priority: high
+---
+
+# Task 001
+Ready to start.
+"""
+        )
+
+        (epic_dir / "002.md").write_text(
+            """---
+name: Second Open Task
+status: open
+depends_on: [001]
+priority: medium
+---
+
+# Task 002
+Depends on task 001.
+"""
+        )
+
+        (epic_dir / "003.md").write_text(
+            """---
+name: Third Open Task
+status: open
+depends_on: []
+priority: low
+---
+
+# Task 003
+Also ready to start.
+"""
+        )
+
+        returncode, stdout, stderr = run_pm_script("next.sh", cwd=pm_git_repo)
+
+        assert returncode == 0, f"Next script failed: {stderr}"
+        # Should suggest task 001 as it has no dependencies
+        assert "001" in stdout or "First Open Task" in stdout
+
+
 class TestScriptIntegration:
     """Test integration between different PM scripts."""
 

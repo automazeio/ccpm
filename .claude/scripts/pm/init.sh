@@ -81,10 +81,9 @@ if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
   cp -r scripts/pm/* .claude/scripts/pm/
   
   # Make shell scripts executable, but only if they exist
-  # Build array of .sh files to avoid glob expansion failure under set -e
-  sh_files=(.claude/scripts/pm/*.sh)
-  if [ -e "${sh_files[0]}" ]; then
-    chmod +x "${sh_files[@]}"
+  # Use find to safely handle the case where no .sh files exist
+  if find .claude/scripts/pm -maxdepth 1 -name "*.sh" -type f | head -1 | grep -q .; then
+    find .claude/scripts/pm -maxdepth 1 -name "*.sh" -type f -exec chmod +x {} \;
   fi
   
   echo "  OK Scripts copied and made executable"

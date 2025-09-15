@@ -53,7 +53,13 @@
       "Bash(for script in status standup blocked next)",
       "Bash(do echo \"Testing $script.sh:\")",
       "Bash(.claude/scripts/pm/:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(CCPM_MIN_TASK_CONTENT=200 bash -c 'source /Users/jmanning/ccpm/ccpm/claude_template/scripts/utils.sh && min=$(get_min_content_length \"\"task:test\"\") && echo \"\"Task minimum with CCPM_MIN_TASK_CONTENT=200: $min\"\"')",
+      "Bash(for issue in 16 17 18)",
+      "Bash(do gh issue view $issue --json number,title,state)",
+      "Bash(echo:*)",
+      "Bash(for cmd in epic-sync issue-sync prd-new)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": [],
