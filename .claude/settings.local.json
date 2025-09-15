@@ -63,7 +63,10 @@
       "WebFetch(domain:docs.pytest.org)",
       "Bash(do echo \"Issue #$issue:\")",
       "Bash(while gh run view 17745662437 --json status)",
-      "Bash(do echo \"Waiting...\")"
+      "Bash(do echo \"Waiting...\")",
+      "Bash(while gh run view 17746003184 --json status)",
+      "Bash(do sleep:*)",
+      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/in-progress.sh:*)"
     ],
     "deny": [],
     "ask": [],

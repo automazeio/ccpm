@@ -55,7 +55,7 @@ for epic_dir in .claude/epics/*/; do
   status=$(grep "^status:" "$epic_dir/epic.md" | head -1 | sed 's/^status: *//')
   if [ "$status" = "in-progress" ] || [ "$status" = "active" ]; then
     epic_name=$(grep "^name:" "$epic_dir/epic.md" | head -1 | sed 's/^name: *//')
-    progress=$(grep "^progress:" "$epic_dir/epic.md" | head -1 | sed 's/^progress: *//')
+    progress=$(grep "^progress:" "$epic_dir/epic.md" | head -1 | sed 's/^progress: *//' || echo "")
     [ -z "$epic_name" ] && epic_name=$(basename "$epic_dir")
     [ -z "$progress" ] && progress="0%"
 

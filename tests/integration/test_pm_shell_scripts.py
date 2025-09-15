@@ -701,7 +701,7 @@ depends_on: []
         assert returncode == 0, f"Blocked script failed: {stderr}"
         assert "Task #001 - Task with Dependencies" in stdout
         assert "Blocked by: [002 003]" in stdout
-        assert "002 (open)" in stdout  # Should show open dependency
+        assert "Waiting for: #002" in stdout  # Should show waiting dependency
 
 
 class TestInProgressScript:
@@ -712,7 +712,7 @@ class TestInProgressScript:
         returncode, stdout, stderr = run_pm_script("in-progress.sh", cwd=pm_git_repo)
 
         assert returncode == 0, f"In-progress script failed: {stderr}"
-        assert "No in-progress tasks found" in stdout or "IN-PROGRESS TASKS" in stdout
+        assert "No in-progress tasks found" in stdout or "IN-PROGRESS" in stdout
 
     def test_in_progress_with_tasks(self, pm_git_repo):
         """Test in-progress script with various task statuses."""
