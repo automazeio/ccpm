@@ -20,15 +20,21 @@ recent_files=$(find .claude -name "*.md" -mtime -1 2>/dev/null)
 
 if [ -n "$recent_files" ]; then
   # Count by type
-  prd_count=$(echo "$recent_files" | grep -c "/prds/" || echo 0)
-  epic_count=$(echo "$recent_files" | grep -c "/epic.md" || echo 0)
-  task_count=$(echo "$recent_files" | grep -c "/[0-9]*.md" || echo 0)
-  update_count=$(echo "$recent_files" | grep -c "/updates/" || echo 0)
+  prd_count=$(echo "$recent_files" | grep -c "/prds/" 2>/dev/null || true)
+  epic_count=$(echo "$recent_files" | grep -c "/epic.md" 2>/dev/null || true)
+  task_count=$(echo "$recent_files" | grep -c "/[0-9]*.md" 2>/dev/null || true)
+  update_count=$(echo "$recent_files" | grep -c "/updates/" 2>/dev/null || true)
 
-  [ $prd_count -gt 0 ] && echo "  * Modified $prd_count PRD(s)"
-  [ $epic_count -gt 0 ] && echo "  * Updated $epic_count epic(s)"
-  [ $task_count -gt 0 ] && echo "  * Worked on $task_count task(s)"
-  [ $update_count -gt 0 ] && echo "  * Posted $update_count progress update(s)"
+  # Ensure counts are numbers
+  prd_count=${prd_count:-0}
+  epic_count=${epic_count:-0}
+  task_count=${task_count:-0}
+  update_count=${update_count:-0}
+
+  [ "$prd_count" -gt 0 ] && echo "  * Modified $prd_count PRD(s)"
+  [ "$epic_count" -gt 0 ] && echo "  * Updated $epic_count epic(s)"
+  [ "$task_count" -gt 0 ] && echo "  * Worked on $task_count task(s)"
+  [ "$update_count" -gt 0 ] && echo "  * Posted $update_count progress update(s)"
 else
   echo "  No activity recorded today"
 fi
@@ -85,11 +91,11 @@ done
 
 echo ""
 echo "QUICK STATS:"
-total_tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+total_tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l | tr -d ' ')
 # Fixed: Handle empty file list gracefully
 if [ "$total_tasks" -gt 0 ]; then
-  open_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *open" 2>/dev/null | wc -l || echo "0")
-  closed_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *closed" 2>/dev/null | wc -l || echo "0")
+  open_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *open" 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+  closed_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *closed" 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 else
   open_tasks=0
   closed_tasks=0

@@ -59,7 +59,8 @@
       "Bash(do gh issue view $issue --json number,title,state)",
       "Bash(echo:*)",
       "Bash(for cmd in epic-sync issue-sync prd-new)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "WebFetch(domain:docs.pytest.org)"
     ],
     "deny": [],
     "ask": [],

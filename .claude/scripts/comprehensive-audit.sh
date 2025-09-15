@@ -1,6 +1,6 @@
 #!/bin/bash
 # comprehensive-audit.sh - Complete CCPM system audit
-set -euo pipefail
+set -uo pipefail
 
 echo "======================================"
 echo "   CCPM COMPREHENSIVE AUDIT"
@@ -20,7 +20,7 @@ validate_structure() {
     for dir in .claude .claude/prds .claude/epics .claude/scripts .claude/scripts/pm .claude/commands .claude/commands/pm; do
         if [ ! -d "$dir" ]; then
             echo "  ❌ Missing directory: $dir"
-            ((errors++))
+            errors=$((errors + 1))
         else
             echo "  ✓ Found: $dir"
         fi
@@ -37,7 +37,7 @@ validate_scripts() {
     local warnings=0
 
     # Count scripts
-    script_count=$(find .claude/scripts/pm -name "*.sh" -type f 2>/dev/null | wc -l)
+    script_count=$(find .claude/scripts/pm -name "*.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
     echo "  Found $script_count PM scripts"
 
     # Check all scripts have proper shebang and error handling
@@ -48,25 +48,25 @@ validate_scripts() {
             # Check shebang
             if ! head -1 "$script" | grep -q "^#!/bin/bash"; then
                 echo "  ❌ Missing shebang: $script_name"
-                ((errors++))
+                errors=$((errors + 1))
             fi
 
             # Check error handling
             if ! grep -q "^set -e" "$script"; then
                 echo "  ⚠️  Missing 'set -e': $script_name"
-                ((warnings++))
+                warnings=$((warnings + 1))
             fi
 
             # Check script is executable
             if [ ! -x "$script" ]; then
                 echo "  ⚠️  Not executable: $script_name"
-                ((warnings++))
+                warnings=$((warnings + 1))
             fi
 
             # Syntax check
             if ! bash -n "$script" 2>/dev/null; then
                 echo "  ❌ Syntax error: $script_name"
-                ((errors++))
+                errors=$((errors + 1))
             fi
         fi
     done
@@ -96,7 +96,7 @@ validate_command_script_mapping() {
                 script_path="${script_ref#bash }"
                 if [ ! -f "$script_path" ]; then
                     echo "  ❌ Command $cmd_name references missing: $script_path"
-                    ((errors++))
+                    errors=$((errors + 1))
                 fi
             done
         fi
@@ -124,7 +124,7 @@ validate_github_integration() {
                 echo "  ✓ File validation function present in $utils_path"
             else
                 echo "  ⚠️  Missing file validation function in $utils_path"
-                ((warnings++))
+                warnings=$((warnings + 1))
             fi
             break
         fi
@@ -132,7 +132,7 @@ validate_github_integration() {
 
     if [ "$utils_found" = "false" ]; then
         echo "  ⚠️  utils.sh not found"
-        ((warnings++))
+        warnings=$((warnings + 1))
     fi
 
     # Check critical commands use validation
@@ -143,12 +143,13 @@ validate_github_integration() {
                 echo "  ✓ ${cmd} uses validation"
             else
                 echo "  ⚠️  ${cmd} missing validation"
-                ((warnings++))
+                warnings=$((warnings + 1))
             fi
         fi
     done
 
-    return $warnings
+    total_warnings=$((total_warnings + warnings))
+    return 0
 }
 
 # 5. Performance Checks
@@ -158,25 +159,25 @@ validate_performance() {
     local info_count=0
 
     # Check for output limiting
-    scripts_with_limits=$(grep -l "MAX_OUTPUT_LINES\|output_limit" .claude/scripts/pm/*.sh 2>/dev/null | wc -l)
-    total_scripts=$(ls .claude/scripts/pm/*.sh 2>/dev/null | wc -l)
+    scripts_with_limits=$(grep -l "MAX_OUTPUT_LINES\|output_limit" .claude/scripts/pm/*.sh 2>/dev/null | wc -l | tr -d ' ')
+    total_scripts=$(ls .claude/scripts/pm/*.sh 2>/dev/null | wc -l | tr -d ' ')
 
     echo "  Scripts with output limits: $scripts_with_limits/$total_scripts"
     if [ $scripts_with_limits -lt $((total_scripts / 2)) ]; then
         echo "  ℹ️  Less than 50% of scripts have output limits"
-        ((info_count++))
+        info_count=$((info_count + 1))
     fi
 
     # Check for timeout usage
-    scripts_with_timeout=$(grep -l "timeout\|TIMEOUT" .claude/scripts/pm/*.sh 2>/dev/null | wc -l)
+    scripts_with_timeout=$(grep -l "timeout\|TIMEOUT" .claude/scripts/pm/*.sh 2>/dev/null | wc -l | tr -d ' ')
     echo "  Scripts with timeouts: $scripts_with_timeout/$total_scripts"
 
     # Check for cleanup traps
-    scripts_with_cleanup=$(grep -l "trap.*cleanup\|trap.*EXIT" .claude/scripts/pm/*.sh 2>/dev/null | wc -l)
+    scripts_with_cleanup=$(grep -l "trap.*cleanup\|trap.*EXIT" .claude/scripts/pm/*.sh 2>/dev/null | wc -l | tr -d ' ')
     echo "  Scripts with cleanup: $scripts_with_cleanup/$total_scripts"
 
     # Check for dangerous patterns
-    scripts_with_eval=$(grep -l "^[^#]*eval " .claude/scripts/pm/*.sh 2>/dev/null | wc -l)
+    scripts_with_eval=$(grep -l "^[^#]*eval " .claude/scripts/pm/*.sh 2>/dev/null | wc -l | tr -d ' ')
     if [ $scripts_with_eval -gt 0 ]; then
         echo "  ⚠️  Scripts using eval: $scripts_with_eval (security risk)"
         total_warnings=$((total_warnings + scripts_with_eval))
@@ -210,7 +211,7 @@ validate_test_coverage() {
             script_base="${script%.sh}"
             # Check if script is mentioned in tests
             if grep -qi "test.*${script_base}\|${script_base}.*test" "$test_file"; then
-                ((tested_count++))
+                tested_count=$((tested_count + 1))
             else
                 untested="$untested $script"
             fi
@@ -225,7 +226,7 @@ validate_test_coverage() {
         fi
     else
         echo "  ❌ Test file not found: $test_file"
-        ((total_errors++))
+        total_errors=$((total_errors + 1))
     fi
 
     return 0
@@ -238,7 +239,7 @@ echo ""
 validate_structure; total_errors=$((total_errors + $?))
 validate_scripts; total_errors=$((total_errors + $?))
 validate_command_script_mapping; total_errors=$((total_errors + $?))
-validate_github_integration; total_warnings=$((total_warnings + $?))
+validate_github_integration
 validate_performance
 validate_test_coverage
 
