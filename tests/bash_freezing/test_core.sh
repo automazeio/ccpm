@@ -192,7 +192,7 @@ status_pid=$!
 sleep 1
 
 # Count child processes
-child_count=$(pgrep -P "$status_pid" 2>/dev/null | wc -l || echo 0)
+child_count=$(pgrep -P "$status_pid" 2>/dev/null | wc -l | tr -d ' \n' || echo "0")
 
 # Wait for completion
 wait "$status_pid"

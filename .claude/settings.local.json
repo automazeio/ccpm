@@ -44,7 +44,16 @@
       "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/status.sh:*)",
       "Bash(../tests/bash_freezing/test_core.sh)",
       "Bash(RUN_ONCE=true .claude/scripts/health-check.sh --once)",
-      "Bash(.claude/scripts/pm/status.sh:*)"
+      "Bash(.claude/scripts/pm/status.sh:*)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(export RUN_ONCE=true)",
+      "Bash(.claude/scripts/health-check.sh:*)",
+      "Bash(TIMEOUT_SECONDS=5 MAX_OUTPUT_LINES=50 .claude/scripts/debug-wrapper.sh .claude/scripts/pm/status.sh)",
+      "Bash(export TIMEOUT_SECONDS=5 MAX_OUTPUT_LINES=50)",
+      "Bash(for script in status standup blocked next)",
+      "Bash(do echo \"Testing $script.sh:\")",
+      "Bash(.claude/scripts/pm/:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": [],

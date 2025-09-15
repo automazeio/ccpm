@@ -81,8 +81,8 @@ echo "QUICK STATS:"
 total_tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
 # Fixed: Handle empty file list gracefully
 if [ "$total_tasks" -gt 0 ]; then
-  open_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *open" 2>/dev/null | wc -l)
-  closed_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *closed" 2>/dev/null | wc -l)
+  open_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *open" 2>/dev/null | wc -l || echo "0")
+  closed_tasks=$(find .claude/epics -name "[0-9]*.md" -print0 2>/dev/null | xargs -0 grep -l "^status: *closed" 2>/dev/null | wc -l || echo "0")
 else
   open_tasks=0
   closed_tasks=0
