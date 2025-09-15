@@ -60,7 +60,8 @@
       "Bash(echo:*)",
       "Bash(for cmd in epic-sync issue-sync prd-new)",
       "Bash(head:*)",
-      "WebFetch(domain:docs.pytest.org)"
+      "WebFetch(domain:docs.pytest.org)",
+      "Bash(do echo \"Issue #$issue:\")"
     ],
     "deny": [],
     "ask": [],
