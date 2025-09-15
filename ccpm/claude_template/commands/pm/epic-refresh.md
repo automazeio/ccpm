@@ -57,7 +57,12 @@ if [ ! -z "$epic_issue" ]; then
       cross_platform_sed "s/- \[x\] #$task_issue/- [ ] #$task_issue/" /tmp/epic-body.md
     fi
   done
-  
+
+  # Validate epic body before update
+  source .claude/scripts/utils.sh
+  min_length=$(get_min_content_length "refresh:epic-$ARGUMENTS")
+  validate_body_file_has_content "/tmp/epic-body.md" "refresh:epic-$ARGUMENTS" "$min_length"
+
   # Update epic issue
   gh issue edit $epic_issue --body-file /tmp/epic-body.md
 fi
