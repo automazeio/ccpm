@@ -50,7 +50,16 @@ gh issue edit $ARGUMENTS --title "{new_title}"
 
 If body changed:
 ```bash
-gh issue edit $ARGUMENTS --body-file {updated_task_file}
+# Strip frontmatter from updated task file
+sed '1,/^---$/d; 1,/^---$/d' {updated_task_file} > /tmp/updated-body.md
+
+# Validate body has meaningful content
+source .claude/scripts/utils.sh
+min_length=$(get_min_content_length "edit:issue-$ARGUMENTS")
+validate_body_file_has_content "/tmp/updated-body.md" "edit:issue-$ARGUMENTS" "$min_length"
+
+# Update issue
+gh issue edit $ARGUMENTS --body-file /tmp/updated-body.md
 ```
 
 If labels changed:

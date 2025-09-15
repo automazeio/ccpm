@@ -42,10 +42,16 @@ echo "TASKS:"
 if [ -d ".claude/epics" ]; then
   # Use more robust task counting with better cross-platform support
   total=$(find .claude/epics -name "[0-9]*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-  open=$(find .claude/epics -name "[0-9]*.md" -type f -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l | tr -d ' ')
-  closed=$(find .claude/epics -name "[0-9]*.md" -type f -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l | tr -d ' ')
+  # Fixed: Handle empty file list gracefully and prevent exit on no matches
+  if [ "$total" -gt 0 ]; then
+    open=$(find .claude/epics -name "[0-9]*.md" -type f -print0 2>/dev/null | xargs -0 grep -l "^status: *open" 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+    closed=$(find .claude/epics -name "[0-9]*.md" -type f -print0 2>/dev/null | xargs -0 grep -l "^status: *closed" 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+  else
+    open=0
+    closed=0
+  fi
   echo "  Open: $open"
-  echo "  Closed: $closed" 
+  echo "  Closed: $closed"
   echo "  Total: $total"
 else
   echo "  No tasks found"

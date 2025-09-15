@@ -40,13 +40,23 @@ If progress file exists at `.claude/epics/{epic}/updates/$ARGUMENTS/progress.md`
 
 Add completion comment and close:
 ```bash
-# Add final comment
-echo "✅ Task completed
+# Create final comment
+cat > /tmp/close-comment.md << EOF
+✅ Task completed
 
 $ARGUMENTS
 
 ---
-Closed at: {timestamp}" | gh issue comment $ARGUMENTS --body-file -
+Closed at: {timestamp}
+EOF
+
+# Validate comment has meaningful content
+source .claude/scripts/utils.sh
+min_length=$(get_min_content_length "completion:issue-$ARGUMENTS")
+validate_body_file_has_content "/tmp/close-comment.md" "completion:issue-$ARGUMENTS" "$min_length"
+
+# Add final comment
+gh issue comment $ARGUMENTS --body-file /tmp/close-comment.md
 
 # Close the issue
 gh issue close $ARGUMENTS

@@ -17,15 +17,30 @@ for epic_dir in .claude/epics/*/; do
   for task_file in "$epic_dir"[0-9]*.md; do
     [ -f "$task_file" ] || continue
 
-    # Check if task is open
-    status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
+    # Read file once and extract all fields safely without eval
+    # Use process substitution to read variables directly
+    {
+      read -r status
+      read -r task_name
+      read -r deps
+    } < <(awk '
+      /^status:/ && !status { status=$2 }
+      /^name:/ && !name { gsub(/^name: */, ""); name=$0 }
+      /^depends_on:/ && !deps {
+        gsub(/^depends_on: *\[|\]/, "");
+        gsub(/,/, " ");
+        deps=$0
+      }
+      END {
+        print status
+        print name
+        print deps
+      }
+    ' "$task_file")
+
     [ "$status" != "open" ] && [ -n "$status" ] && continue
 
-    # Check for dependencies
-    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//' | sed 's/,/ /g')
-
     if [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
-      task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
       task_num=$(basename "$task_file" .md)
 
       echo "[PAUSED] Task #$task_num - $task_name"

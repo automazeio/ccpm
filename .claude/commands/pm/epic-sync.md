@@ -57,8 +57,11 @@ fi
 
 Strip frontmatter and prepare GitHub issue body:
 ```bash
-# Extract content without frontmatter
-sed '1,/^---$/d; 1,/^---$/d' .claude/epics/$ARGUMENTS/epic.md > /tmp/epic-body-raw.md
+# Source utility functions
+source ".claude/scripts/pm/lib/utils.sh"
+
+# Extract content without frontmatter using safe stripping
+strip_frontmatter_safe ".claude/epics/$ARGUMENTS/epic.md" "/tmp/epic-body-raw.md" "Epic implementation details pending."
 
 # Remove "## Tasks Created" section and replace with Stats
 awk '
@@ -149,8 +152,8 @@ if [ "$task_count" -lt 5 ]; then
     # Extract task name from frontmatter
     task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
 
-    # Strip frontmatter from task content
-    sed '1,/^---$/d; 1,/^---$/d' "$task_file" > /tmp/task-body.md
+    # Strip frontmatter from task content using safe stripping
+    strip_frontmatter_safe "$task_file" "/tmp/task-body.md" "Task implementation details pending."
 
     # Ensure labels exist
     gh label create "task" --force 2>/dev/null || true
@@ -214,7 +217,9 @@ Task:
 
     For each task file:
     1. Extract task name from frontmatter
-    2. Strip frontmatter using: sed '1,/^---$/d; 1,/^---$/d'
+    2. Strip frontmatter using safe function:
+       source ".claude/scripts/pm/lib/utils.sh"
+       strip_frontmatter_safe "$task_file" "/tmp/task-body.md" "Task implementation details pending."
     3. Create sub-issue using:
        - If gh-sub-issue available:
          gh label create "task" --force 2>/dev/null || true

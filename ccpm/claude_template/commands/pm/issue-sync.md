@@ -113,8 +113,14 @@ Create comprehensive update comment:
 ```
 
 ### 5. Post to GitHub
-Use GitHub CLI to add comment:
+Validate and post comment:
 ```bash
+# Validate comment has meaningful content
+source .claude/scripts/utils.sh
+min_length=$(get_min_content_length "progress-update:issue-$ARGUMENTS")
+validate_body_file_has_content "{temp_comment_file}" "progress-update:issue-$ARGUMENTS" "$min_length"
+
+# Post to GitHub
 gh issue comment #$ARGUMENTS --body-file {temp_comment_file}
 ```
 
@@ -169,8 +175,10 @@ github: [existing URL]
 ```
 
 ### 8. Completion Comment
-If task is complete:
-```markdown
+If task is complete, create and validate completion comment:
+```bash
+# Create completion comment
+cat > /tmp/completion-comment.md << 'EOF'
 ## ✅ Task Completed - {current_date}
 
 ### 🎯 All Acceptance Criteria Met
@@ -195,6 +203,15 @@ This task is ready for review and can be closed.
 
 ---
 *Task completed: 100% | Synced at {timestamp}*
+EOF
+
+# Validate completion comment has meaningful content
+source .claude/scripts/utils.sh
+min_length=$(get_min_content_length "completion:issue-$ARGUMENTS")
+validate_body_file_has_content "/tmp/completion-comment.md" "completion:issue-$ARGUMENTS" "$min_length"
+
+# Post completion comment
+gh issue comment #$ARGUMENTS --body-file /tmp/completion-comment.md
 ```
 
 ### 9. Output Summary

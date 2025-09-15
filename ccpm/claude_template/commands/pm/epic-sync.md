@@ -78,9 +78,14 @@ else
   epic_type="feature"
 fi
 
+# Validate body file has meaningful content
+source .claude/scripts/utils.sh
+min_length=$(get_min_content_length "epic:$ARGUMENTS")
+validate_body_file_has_content "/tmp/epic-body.md" "epic:$ARGUMENTS" "$min_length"
+
 # Ensure labels exist
 gh label create "epic" --force 2>/dev/null || true
-gh label create "epic:$ARGUMENTS" --force 2>/dev/null || true  
+gh label create "epic:$ARGUMENTS" --force 2>/dev/null || true
 gh label create "$epic_type" --force 2>/dev/null || true
 
 # Create epic issue with labels
@@ -123,7 +128,11 @@ if [ "$task_count" -lt 5 ]; then
     
     # Strip frontmatter from task content
     sed '1,/^---$/d; 1,/^---$/d' "$task_file" > /tmp/task-body.md
-    
+
+    # Validate task body has meaningful content
+    min_length=$(get_min_content_length "task:$task_name")
+    validate_body_file_has_content "/tmp/task-body.md" "task:$task_name" "$min_length"
+
     # Ensure labels exist
     gh label create "task" --force 2>/dev/null || true
     gh label create "epic:$ARGUMENTS" --force 2>/dev/null || true
@@ -188,12 +197,18 @@ Task:
     1. Extract task name from frontmatter
     2. Strip frontmatter using: sed '1,/^---$/d; 1,/^---$/d'
     3. Create sub-issue using:
-       - If gh-sub-issue available: 
+       - If gh-sub-issue available:
+         source .claude/scripts/utils.sh
+         min_length=$(get_min_content_length "task:$task_name")
+         validate_body_file_has_content "/tmp/task-body.md" "task:$task_name" "$min_length"
          gh label create "task" --force 2>/dev/null || true
          gh label create "epic:$ARGUMENTS" --force 2>/dev/null || true
          gh sub-issue create --parent $epic_number --title "$task_name" \
            --body-file /tmp/task-body.md --label "task,epic:$ARGUMENTS"
-       - Otherwise: 
+       - Otherwise:
+         source .claude/scripts/utils.sh
+         min_length=$(get_min_content_length "task:$task_name")
+         validate_body_file_has_content "/tmp/task-body.md" "task:$task_name" "$min_length"
          gh label create "task" --force 2>/dev/null || true
          gh label create "epic:$ARGUMENTS" --force 2>/dev/null || true
          gh issue create --title "$task_name" --body-file /tmp/task-body.md \

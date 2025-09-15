@@ -11,17 +11,34 @@ YAML frontmatter contains internal metadata that should not appear in GitHub iss
 
 ## The Solution
 
-Use sed to strip frontmatter from any markdown file:
+### Safe Stripping Function (Recommended)
+
+Use the provided utility function that handles empty files:
+
+```bash
+# Source utility functions
+source ".claude/scripts/pm/lib/utils.sh"
+
+# Strip frontmatter safely with default content
+strip_frontmatter_safe "input.md" "output.md" "Content pending."
+```
+
+This function:
+1. Strips frontmatter using the standard sed pattern
+2. Checks if the output file is empty
+3. Provides default content if needed
+4. Prevents empty GitHub issue bodies
+
+### Basic sed Command
+
+For simple cases where empty files are not a concern:
 
 ```bash
 # Strip frontmatter (everything between first two --- lines)
 sed '1,/^---$/d; 1,/^---$/d' input.md > output.md
 ```
 
-This removes:
-1. The opening `---` line
-2. All YAML content
-3. The closing `---` line
+**WARNING**: Files containing only frontmatter will result in empty output!
 
 ## When to Strip Frontmatter
 
@@ -38,15 +55,17 @@ Always strip frontmatter when:
 # Bad - includes frontmatter
 gh issue create --body-file task.md
 
-# Good - strips frontmatter
-sed '1,/^---$/d; 1,/^---$/d' task.md > /tmp/clean.md
+# Good - strips frontmatter safely
+source "$HOME/.claude/scripts/pm/lib/utils.sh"
+strip_frontmatter_safe "task.md" "/tmp/clean.md" "Task details pending."
 gh issue create --body-file /tmp/clean.md
 ```
 
 ### Posting a comment
 ```bash
 # Strip frontmatter before posting
-sed '1,/^---$/d; 1,/^---$/d' progress.md > /tmp/comment.md
+source "$HOME/.claude/scripts/pm/lib/utils.sh"
+strip_frontmatter_safe "progress.md" "/tmp/comment.md" "Update pending."
 gh issue comment 123 --body-file /tmp/comment.md
 ```
 
