@@ -70,7 +70,7 @@ for epic_dir in .claude/epics/*/; do
     } < <(awk '
       /^status:/ && !status { status=$2 }
       /^name:/ && !name { gsub(/^name: */, ""); name=$0 }
-      /^depends_on:/ && !deps { gsub(/^depends_on: *\[|\]/, ""); deps=$0 }
+      /^depends_on:/ && !deps { gsub(/^depends_on: *\[|\]/, ""); gsub(/, */, " "); deps=$0 }
       END {
         print status
         print name

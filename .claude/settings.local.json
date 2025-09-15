@@ -61,7 +61,9 @@
       "Bash(for cmd in epic-sync issue-sync prd-new)",
       "Bash(head:*)",
       "WebFetch(domain:docs.pytest.org)",
-      "Bash(do echo \"Issue #$issue:\")"
+      "Bash(do echo \"Issue #$issue:\")",
+      "Bash(while gh run view 17745662437 --json status)",
+      "Bash(do echo \"Waiting...\")"
     ],
     "deny": [],
     "ask": [],

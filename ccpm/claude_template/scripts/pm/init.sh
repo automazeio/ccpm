@@ -78,7 +78,13 @@ if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
   echo ""
   echo "NOTE Copying PM scripts..."
   cp -r scripts/pm/* .claude/scripts/pm/
-  chmod +x .claude/scripts/pm/*.sh
+
+  # Make shell scripts executable, but only if they exist
+  # Use find to safely handle the case where no .sh files exist
+  if find .claude/scripts/pm -maxdepth 1 -name "*.sh" -type f | head -1 | grep -q .; then
+    find .claude/scripts/pm -maxdepth 1 -name "*.sh" -type f -exec chmod +x {} \;
+  fi
+
   echo "  OK Scripts copied and made executable"
 fi
 

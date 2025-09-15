@@ -28,7 +28,7 @@ for epic_dir in .claude/epics/*/; do
       /^name:/ && !name { gsub(/^name: */, ""); name=$0 }
       /^depends_on:/ && !deps {
         gsub(/^depends_on: *\[|\]/, "");
-        gsub(/,/, " ");
+        gsub(/, */, " ");
         deps=$0
       }
       END {
