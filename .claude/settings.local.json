@@ -37,7 +37,8 @@
       "Bash(bash:*)",
       "Bash(find:*)",
       "Read(//Users/jmanning/**)",
-      "Bash(ruff check:*)"
+      "Bash(ruff check:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": [],

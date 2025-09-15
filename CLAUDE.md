@@ -121,3 +121,4 @@ These commands can be run without user approval:
 - Test runner: `bash .claude/scripts/test-and-log.sh`
 - GitHub CLI operations: `gh *`
 - Git operations: `git *`
+- the current repository is https://github.com/jeremymanning/ccpm
