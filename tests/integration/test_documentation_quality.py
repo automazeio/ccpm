@@ -97,7 +97,8 @@ class TestMarkdownQuality:
 
             if result.returncode != 0:
                 # Only fail on critical errors, not style preferences
-                errors = result.stderr
+                # markdownlint outputs to stdout, not stderr
+                errors = result.stdout + result.stderr
                 if any(
                     critical in errors
                     for critical in ["MD001", "MD026", "MD034", "MD040"]

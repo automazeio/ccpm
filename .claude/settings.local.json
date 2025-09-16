@@ -69,7 +69,10 @@
       "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/in-progress.sh:*)",
       "Bash(column:*)",
       "WebFetch(domain:github.com)",
-      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/prd-status.sh:*)"
+      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/prd-status.sh:*)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(unzip:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": [],
