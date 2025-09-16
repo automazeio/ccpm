@@ -22,8 +22,8 @@ class TestGitHubIssueCreation:
         """Setup test environment"""
         # Get project root directory
         import pathlib
-        cls.project_root = pathlib.Path(__file__).parent.parent
-        cls.utils_path = cls.project_root / ".claude" / "scripts" / "pm" / "lib" / "utils.sh"
+        cls.project_root = pathlib.Path(__file__).parent.parent.absolute()
+        cls.utils_path = (cls.project_root / ".claude" / "scripts" / "pm" / "lib" / "utils.sh").absolute()
 
         # Check if utils.sh exists
         if not cls.utils_path.exists():
@@ -90,7 +90,7 @@ class TestGitHubIssueCreation:
         try:
             # Source utils and use strip_frontmatter_safe
             test_script = f"""
-            source "{self.utils_path}"
+            source "{str(self.utils_path)}"
             strip_frontmatter_safe "{task_file}" /tmp/test-body.md "Task implementation pending."
 
             # Create issue with the processed body
@@ -167,7 +167,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "{self.utils_path}"
+            source "{str(self.utils_path)}"
             strip_frontmatter_safe "{task_file}" /tmp/test-malformed.md "Malformed content handling."
 
             # Check what was extracted
@@ -207,7 +207,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "{self.utils_path}"
+            source "{str(self.utils_path)}"
             strip_frontmatter_safe "{task_file}" /tmp/test-large.md "Large content test."
 
             # Count lines and check last line
@@ -273,7 +273,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "{self.utils_path}"
+            source "{str(self.utils_path)}"
             strip_frontmatter_safe "{task_file}" /tmp/test-special.md "Special chars test."
 
             # Check content preservation
@@ -314,7 +314,7 @@ class TestGitHubIssueCreation:
         print("\n=== Testing validate_body_file function ===")
 
         test_script = f"""
-        source "{self.utils_path}"
+        source "{str(self.utils_path)}"
 
         # Test 1: Non-existent file
         echo "Test 1: Non-existent file"
@@ -373,7 +373,7 @@ class TestGitHubIssueCreation:
 
         try:
             test_script = f"""
-            source "{self.utils_path}"
+            source "{str(self.utils_path)}"
 
             echo "Testing file with only frontmatter:"
             if has_content_after_frontmatter "{only_fm}"; then
