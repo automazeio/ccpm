@@ -14,6 +14,12 @@ class TestValidationFunction:
     @pytest.fixture(autouse=True)
     def setup(self):
         """Set up test environment."""
+        # Check if bash is available
+        try:
+            subprocess.run(["bash", "--version"], capture_output=True, timeout=2)
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            pytest.skip("Bash not available on this system")
+
         # Get the path to utils.sh
         self.utils_path = Path(__file__).parent.parent / "ccpm/claude_template/scripts/utils.sh"
         assert self.utils_path.exists(), f"utils.sh not found at {self.utils_path}"
@@ -32,7 +38,7 @@ class TestValidationFunction:
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             # Should succeed (return 0)
@@ -62,7 +68,7 @@ class TestValidationFunction:
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             assert result.returncode == 0
@@ -89,7 +95,7 @@ class TestValidationFunction:
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             assert result.returncode == 0
@@ -142,7 +148,7 @@ class TestValidationFunction:
                     shell=True,
                     capture_output=True,
                     text=True,
-                    executable='/bin/bash'
+                    executable='bash'
                 )
 
                 # Should detect and replace placeholder
@@ -179,7 +185,7 @@ class TestValidationFunction:
                     shell=True,
                     capture_output=True,
                     text=True,
-                    executable='/bin/bash'
+                    executable='bash'
                 )
 
                 new_content = Path(temp_path).read_text()
@@ -216,7 +222,7 @@ class TestValidationFunction:
                     shell=True,
                     capture_output=True,
                     text=True,
-                    executable='/bin/bash'
+                    executable='bash'
                 )
 
                 content = Path(temp_path).read_text()
@@ -244,7 +250,7 @@ class TestValidationFunction:
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             # Should detect insufficient content (only "Word" counts = 4 chars)
@@ -278,7 +284,7 @@ Insert test plan here""")
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             # Should detect placeholder text even with some real content
@@ -310,7 +316,7 @@ Insert test plan here""")
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             assert result.returncode == 0
@@ -333,7 +339,7 @@ Insert test plan here""")
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             assert "Min length: 200" in result.stdout
@@ -359,7 +365,7 @@ Insert test plan here""")
                 shell=True,
                 capture_output=True,
                 text=True,
-                executable='/bin/bash'
+                executable='bash'
             )
 
             # Should succeed and add content

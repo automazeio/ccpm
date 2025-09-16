@@ -830,6 +830,12 @@ class TestInitScript:
             project_root = Path(__file__).parent.parent.parent
             init_script = project_root / ".claude" / "scripts" / "pm" / "init.sh"
 
+            # Check if bash is available
+            try:
+                subprocess.run(["bash", "--version"], capture_output=True, timeout=2)
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                pytest.skip("Bash not available on this system")
+
             result = subprocess.run(
                 ["bash", str(init_script)],
                 cwd=test_repo,
