@@ -9,8 +9,13 @@ if [ ! -d ".claude/prds" ]; then
   exit 0
 fi
 
-total=$(ls .claude/prds/*.md 2>/dev/null | wc -l)
-[ $total -eq 0 ] && echo "No PRDs found." && exit 0
+# Count PRD files safely
+if ls .claude/prds/*.md >/dev/null 2>&1; then
+  total=$(ls .claude/prds/*.md 2>/dev/null | wc -l | tr -d ' ')
+else
+  total=0
+fi
+[ "$total" = "0" ] && echo "No PRDs found." && exit 0
 
 # Count by status
 backlog=0
@@ -38,9 +43,15 @@ echo "STATUS Distribution:"
 echo "================"
 
 echo ""
-echo "  Backlog:     $(printf '%-3d' $backlog) [$(printf '%0.s█' $(seq 1 $((backlog*20/total))))]"
-echo "  In Progress: $(printf '%-3d' $in_progress) [$(printf '%0.s█' $(seq 1 $((in_progress*20/total))))]"
-echo "  Implemented: $(printf '%-3d' $implemented) [$(printf '%0.s█' $(seq 1 $((implemented*20/total))))]"
+if [ "$total" = "0" ]; then
+  echo "  Backlog:     0   []"
+  echo "  In Progress: 0   []"
+  echo "  Implemented: 0   []"
+else
+  echo "  Backlog:     $(printf '%-3d' $backlog) [$(printf '%0.s#' $(seq 1 $((backlog*20/total))))]"
+  echo "  In Progress: $(printf '%-3d' $in_progress) [$(printf '%0.s#' $(seq 1 $((in_progress*20/total))))]"
+  echo "  Implemented: $(printf '%-3d' $implemented) [$(printf '%0.s#' $(seq 1 $((implemented*20/total))))]"
+fi
 echo ""
 echo "  Total PRDs: $total"
 

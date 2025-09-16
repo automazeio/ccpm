@@ -66,7 +66,10 @@
       "Bash(do echo \"Waiting...\")",
       "Bash(while gh run view 17746003184 --json status)",
       "Bash(do sleep:*)",
-      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/in-progress.sh:*)"
+      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/in-progress.sh:*)",
+      "Bash(column:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/prd-status.sh:*)"
     ],
     "deny": [],
     "ask": [],
