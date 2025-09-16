@@ -11,8 +11,8 @@ import pytest
 class TestValidationFunction:
     """Test the validate_body_file_has_content function."""
 
-    @pytest.fixture(autouse=True)
-    def setup(self):
+    @classmethod
+    def setup_class(cls):
         """Set up test environment."""
         # Check if bash is available
         try:
@@ -21,8 +21,8 @@ class TestValidationFunction:
             pytest.skip("Bash not available on this system")
 
         # Get the path to utils.sh
-        self.utils_path = Path(__file__).parent.parent / "ccpm/claude_template/scripts/utils.sh"
-        assert self.utils_path.exists(), f"utils.sh not found at {self.utils_path}"
+        cls.utils_path = Path(__file__).parent.parent / "ccpm/claude_template/scripts/utils.sh"
+        assert cls.utils_path.exists(), f"utils.sh not found at {cls.utils_path}"
 
     def test_validate_empty_file(self):
         """Test validation catches empty files and adds default content."""

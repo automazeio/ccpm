@@ -12,11 +12,17 @@ import pytest
 class TestGitHubIssueValidation:
     """Test GitHub issue creation with body validation."""
 
-    @pytest.fixture(autouse=True)
-    def setup(self):
+    @classmethod
+    def setup_class(cls):
         """Set up test environment."""
-        self.utils_path = Path(__file__).parent.parent / "ccpm/claude_template/scripts/utils.sh"
-        assert self.utils_path.exists(), f"utils.sh not found at {self.utils_path}"
+        # Check if bash is available
+        try:
+            subprocess.run(["bash", "--version"], capture_output=True, timeout=2)
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            pytest.skip("Bash not available on this system")
+
+        cls.utils_path = Path(__file__).parent.parent / "ccpm/claude_template/scripts/utils.sh"
+        assert cls.utils_path.exists(), f"utils.sh not found at {cls.utils_path}"
 
     def test_epic_sync_with_empty_body(self):
         """Test epic-sync handles empty epic body correctly."""
