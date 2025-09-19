@@ -108,11 +108,16 @@ def _find_wsl_bash() -> Optional[str]:
         # Test if WSL bash is available
         try:
             result = subprocess.run(
-                [wsl_path, "which", "bash"], capture_output=True, timeout=5, text=True
+                [wsl_path, "which", "bash"],
+                capture_output=True,
+                timeout=5,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
             )
             if result.returncode == 0:
                 return wsl_path
-        except (subprocess.TimeoutExpired, FileNotFoundError):
+        except (subprocess.TimeoutExpired, FileNotFoundError, UnicodeDecodeError):
             pass
     return None
 
