@@ -72,7 +72,8 @@
       "Bash(/Users/jmanning/ccpm/.claude/scripts/pm/prd-status.sh:*)",
       "WebFetch(domain:api.github.com)",
       "Bash(unzip:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": [],

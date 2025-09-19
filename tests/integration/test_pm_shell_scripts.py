@@ -836,17 +836,35 @@ class TestInitScript:
             except (FileNotFoundError, subprocess.TimeoutExpired):
                 pytest.skip("Bash not available on this system")
 
+            # On Windows, WSL may output UTF-16, so we need to handle encoding
             result = subprocess.run(
                 ["bash", str(init_script)],
                 cwd=test_repo,
                 capture_output=True,
-                text=True,
+                text=False,  # Get raw bytes
                 timeout=30
             )
 
             returncode = result.returncode
-            stdout = result.stdout
-            stderr = result.stderr
+
+            # Try to decode output, handling potential UTF-16 from WSL
+            try:
+                stdout = result.stdout.decode('utf-8')
+            except UnicodeDecodeError:
+                # Try UTF-16 (common on Windows)
+                try:
+                    stdout = result.stdout.decode('utf-16')
+                except UnicodeDecodeError:
+                    # Last resort: replace errors
+                    stdout = result.stdout.decode('utf-8', errors='replace')
+
+            try:
+                stderr = result.stderr.decode('utf-8')
+            except UnicodeDecodeError:
+                try:
+                    stderr = result.stderr.decode('utf-16')
+                except UnicodeDecodeError:
+                    stderr = result.stderr.decode('utf-8', errors='replace')
 
             # Check return code (may be 0 or 1 depending on whether it's already initialized)
             assert returncode in [0, 1], f"Init script had unexpected return: {stderr}"
