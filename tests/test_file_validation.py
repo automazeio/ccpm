@@ -1,28 +1,24 @@
 """Tests for GitHub issue body file validation functionality."""
 
 import os
-import subprocess
+import sys
 import tempfile
+from io import StringIO
 from pathlib import Path
 
 import pytest
 
+from ccpm.validation import (
+    get_min_content_length,
+    has_placeholder_text,
+    validate_body_file_has_content,
+    has_content_after_frontmatter,
+    get_default_content
+)
+
 
 class TestValidationFunction:
-    """Test the validate_body_file_has_content function."""
-
-    @classmethod
-    def setup_class(cls):
-        """Set up test environment."""
-        # Check if bash is available
-        try:
-            subprocess.run(["bash", "--version"], capture_output=True, timeout=2)
-        except (FileNotFoundError, subprocess.TimeoutExpired):
-            pytest.skip("Bash not available on this system")
-
-        # Get the path to utils.sh
-        cls.utils_path = Path(__file__).parent.parent / "ccpm/claude_template/scripts/utils.sh"
-        assert cls.utils_path.exists(), f"utils.sh not found at {cls.utils_path}"
+    """Test the validation functions."""
 
     def test_validate_empty_file(self):
         """Test validation catches empty files and adds default content."""
@@ -31,18 +27,19 @@ class TestValidationFunction:
             temp_path = f.name
 
         try:
-            # Source utils and run validation
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'validate_body_file_has_content "{temp_path}" "task:test" 50',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            # Capture stderr
+            old_stderr = sys.stderr
+            sys.stderr = StringIO()
 
-            # Should succeed (return 0)
-            assert result.returncode == 0, f"Validation failed: {result.stderr}"
+            # Run validation
+            result = validate_body_file_has_content(temp_path, "task:test", 50)
+
+            # Get stderr output
+            stderr_output = sys.stderr.getvalue()
+            sys.stderr = old_stderr
+
+            # Should succeed
+            assert result is True
 
             # File should now have content
             content = Path(temp_path).read_text()
@@ -50,8 +47,8 @@ class TestValidationFunction:
             assert "Task Details" in content, "Default task content not added"
 
             # Check warnings were printed
-            assert "insufficient content" in result.stderr
-            assert "Content length: 0 chars" in result.stderr
+            assert "insufficient content" in stderr_output
+            assert "Content length: 0 chars" in stderr_output
         finally:
             os.unlink(temp_path)
 
@@ -62,21 +59,20 @@ class TestValidationFunction:
             temp_path = f.name
 
         try:
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'validate_body_file_has_content "{temp_path}" "task:test" 50',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            old_stderr = sys.stderr
+            sys.stderr = StringIO()
 
-            assert result.returncode == 0
+            result = validate_body_file_has_content(temp_path, "task:test", 50)
+
+            stderr_output = sys.stderr.getvalue()
+            sys.stderr = old_stderr
+
+            assert result is True
             content = Path(temp_path).read_text()
             assert "Task Details" in content
 
             # Check that whitespace was correctly identified as insufficient
-            assert "Content length: 0 chars" in result.stderr
+            assert "Content length: 0 chars" in stderr_output
         finally:
             os.unlink(temp_path)
 
@@ -89,37 +85,35 @@ class TestValidationFunction:
         original_content = Path(temp_path).read_text()
 
         try:
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'validate_body_file_has_content "{temp_path}" "task:test" 50',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            old_stderr = sys.stderr
+            sys.stderr = StringIO()
 
-            assert result.returncode == 0
+            result = validate_body_file_has_content(temp_path, "task:test", 50)
+
+            stderr_output = sys.stderr.getvalue()
+            sys.stderr = old_stderr
+
+            assert result is True
             # Content should remain unchanged
             assert Path(temp_path).read_text() == original_content
             # No warnings should be printed
-            assert "insufficient content" not in result.stderr
+            assert "insufficient content" not in stderr_output
         finally:
             os.unlink(temp_path)
 
     def test_validate_missing_file(self):
         """Test validation handles missing files correctly."""
-        result = subprocess.run(
-            f'source {self.utils_path} && '
-            f'validate_body_file_has_content "/nonexistent/file.md" "test-context" 50',
-            shell=True,
-            capture_output=True,
-            text=True,
-            executable='/bin/bash'
-        )
+        old_stderr = sys.stderr
+        sys.stderr = StringIO()
 
-        # Should fail (return 1)
-        assert result.returncode == 1
-        assert "does not exist" in result.stderr
+        result = validate_body_file_has_content("/nonexistent/file.md", "test-context", 50)
+
+        stderr_output = sys.stderr.getvalue()
+        sys.stderr = old_stderr
+
+        # Should fail
+        assert result is False
+        assert "does not exist" in stderr_output
 
     def test_placeholder_text_detection(self):
         """Test that common placeholder texts are detected and replaced."""
@@ -142,17 +136,16 @@ class TestValidationFunction:
                 temp_path = f.name
 
             try:
-                result = subprocess.run(
-                    f'source {self.utils_path} && '
-                    f'validate_body_file_has_content "{temp_path}" "task:test" 50',
-                    shell=True,
-                    capture_output=True,
-                    text=True,
-                    executable='bash'
-                )
+                old_stderr = sys.stderr
+                sys.stderr = StringIO()
+
+                validate_body_file_has_content(temp_path, "task:test", 50)
+
+                stderr_output = sys.stderr.getvalue()
+                sys.stderr = old_stderr
 
                 # Should detect and replace placeholder
-                assert "Placeholder text detected" in result.stderr, f"Failed to detect placeholder: {placeholder}"
+                assert "Placeholder text detected" in stderr_output, f"Failed to detect placeholder: {placeholder}"
 
                 # Should have substantial content now
                 content = Path(temp_path).read_text()
@@ -179,25 +172,24 @@ class TestValidationFunction:
             original_content = content
 
             try:
-                result = subprocess.run(
-                    f'source {self.utils_path} && '
-                    f'validate_body_file_has_content "{temp_path}" "task:test" {min_chars}',
-                    shell=True,
-                    capture_output=True,
-                    text=True,
-                    executable='bash'
-                )
+                old_stderr = sys.stderr
+                sys.stderr = StringIO()
+
+                validate_body_file_has_content(temp_path, "task:test", min_chars)
+
+                stderr_output = sys.stderr.getvalue()
+                sys.stderr = old_stderr
 
                 new_content = Path(temp_path).read_text()
 
                 if should_pass:
                     # Content should be unchanged
                     assert new_content == original_content
-                    assert "insufficient content" not in result.stderr
+                    assert "insufficient content" not in stderr_output
                 else:
                     # Should have added default content
                     assert len(new_content.replace(" ", "").replace("\n", "")) >= min_chars
-                    assert "insufficient content" in result.stderr
+                    assert "insufficient content" in stderr_output
             finally:
                 os.unlink(temp_path)
 
@@ -216,14 +208,12 @@ class TestValidationFunction:
                 temp_path = f.name
 
             try:
-                subprocess.run(
-                    f'source {self.utils_path} && '
-                    f'validate_body_file_has_content "{temp_path}" "{context}" {min_chars}',
-                    shell=True,
-                    capture_output=True,
-                    text=True,
-                    executable='bash'
-                )
+                old_stderr = sys.stderr
+                sys.stderr = StringIO()
+
+                validate_body_file_has_content(temp_path, context, min_chars)
+
+                sys.stderr = old_stderr
 
                 content = Path(temp_path).read_text()
 
@@ -244,18 +234,17 @@ class TestValidationFunction:
             temp_path = f.name
 
         try:
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'validate_body_file_has_content "{temp_path}" "task:test" 50',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            old_stderr = sys.stderr
+            sys.stderr = StringIO()
+
+            validate_body_file_has_content(temp_path, "task:test", 50)
+
+            stderr_output = sys.stderr.getvalue()
+            sys.stderr = old_stderr
 
             # Should detect insufficient content (only "Word" counts = 4 chars)
-            assert "insufficient content" in result.stderr
-            assert "Content length: 4 chars" in result.stderr
+            assert "insufficient content" in stderr_output
+            assert "Content length: 4 chars" in stderr_output
 
             # Should have added proper content
             content = Path(temp_path).read_text()
@@ -278,17 +267,16 @@ Insert test plan here""")
             temp_path = f.name
 
         try:
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'validate_body_file_has_content "{temp_path}" "task:auth" 50',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            old_stderr = sys.stderr
+            sys.stderr = StringIO()
+
+            validate_body_file_has_content(temp_path, "task:auth", 50)
+
+            stderr_output = sys.stderr.getvalue()
+            sys.stderr = old_stderr
 
             # Should detect placeholder text even with some real content
-            assert "Placeholder text detected" in result.stderr
+            assert "Placeholder text detected" in stderr_output
 
             # Should replace with proper content
             content = Path(temp_path).read_text()
@@ -300,27 +288,18 @@ Insert test plan here""")
     def test_get_min_content_length(self):
         """Test that get_min_content_length returns correct values for different contexts."""
         test_cases = [
-            ("epic:test", "100"),  # Default epic minimum
-            ("task:test", "50"),  # Default task minimum
-            ("issue:test", "50"),  # Issues same as tasks
-            ("comment:test", "30"),  # Comment minimum
-            ("update:test", "30"),  # Update minimum
-            ("progress-update:test", "30"),  # Progress update minimum
-            ("unknown:test", "50"),  # Default for unknown
+            ("epic:test", 100),  # Default epic minimum
+            ("task:test", 50),  # Default task minimum
+            ("issue:test", 50),  # Issues same as tasks
+            ("comment:test", 30),  # Comment minimum
+            ("update:test", 30),  # Update minimum
+            ("progress-update:test", 30),  # Progress update minimum
+            ("unknown:test", 50),  # Default for unknown
         ]
 
         for context, expected_min in test_cases:
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'get_min_content_length "{context}"',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
-
-            assert result.returncode == 0
-            assert result.stdout.strip() == expected_min, f"Expected {expected_min} for {context}, got {result.stdout.strip()}"
+            result = get_min_content_length(context)
+            assert result == expected_min, f"Expected {expected_min} for {context}, got {result}"
 
     def test_configurable_thresholds(self):
         """Test that environment variables control minimum content thresholds."""
@@ -330,20 +309,20 @@ Insert test plan here""")
 
         try:
             # Test with custom threshold
-            result = subprocess.run(
-                f'export CCPM_MIN_TASK_CONTENT=200 && '
-                f'source {self.utils_path} && '
-                f'min_length=$(get_min_content_length "task:test") && '
-                f'echo "Min length: $min_length" && '
-                f'validate_body_file_has_content "{temp_path}" "task:test" "$min_length"',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            os.environ['CCPM_MIN_TASK_CONTENT'] = '200'
 
-            assert "Min length: 200" in result.stdout
-            assert "insufficient content" in result.stderr
+            old_stderr = sys.stderr
+            sys.stderr = StringIO()
+
+            min_length = get_min_content_length("task:test")
+            assert min_length == 200
+
+            validate_body_file_has_content(temp_path, "task:test")
+
+            stderr_output = sys.stderr.getvalue()
+            sys.stderr = old_stderr
+
+            assert "insufficient content" in stderr_output
 
             # Content should be enhanced to meet custom minimum
             content = Path(temp_path).read_text()
@@ -351,26 +330,47 @@ Insert test plan here""")
             assert "Task Details" in content
         finally:
             os.unlink(temp_path)
+            # Clean up environment
+            if 'CCPM_MIN_TASK_CONTENT' in os.environ:
+                del os.environ['CCPM_MIN_TASK_CONTENT']
 
-    def test_backward_compatibility(self):
-        """Test that validate_body_file_not_empty still works for backward compatibility."""
+    def test_has_content_after_frontmatter_function(self):
+        """Test the has_content_after_frontmatter function."""
+        # Create test files
         with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
-            f.write("")  # Empty file
-            temp_path = f.name
+            f.write("---\n")
+            f.write("title: Only Frontmatter\n")
+            f.write("---\n")
+            only_fm = f.name
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+            f.write("---\n")
+            f.write("title: With Content\n")
+            f.write("---\n")
+            f.write("This has content after frontmatter\n")
+            with_content = f.name
 
         try:
-            result = subprocess.run(
-                f'source {self.utils_path} && '
-                f'validate_body_file_not_empty "{temp_path}" "task:test"',
-                shell=True,
-                capture_output=True,
-                text=True,
-                executable='bash'
-            )
+            # Test file with only frontmatter
+            assert not has_content_after_frontmatter(only_fm), "Should not detect content"
 
-            # Should succeed and add content
-            assert result.returncode == 0
-            content = Path(temp_path).read_text()
-            assert len(content) > 0
+            # Test file with content
+            assert has_content_after_frontmatter(with_content), "Should detect content"
+
         finally:
-            os.unlink(temp_path)
+            os.unlink(only_fm)
+            os.unlink(with_content)
+
+    def test_placeholder_detection_function(self):
+        """Test the has_placeholder_text function directly."""
+        # Should detect placeholders
+        assert has_placeholder_text("TODO: implement this")
+        assert has_placeholder_text("Insert description here")
+        assert has_placeholder_text("TBD")
+        assert has_placeholder_text("This is a FIXME note")
+        assert has_placeholder_text("Work in progress")
+
+        # Should not detect false positives
+        assert not has_placeholder_text("This is a complete description")
+        assert not has_placeholder_text("The todo list application")  # "todo" as part of word
+        assert not has_placeholder_text("Wipe the surface clean")  # "wip" as part of word

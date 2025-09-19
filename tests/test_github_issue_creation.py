@@ -12,6 +12,16 @@ import os
 import json
 import pytest
 import uuid
+import sys
+from pathlib import Path
+
+# Add parent directory to path to import ccpm modules
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from ccpm.validation import (
+    strip_frontmatter_safe,
+    has_content_after_frontmatter,
+    validate_body_file_has_content
+)
 
 
 class TestGitHubIssueCreation:
@@ -21,13 +31,7 @@ class TestGitHubIssueCreation:
     def setup_class(cls):
         """Setup test environment"""
         # Get project root directory
-        import pathlib
-        cls.project_root = pathlib.Path(__file__).parent.parent.absolute()
-        cls.utils_path = (cls.project_root / ".claude" / "scripts" / "pm" / "lib" / "utils.sh").absolute()
-
-        # Check if utils.sh exists
-        if not cls.utils_path.exists():
-            pytest.skip(f"Utils script not found at {cls.utils_path}")
+        cls.project_root = Path(__file__).parent.parent.absolute()
 
         # Ensure we're in a git repo with GitHub remote
         result = subprocess.run(['git', 'remote', 'get-url', 'origin'],
@@ -87,54 +91,41 @@ class TestGitHubIssueCreation:
             f.write("---\n")
             task_file = f.name
 
+        output_file = tempfile.mktemp(suffix='.md')
+
         try:
-            # Source utils and use strip_frontmatter_safe
-            test_script = f"""
-            source "{str(self.utils_path)}"
-            strip_frontmatter_safe "{task_file}" /tmp/test-body.md "Task implementation pending."
+            # Use Python function to strip frontmatter
+            strip_frontmatter_safe(task_file, output_file, "Task implementation pending.")
+
+            # Read the processed content
+            with open(output_file, 'r') as f:
+                processed_content = f.read()
+
+            print(f"Processed content: {processed_content}")
 
             # Create issue with the processed body
-            issue_url=$(gh issue create \\
-                --title "Test: Empty Frontmatter Only" \\
-                --body-file /tmp/test-body.md \\
-                --label "{self.test_label}")
+            result = subprocess.run([
+                'gh', 'issue', 'create',
+                '--title', 'Test: Empty Frontmatter Only',
+                '--body-file', output_file,
+                '--label', self.test_label,
+                '--json', 'number,url'
+            ], capture_output=True, text=True)
 
-            # Extract issue number from URL
-            issue_num=$(echo "$issue_url" | grep -oE '[0-9]+$')
+            if result.returncode != 0:
+                print(f"Failed to create issue: {result.stderr}")
+                pytest.fail(f"Failed to create issue: {result.stderr}")
+
+            issue_data = json.loads(result.stdout)
+            issue_num = str(issue_data['number'])
 
             # Get the issue body
-            gh issue view "$issue_num" --json body -q '.body' > /tmp/issue-body.txt
+            verify_result = subprocess.run([
+                'gh', 'issue', 'view', issue_num,
+                '--json', 'body', '-q', '.body'
+            ], capture_output=True, text=True)
 
-            echo "ISSUE_NUM:$issue_num"
-            echo "BODY_START"
-            cat /tmp/issue-body.txt
-            echo "BODY_END"
-            """
-
-            result = subprocess.run(['bash', '-c', test_script],
-                                  capture_output=True, text=True)
-
-            print(f"Command output: {result.stdout}")
-            print(f"Command stderr: {result.stderr}")
-
-            assert result.returncode == 0, f"Failed to create issue: {result.stderr}"
-
-            # Parse output
-            output_lines = result.stdout.strip().split('\n')
-            issue_num = None
-            issue_body = ""
-
-            for i, line in enumerate(output_lines):
-                if line.startswith('ISSUE_NUM:'):
-                    issue_num = line.replace('ISSUE_NUM:', '')
-                elif line == 'BODY_START':
-                    # Collect everything between BODY_START and BODY_END
-                    body_lines = []
-                    for j in range(i+1, len(output_lines)):
-                        if output_lines[j] == 'BODY_END':
-                            break
-                        body_lines.append(output_lines[j])
-                    issue_body = '\n'.join(body_lines)
+            issue_body = verify_result.stdout.strip()
 
             print(f"Created issue #{issue_num}")
             print(f"Issue body: {issue_body}")
@@ -149,8 +140,8 @@ class TestGitHubIssueCreation:
 
         finally:
             os.unlink(task_file)
-            if os.path.exists('/tmp/test-body.md'):
-                os.unlink('/tmp/test-body.md')
+            if os.path.exists(output_file):
+                os.unlink(output_file)
 
     def test_malformed_markdown_file(self):
         """Test handling of malformed markdown files"""
@@ -165,28 +156,27 @@ class TestGitHubIssueCreation:
             f.write("Even without proper frontmatter closing\n")
             task_file = f.name
 
+        output_file = tempfile.mktemp(suffix='.md')
+
         try:
-            test_script = f"""
-            source "{str(self.utils_path)}"
-            strip_frontmatter_safe "{task_file}" /tmp/test-malformed.md "Malformed content handling."
+            # Use Python function to handle malformed frontmatter
+            strip_frontmatter_safe(task_file, output_file, "Malformed content handling.")
 
             # Check what was extracted
-            cat /tmp/test-malformed.md
-            """
+            with open(output_file, 'r') as f:
+                extracted_content = f.read()
 
-            result = subprocess.run(['bash', '-c', test_script],
-                                  capture_output=True, text=True)
-
-            print(f"Extracted content: {result.stdout}")
+            print(f"Extracted content: {extracted_content}")
 
             # Should handle gracefully - either extract content or use default
-            assert result.returncode == 0, "Should handle malformed files gracefully"
-            assert len(result.stdout.strip()) > 0, "Should produce some output"
+            assert len(extracted_content.strip()) > 0, "Should produce some output"
+            # Should extract the content after incomplete frontmatter
+            assert "Some content" in extracted_content or "Malformed content" in extracted_content
 
         finally:
             os.unlink(task_file)
-            if os.path.exists('/tmp/test-malformed.md'):
-                os.unlink('/tmp/test-malformed.md')
+            if os.path.exists(output_file):
+                os.unlink(output_file)
 
     def test_large_content_file(self):
         """Test with large content files to ensure no truncation"""
@@ -205,38 +195,37 @@ class TestGitHubIssueCreation:
 
             task_file = f.name
 
+        output_file = tempfile.mktemp(suffix='.md')
+
         try:
-            test_script = f"""
-            source "{str(self.utils_path)}"
-            strip_frontmatter_safe "{task_file}" /tmp/test-large.md "Large content test."
+            # Use Python function to strip frontmatter
+            strip_frontmatter_safe(task_file, output_file, "Large content test.")
 
-            # Count lines and check last line
-            line_count=$(wc -l < /tmp/test-large.md)
-            last_line=$(tail -1 /tmp/test-large.md)
+            # Count lines and check content
+            with open(output_file, 'r') as f:
+                content = f.read()
+                lines = content.split('\n')
 
-            echo "Line count: $line_count"
-            echo "Last line: $last_line"
+            line_count = len([l for l in lines if l])  # Count non-empty lines
+            print(f"Line count: {line_count}")
+
+            # Should have preserved all content lines
+            assert line_count >= 1000, f"Should preserve all lines, got {line_count}"
+            assert "Line 999:" in content, "Last line should be present"
 
             # Create issue
-            gh issue create \\
-                --title "Test: Large Content" \\
-                --body-file /tmp/test-large.md \\
-                --label "{self.test_label}" \\
-                --json number -q '.number'
-            """
+            result = subprocess.run([
+                'gh', 'issue', 'create',
+                '--title', 'Test: Large Content',
+                '--body-file', output_file,
+                '--label', self.test_label,
+                '--json', 'number'
+            ], capture_output=True, text=True)
 
-            result = subprocess.run(['bash', '-c', test_script],
-                                  capture_output=True, text=True)
+            if result.returncode == 0:
+                issue_data = json.loads(result.stdout)
+                issue_num = str(issue_data['number'])
 
-            print(f"Output: {result.stdout}")
-
-            lines = result.stdout.strip().split('\n')
-            assert "Line count: 1001" in result.stdout, "Should preserve all lines"
-            assert "Line 999:" in result.stdout, "Last line should be present"
-
-            # Extract issue number and verify
-            issue_num = lines[-1]
-            if issue_num.isdigit():
                 # Get issue body to verify content preservation
                 verify_result = subprocess.run([
                     'gh', 'issue', 'view', issue_num,
@@ -252,8 +241,8 @@ class TestGitHubIssueCreation:
 
         finally:
             os.unlink(task_file)
-            if os.path.exists('/tmp/test-large.md'):
-                os.unlink('/tmp/test-large.md')
+            if os.path.exists(output_file):
+                os.unlink(output_file)
 
     def test_special_characters_in_content(self):
         """Test handling of special characters and code blocks"""
@@ -271,87 +260,99 @@ class TestGitHubIssueCreation:
             f.write("Unicode: 中文, العربية, עברית, 🚀💻🎨\n")
             task_file = f.name
 
+        output_file = tempfile.mktemp(suffix='.md')
+
         try:
-            test_script = f"""
-            source "{str(self.utils_path)}"
-            strip_frontmatter_safe "{task_file}" /tmp/test-special.md "Special chars test."
+            # Use Python function to strip frontmatter
+            strip_frontmatter_safe(task_file, output_file, "Special chars test.")
 
             # Check content preservation
-            grep -q '```bash' /tmp/test-special.md && echo "Code block preserved"
-            grep -q '\\$HOME' /tmp/test-special.md && echo "Variables preserved"
-            grep -q '🚀' /tmp/test-special.md && echo "Emoji preserved"
+            with open(output_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            assert '```bash' in content, "Code block should be preserved"
+            assert '$HOME' in content, "Variables should be preserved"
+            assert '🚀' in content, "Emoji should be preserved"
+
+            print("Code block preserved")
+            print("Variables preserved")
+            print("Emoji preserved")
 
             # Create issue
-            gh issue create \\
-                --title "Test: Special Characters" \\
-                --body-file /tmp/test-special.md \\
-                --label "{self.test_label}" \\
-                --json number -q '.number'
-            """
+            result = subprocess.run([
+                'gh', 'issue', 'create',
+                '--title', 'Test: Special Characters',
+                '--body-file', output_file,
+                '--label', self.test_label,
+                '--json', 'number'
+            ], capture_output=True, text=True)
 
-            result = subprocess.run(['bash', '-c', test_script],
-                                  capture_output=True, text=True)
-
-            print(f"Output: {result.stdout}")
-
-            assert "Code block preserved" in result.stdout
-            assert "Variables preserved" in result.stdout
-            assert "Emoji preserved" in result.stdout
-
-            # Clean up issue
-            lines = result.stdout.strip().split('\n')
-            issue_num = lines[-1]
-            if issue_num.isdigit():
+            if result.returncode == 0:
+                issue_data = json.loads(result.stdout)
+                issue_num = str(issue_data['number'])
                 subprocess.run(['gh', 'issue', 'close', issue_num], capture_output=True)
 
         finally:
             os.unlink(task_file)
-            if os.path.exists('/tmp/test-special.md'):
-                os.unlink('/tmp/test-special.md')
+            if os.path.exists(output_file):
+                os.unlink(output_file)
 
     def test_validate_body_file_function(self):
         """Test the validate_body_file utility function"""
         print("\n=== Testing validate_body_file function ===")
 
-        test_script = f"""
-        source "{str(self.utils_path)}"
-
         # Test 1: Non-existent file
-        echo "Test 1: Non-existent file"
-        if ! validate_body_file "/tmp/nonexistent.md" 2>/dev/null; then
-            echo "✓ Correctly detected non-existent file"
-        fi
+        print("Test 1: Non-existent file")
+        from io import StringIO
+        old_stderr = sys.stderr
+        sys.stderr = StringIO()
+
+        result = validate_body_file_has_content("/tmp/nonexistent.md", "test-context")
+
+        stderr_output = sys.stderr.getvalue()
+        sys.stderr = old_stderr
+
+        assert result is False, "Should return False for non-existent file"
+        assert "does not exist" in stderr_output
+        print("✓ Correctly detected non-existent file")
 
         # Test 2: Empty file
-        echo "Test 2: Empty file"
-        touch /tmp/empty.md
-        validate_body_file "/tmp/empty.md" "Default content" 2>&1
-        content=$(cat /tmp/empty.md)
-        if [ "$content" = "Default content" ]; then
-            echo "✓ Added default content to empty file"
-        fi
-        rm /tmp/empty.md
+        print("Test 2: Empty file")
+        empty_file = tempfile.mktemp(suffix='.md')
+        Path(empty_file).write_text("")
+
+        old_stderr = sys.stderr
+        sys.stderr = StringIO()
+
+        result = validate_body_file_has_content(empty_file, "task:test")
+
+        sys.stderr = old_stderr
+
+        content = Path(empty_file).read_text()
+        assert result is True
+        assert len(content) > 0, "Should add default content to empty file"
+        assert "Task Details" in content
+        print("✓ Added default content to empty file")
+        os.unlink(empty_file)
 
         # Test 3: File with content
-        echo "Test 3: File with content"
-        echo "Existing content" > /tmp/withcontent.md
-        validate_body_file "/tmp/withcontent.md"
-        content=$(cat /tmp/withcontent.md)
-        if [ "$content" = "Existing content" ]; then
-            echo "✓ Preserved existing content"
-        fi
-        rm /tmp/withcontent.md
-        """
+        print("Test 3: File with content")
+        content_file = tempfile.mktemp(suffix='.md')
+        original_content = "This is existing content that should be preserved."
+        Path(content_file).write_text(original_content)
 
-        result = subprocess.run(['bash', '-c', test_script],
-                              capture_output=True, text=True)
+        old_stderr = sys.stderr
+        sys.stderr = StringIO()
 
-        print(f"Output: {result.stdout}")
-        print(f"Stderr: {result.stderr}")
+        result = validate_body_file_has_content(content_file, "task:test")
 
-        assert "✓ Correctly detected non-existent file" in result.stdout
-        assert "✓ Added default content to empty file" in result.stdout
-        assert "✓ Preserved existing content" in result.stdout
+        sys.stderr = old_stderr
+
+        content = Path(content_file).read_text()
+        assert result is True
+        assert content == original_content, "Should preserve existing content"
+        print("✓ Preserved existing content")
+        os.unlink(content_file)
 
     def test_has_content_after_frontmatter_function(self):
         """Test the has_content_after_frontmatter utility function"""
@@ -372,31 +373,15 @@ class TestGitHubIssueCreation:
             with_content = f.name
 
         try:
-            test_script = f"""
-            source "{str(self.utils_path)}"
+            print("Testing file with only frontmatter:")
+            result = has_content_after_frontmatter(only_fm)
+            assert result is False, "Should not detect content after frontmatter"
+            print("✓ Correctly detected no content after frontmatter")
 
-            echo "Testing file with only frontmatter:"
-            if has_content_after_frontmatter "{only_fm}"; then
-                echo "ERROR: Should not detect content"
-            else
-                echo "✓ Correctly detected no content after frontmatter"
-            fi
-
-            echo "Testing file with content:"
-            if has_content_after_frontmatter "{with_content}"; then
-                echo "✓ Correctly detected content after frontmatter"
-            else
-                echo "ERROR: Should detect content"
-            fi
-            """
-
-            result = subprocess.run(['bash', '-c', test_script],
-                                  capture_output=True, text=True)
-
-            print(f"Output: {result.stdout}")
-
-            assert "✓ Correctly detected no content after frontmatter" in result.stdout
-            assert "✓ Correctly detected content after frontmatter" in result.stdout
+            print("Testing file with content:")
+            result = has_content_after_frontmatter(with_content)
+            assert result is True, "Should detect content after frontmatter"
+            print("✓ Correctly detected content after frontmatter")
 
         finally:
             os.unlink(only_fm)
