@@ -305,7 +305,7 @@ class TestGitHubIssueCreation:
         """Test handling of special characters and code blocks"""
         print("\n=== Testing special characters ===")
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False, encoding="utf-8") as f:
             f.write("---\n")
             f.write("title: Special Chars Test\n")
             f.write("---\n")
