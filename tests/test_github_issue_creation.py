@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from ccpm.validation import (
     strip_frontmatter_safe,
     has_content_after_frontmatter,
-    validate_body_file_has_content
+    validate_body_file_has_content,
 )
 
 
@@ -34,96 +34,134 @@ class TestGitHubIssueCreation:
         cls.project_root = Path(__file__).parent.parent.absolute()
 
         # Ensure we're in a git repo with GitHub remote
-        result = subprocess.run(['git', 'remote', 'get-url', 'origin'],
-                              capture_output=True, text=True)
+        result = subprocess.run(
+            ["git", "remote", "get-url", "origin"], capture_output=True, text=True
+        )
         if result.returncode != 0:
             pytest.skip("Not in a git repository with remote")
 
         # Check if gh CLI is available
-        result = subprocess.run(['which', 'gh'], capture_output=True)
+        result = subprocess.run(["which", "gh"], capture_output=True)
         if result.returncode != 0:
             pytest.skip("GitHub CLI (gh) not installed")
 
         # Get repo info
-        result = subprocess.run(['gh', 'repo', 'view', '--json', 'nameWithOwner'],
-                              capture_output=True, text=True)
+        result = subprocess.run(
+            ["gh", "repo", "view", "--json", "nameWithOwner"],
+            capture_output=True,
+            text=True,
+        )
         if result.returncode != 0:
             pytest.skip("Unable to access GitHub repository")
 
-        cls.repo = json.loads(result.stdout)['nameWithOwner']
+        cls.repo = json.loads(result.stdout)["nameWithOwner"]
         cls.test_label = f"test-{uuid.uuid4().hex[:8]}"
 
         # Create test label for cleanup
-        subprocess.run(['gh', 'label', 'create', cls.test_label,
-                       '--description', 'Test label for automated tests',
-                       '--color', 'FF0000'], capture_output=True)
+        subprocess.run(
+            [
+                "gh",
+                "label",
+                "create",
+                cls.test_label,
+                "--description",
+                "Test label for automated tests",
+                "--color",
+                "FF0000",
+            ],
+            capture_output=True,
+        )
 
     @classmethod
     def teardown_class(cls):
         """Cleanup after all tests"""
         # Close all test issues
-        result = subprocess.run([
-            'gh', 'issue', 'list',
-            '--label', cls.test_label,
-            '--state', 'open',
-            '--json', 'number'
-        ], capture_output=True, text=True)
+        result = subprocess.run(
+            [
+                "gh",
+                "issue",
+                "list",
+                "--label",
+                cls.test_label,
+                "--state",
+                "open",
+                "--json",
+                "number",
+            ],
+            capture_output=True,
+            text=True,
+        )
 
         if result.returncode == 0:
             issues = json.loads(result.stdout)
             for issue in issues:
-                subprocess.run(['gh', 'issue', 'close', str(issue['number'])],
-                             capture_output=True)
+                subprocess.run(
+                    ["gh", "issue", "close", str(issue["number"])], capture_output=True
+                )
 
         # Delete test label
-        subprocess.run(['gh', 'label', 'delete', cls.test_label, '--yes'],
-                      capture_output=True)
+        subprocess.run(
+            ["gh", "label", "delete", cls.test_label, "--yes"], capture_output=True
+        )
 
     def test_empty_frontmatter_only_file(self):
         """Test that frontmatter-only files create issues with default content"""
         print("\n=== Testing frontmatter-only file ===")
 
         # Create a task file with only frontmatter
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: Test Task Empty Frontmatter\n")
             f.write("status: pending\n")
             f.write("---\n")
             task_file = f.name
 
-        output_file = tempfile.mktemp(suffix='.md')
+        output_file = tempfile.mktemp(suffix=".md")
 
         try:
             # Use Python function to strip frontmatter
-            strip_frontmatter_safe(task_file, output_file, "Task implementation pending.")
+            strip_frontmatter_safe(
+                task_file, output_file, "Task implementation pending."
+            )
 
             # Read the processed content
-            with open(output_file, 'r') as f:
+            with open(output_file, "r") as f:
                 processed_content = f.read()
 
             print(f"Processed content: {processed_content}")
 
             # Create issue with the processed body
-            result = subprocess.run([
-                'gh', 'issue', 'create',
-                '--title', 'Test: Empty Frontmatter Only',
-                '--body-file', output_file,
-                '--label', self.test_label,
-                '--json', 'number,url'
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "create",
+                    "--title",
+                    "Test: Empty Frontmatter Only",
+                    "--body-file",
+                    output_file,
+                    "--label",
+                    self.test_label,
+                ],
+                capture_output=True,
+                text=True,
+            )
 
             if result.returncode != 0:
                 print(f"Failed to create issue: {result.stderr}")
                 pytest.fail(f"Failed to create issue: {result.stderr}")
 
-            issue_data = json.loads(result.stdout)
-            issue_num = str(issue_data['number'])
+            # Extract issue number from the URL that gh returns
+            # Format: https://github.com/owner/repo/issues/123
+            issue_url = result.stdout.strip()
+            issue_num = issue_url.split("/")[-1]
 
             # Get the issue body
-            verify_result = subprocess.run([
-                'gh', 'issue', 'view', issue_num,
-                '--json', 'body', '-q', '.body'
-            ], capture_output=True, text=True)
+            verify_result = subprocess.run(
+                ["gh", "issue", "view", issue_num, "--json", "body", "-q", ".body"],
+                capture_output=True,
+                text=True,
+            )
 
             issue_body = verify_result.stdout.strip()
 
@@ -132,11 +170,13 @@ class TestGitHubIssueCreation:
 
             # Verify issue was created with non-empty body
             assert issue_body != "", "Issue body should not be empty"
-            assert "pending" in issue_body.lower() or "implementation" in issue_body.lower(), \
-                   f"Expected default content, got: {issue_body}"
+            assert (
+                "pending" in issue_body.lower()
+                or "implementation" in issue_body.lower()
+            ), f"Expected default content, got: {issue_body}"
 
             # Clean up
-            subprocess.run(['gh', 'issue', 'close', issue_num], capture_output=True)
+            subprocess.run(["gh", "issue", "close", issue_num], capture_output=True)
 
         finally:
             os.unlink(task_file)
@@ -148,7 +188,7 @@ class TestGitHubIssueCreation:
         print("\n=== Testing malformed markdown file ===")
 
         # Create malformed file (missing closing frontmatter)
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: Malformed Test\n")
             # Missing closing ---
@@ -156,14 +196,16 @@ class TestGitHubIssueCreation:
             f.write("Even without proper frontmatter closing\n")
             task_file = f.name
 
-        output_file = tempfile.mktemp(suffix='.md')
+        output_file = tempfile.mktemp(suffix=".md")
 
         try:
             # Use Python function to handle malformed frontmatter
-            strip_frontmatter_safe(task_file, output_file, "Malformed content handling.")
+            strip_frontmatter_safe(
+                task_file, output_file, "Malformed content handling."
+            )
 
             # Check what was extracted
-            with open(output_file, 'r') as f:
+            with open(output_file, "r") as f:
                 extracted_content = f.read()
 
             print(f"Extracted content: {extracted_content}")
@@ -171,7 +213,10 @@ class TestGitHubIssueCreation:
             # Should handle gracefully - either extract content or use default
             assert len(extracted_content.strip()) > 0, "Should produce some output"
             # Should extract the content after incomplete frontmatter
-            assert "Some content" in extracted_content or "Malformed content" in extracted_content
+            assert (
+                "Some content" in extracted_content
+                or "Malformed content" in extracted_content
+            )
 
         finally:
             os.unlink(task_file)
@@ -183,7 +228,7 @@ class TestGitHubIssueCreation:
         print("\n=== Testing large content file ===")
 
         # Create large content file
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: Large Content Test\n")
             f.write("---\n")
@@ -195,16 +240,16 @@ class TestGitHubIssueCreation:
 
             task_file = f.name
 
-        output_file = tempfile.mktemp(suffix='.md')
+        output_file = tempfile.mktemp(suffix=".md")
 
         try:
             # Use Python function to strip frontmatter
             strip_frontmatter_safe(task_file, output_file, "Large content test.")
 
             # Count lines and check content
-            with open(output_file, 'r') as f:
+            with open(output_file, "r") as f:
                 content = f.read()
-                lines = content.split('\n')
+                lines = content.split("\n")
 
             line_count = len([l for l in lines if l])  # Count non-empty lines
             print(f"Line count: {line_count}")
@@ -214,30 +259,42 @@ class TestGitHubIssueCreation:
             assert "Line 999:" in content, "Last line should be present"
 
             # Create issue
-            result = subprocess.run([
-                'gh', 'issue', 'create',
-                '--title', 'Test: Large Content',
-                '--body-file', output_file,
-                '--label', self.test_label,
-                '--json', 'number'
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "create",
+                    "--title",
+                    "Test: Large Content",
+                    "--body-file",
+                    output_file,
+                    "--label",
+                    self.test_label,
+                ],
+                capture_output=True,
+                text=True,
+            )
 
             if result.returncode == 0:
-                issue_data = json.loads(result.stdout)
-                issue_num = str(issue_data['number'])
+                # Extract issue number from URL
+                issue_url = result.stdout.strip()
+                issue_num = issue_url.split("/")[-1]
 
                 # Get issue body to verify content preservation
-                verify_result = subprocess.run([
-                    'gh', 'issue', 'view', issue_num,
-                    '--json', 'body', '-q', '.body'
-                ], capture_output=True, text=True)
+                verify_result = subprocess.run(
+                    ["gh", "issue", "view", issue_num, "--json", "body", "-q", ".body"],
+                    capture_output=True,
+                    text=True,
+                )
 
                 issue_body = verify_result.stdout
-                assert len(issue_body) > 10000, f"Large content should be preserved, got {len(issue_body)} chars"
+                assert (
+                    len(issue_body) > 10000
+                ), f"Large content should be preserved, got {len(issue_body)} chars"
                 assert "Line 999" in issue_body, "Last line should be in issue body"
 
                 # Clean up
-                subprocess.run(['gh', 'issue', 'close', issue_num], capture_output=True)
+                subprocess.run(["gh", "issue", "close", issue_num], capture_output=True)
 
         finally:
             os.unlink(task_file)
@@ -248,7 +305,7 @@ class TestGitHubIssueCreation:
         """Test handling of special characters and code blocks"""
         print("\n=== Testing special characters ===")
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: Special Chars Test\n")
             f.write("---\n")
@@ -260,37 +317,46 @@ class TestGitHubIssueCreation:
             f.write("Unicode: 中文, العربية, עברית, 🚀💻🎨\n")
             task_file = f.name
 
-        output_file = tempfile.mktemp(suffix='.md')
+        output_file = tempfile.mktemp(suffix=".md")
 
         try:
             # Use Python function to strip frontmatter
             strip_frontmatter_safe(task_file, output_file, "Special chars test.")
 
             # Check content preservation
-            with open(output_file, 'r', encoding='utf-8') as f:
+            with open(output_file, "r", encoding="utf-8") as f:
                 content = f.read()
 
-            assert '```bash' in content, "Code block should be preserved"
-            assert '$HOME' in content, "Variables should be preserved"
-            assert '🚀' in content, "Emoji should be preserved"
+            assert "```bash" in content, "Code block should be preserved"
+            assert "$HOME" in content, "Variables should be preserved"
+            assert "🚀" in content, "Emoji should be preserved"
 
             print("Code block preserved")
             print("Variables preserved")
             print("Emoji preserved")
 
             # Create issue
-            result = subprocess.run([
-                'gh', 'issue', 'create',
-                '--title', 'Test: Special Characters',
-                '--body-file', output_file,
-                '--label', self.test_label,
-                '--json', 'number'
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    "gh",
+                    "issue",
+                    "create",
+                    "--title",
+                    "Test: Special Characters",
+                    "--body-file",
+                    output_file,
+                    "--label",
+                    self.test_label,
+                ],
+                capture_output=True,
+                text=True,
+            )
 
             if result.returncode == 0:
-                issue_data = json.loads(result.stdout)
-                issue_num = str(issue_data['number'])
-                subprocess.run(['gh', 'issue', 'close', issue_num], capture_output=True)
+                # Extract issue number from URL
+                issue_url = result.stdout.strip()
+                issue_num = issue_url.split("/")[-1]
+                subprocess.run(["gh", "issue", "close", issue_num], capture_output=True)
 
         finally:
             os.unlink(task_file)
@@ -304,6 +370,7 @@ class TestGitHubIssueCreation:
         # Test 1: Non-existent file
         print("Test 1: Non-existent file")
         from io import StringIO
+
         old_stderr = sys.stderr
         sys.stderr = StringIO()
 
@@ -318,7 +385,7 @@ class TestGitHubIssueCreation:
 
         # Test 2: Empty file
         print("Test 2: Empty file")
-        empty_file = tempfile.mktemp(suffix='.md')
+        empty_file = tempfile.mktemp(suffix=".md")
         Path(empty_file).write_text("")
 
         old_stderr = sys.stderr
@@ -337,8 +404,8 @@ class TestGitHubIssueCreation:
 
         # Test 3: File with content
         print("Test 3: File with content")
-        content_file = tempfile.mktemp(suffix='.md')
-        original_content = "This is existing content that should be preserved."
+        content_file = tempfile.mktemp(suffix=".md")
+        original_content = "This is existing content that should be preserved because it is long enough to meet the minimum character requirements."
         Path(content_file).write_text(original_content)
 
         old_stderr = sys.stderr
@@ -359,13 +426,13 @@ class TestGitHubIssueCreation:
         print("\n=== Testing has_content_after_frontmatter function ===")
 
         # Create test files
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: Only Frontmatter\n")
             f.write("---\n")
             only_fm = f.name
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: With Content\n")
             f.write("---\n")
@@ -390,4 +457,4 @@ class TestGitHubIssueCreation:
 
 if __name__ == "__main__":
     # Run tests with verbose output
-    pytest.main([__file__, '-v', '-s'])
+    pytest.main([__file__, "-v", "-s"])

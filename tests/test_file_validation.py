@@ -13,7 +13,7 @@ from ccpm.validation import (
     has_placeholder_text,
     validate_body_file_has_content,
     has_content_after_frontmatter,
-    get_default_content
+    get_default_content,
 )
 
 
@@ -22,7 +22,7 @@ class TestValidationFunction:
 
     def test_validate_empty_file(self):
         """Test validation catches empty files and adds default content."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("")  # Empty file
             temp_path = f.name
 
@@ -54,7 +54,7 @@ class TestValidationFunction:
 
     def test_validate_whitespace_only_file(self):
         """Test validation catches whitespace-only files."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("   \n\t\n   ")  # Only whitespace
             temp_path = f.name
 
@@ -78,8 +78,10 @@ class TestValidationFunction:
 
     def test_validate_non_empty_file(self):
         """Test validation passes files with actual content."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
-            f.write("# Task Description\n\nThis is a comprehensive task description with enough content to meet the minimum requirements.")
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(
+                "# Task Description\n\nThis is a comprehensive task description with enough content to meet the minimum requirements."
+            )
             temp_path = f.name
 
         original_content = Path(temp_path).read_text()
@@ -106,7 +108,9 @@ class TestValidationFunction:
         old_stderr = sys.stderr
         sys.stderr = StringIO()
 
-        result = validate_body_file_has_content("/nonexistent/file.md", "test-context", 50)
+        result = validate_body_file_has_content(
+            "/nonexistent/file.md", "test-context", 50
+        )
 
         stderr_output = sys.stderr.getvalue()
         sys.stderr = old_stderr
@@ -127,11 +131,11 @@ class TestValidationFunction:
             "Coming soon",
             "Work in progress",
             "Fill in details here",
-            "Update this section"
+            "Update this section",
         ]
 
         for placeholder in placeholders:
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
                 f.write(f"# Task\n\n{placeholder}")
                 temp_path = f.name
 
@@ -145,12 +149,16 @@ class TestValidationFunction:
                 sys.stderr = old_stderr
 
                 # Should detect and replace placeholder
-                assert "Placeholder text detected" in stderr_output, f"Failed to detect placeholder: {placeholder}"
+                assert (
+                    "Placeholder text detected" in stderr_output
+                ), f"Failed to detect placeholder: {placeholder}"
 
                 # Should have substantial content now
                 content = Path(temp_path).read_text()
                 assert len(content.replace(" ", "").replace("\n", "")) > 50
-                assert placeholder not in content, f"Placeholder '{placeholder}' still in content"
+                assert (
+                    placeholder not in content
+                ), f"Placeholder '{placeholder}' still in content"
                 assert "Task Details" in content  # Should have real content
             finally:
                 os.unlink(temp_path)
@@ -161,11 +169,15 @@ class TestValidationFunction:
             ("", 50, False),  # Empty - should fail
             ("Hi", 50, False),  # Too short - should fail
             ("This is a task", 50, False),  # Still too short - should fail
-            ("This is a proper task description with enough detail to meet the minimum content requirements for a GitHub issue", 50, True),  # Should pass
+            (
+                "This is a proper task description with enough detail to meet the minimum content requirements for a GitHub issue",
+                50,
+                True,
+            ),  # Should pass
         ]
 
         for content, min_chars, should_pass in test_cases:
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
                 f.write(content)
                 temp_path = f.name
 
@@ -188,7 +200,9 @@ class TestValidationFunction:
                     assert "insufficient content" not in stderr_output
                 else:
                     # Should have added default content
-                    assert len(new_content.replace(" ", "").replace("\n", "")) >= min_chars
+                    assert (
+                        len(new_content.replace(" ", "").replace("\n", "")) >= min_chars
+                    )
                     assert "insufficient content" in stderr_output
             finally:
                 os.unlink(temp_path)
@@ -196,14 +210,30 @@ class TestValidationFunction:
     def test_context_specific_content(self):
         """Test that different contexts get appropriate detailed content."""
         contexts = [
-            ("epic:feature-x", 100, ["Epic Implementation", "Objectives", "Technical Approach"]),
-            ("task:implement-y", 50, ["Task Details", "Acceptance Criteria", "Implementation Notes"]),
-            ("progress-update:issue-123", 30, ["Progress Update", "Recent Activity", "Next Steps"]),
-            ("completion:issue-456", 30, ["Task Completed", "Deliverables", "Verification"]),
+            (
+                "epic:feature-x",
+                100,
+                ["Epic Implementation", "Objectives", "Technical Approach"],
+            ),
+            (
+                "task:implement-y",
+                50,
+                ["Task Details", "Acceptance Criteria", "Implementation Notes"],
+            ),
+            (
+                "progress-update:issue-123",
+                30,
+                ["Progress Update", "Recent Activity", "Next Steps"],
+            ),
+            (
+                "completion:issue-456",
+                30,
+                ["Task Completed", "Deliverables", "Verification"],
+            ),
         ]
 
         for context, min_chars, expected_phrases in contexts:
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
                 f.write("Too short")  # Intentionally insufficient
                 temp_path = f.name
 
@@ -219,7 +249,9 @@ class TestValidationFunction:
 
                 # Check for context-specific content
                 for phrase in expected_phrases:
-                    assert phrase in content, f"Expected '{phrase}' in content for {context}"
+                    assert (
+                        phrase in content
+                    ), f"Expected '{phrase}' in content for {context}"
 
                 # Ensure sufficient length
                 assert len(content.replace(" ", "").replace("\n", "")) >= min_chars
@@ -228,7 +260,7 @@ class TestValidationFunction:
 
     def test_whitespace_counted_correctly(self):
         """Test that whitespace doesn't count toward content length."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             # Lots of whitespace but no real content
             f.write("   \n\n\n\t\t\t   \n\n\n   Word   \n\n\n\t\t\t")
             temp_path = f.name
@@ -254,8 +286,9 @@ class TestValidationFunction:
 
     def test_mixed_placeholder_and_content(self):
         """Test files with some real content mixed with placeholders."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
-            f.write("""# Task Implementation
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(
+                """# Task Implementation
 
 This task implements the user authentication module.
 
@@ -263,7 +296,8 @@ This task implements the user authentication module.
 TODO: Add more details here
 
 ## Testing
-Insert test plan here""")
+Insert test plan here"""
+            )
             temp_path = f.name
 
         try:
@@ -299,17 +333,19 @@ Insert test plan here""")
 
         for context, expected_min in test_cases:
             result = get_min_content_length(context)
-            assert result == expected_min, f"Expected {expected_min} for {context}, got {result}"
+            assert (
+                result == expected_min
+            ), f"Expected {expected_min} for {context}, got {result}"
 
     def test_configurable_thresholds(self):
         """Test that environment variables control minimum content thresholds."""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("Short content")
             temp_path = f.name
 
         try:
             # Test with custom threshold
-            os.environ['CCPM_MIN_TASK_CONTENT'] = '200'
+            os.environ["CCPM_MIN_TASK_CONTENT"] = "200"
 
             old_stderr = sys.stderr
             sys.stderr = StringIO()
@@ -331,19 +367,19 @@ Insert test plan here""")
         finally:
             os.unlink(temp_path)
             # Clean up environment
-            if 'CCPM_MIN_TASK_CONTENT' in os.environ:
-                del os.environ['CCPM_MIN_TASK_CONTENT']
+            if "CCPM_MIN_TASK_CONTENT" in os.environ:
+                del os.environ["CCPM_MIN_TASK_CONTENT"]
 
     def test_has_content_after_frontmatter_function(self):
         """Test the has_content_after_frontmatter function."""
         # Create test files
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: Only Frontmatter\n")
             f.write("---\n")
             only_fm = f.name
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
             f.write("---\n")
             f.write("title: With Content\n")
             f.write("---\n")
@@ -352,7 +388,9 @@ Insert test plan here""")
 
         try:
             # Test file with only frontmatter
-            assert not has_content_after_frontmatter(only_fm), "Should not detect content"
+            assert not has_content_after_frontmatter(
+                only_fm
+            ), "Should not detect content"
 
             # Test file with content
             assert has_content_after_frontmatter(with_content), "Should detect content"
@@ -372,5 +410,9 @@ Insert test plan here""")
 
         # Should not detect false positives
         assert not has_placeholder_text("This is a complete description")
-        assert not has_placeholder_text("The todo list application")  # "todo" as part of word
-        assert not has_placeholder_text("Wipe the surface clean")  # "wip" as part of word
+        assert not has_placeholder_text(
+            "The tornado swept through"
+        )  # "todo" not present
+        assert not has_placeholder_text(
+            "Wipe the surface clean"
+        )  # "wip" as part of word

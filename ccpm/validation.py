@@ -2,7 +2,6 @@
 
 import os
 import re
-from pathlib import Path
 from typing import Optional
 
 
@@ -24,8 +23,8 @@ def has_placeholder_text(content: str) -> bool:
     placeholder_patterns = [
         r"insert.*here",
         r"to.*be.*added",
-        r"todo(?![\w])",  # TODO but not part of a word
-        r"tbd",
+        r"\btodo\b",  # TODO as a whole word
+        r"\btbd\b",  # TBD as a whole word
         r"placeholder",
         r"description.*here",
         r"add.*content",
@@ -33,10 +32,10 @@ def has_placeholder_text(content: str) -> bool:
         r"fill.*in",
         r"coming.*soon",
         r"work.*in.*progress",
-        r"wip(?![\w])",
-        r"xxx",
-        r"fixme",
-        r"update.*this"
+        r"\bwip\b",  # WIP as a whole word
+        r"\bxxx\b",  # XXX as a whole word
+        r"\bfixme\b",  # FIXME as a whole word
+        r"update.*this",
     ]
 
     pattern = "|".join(f"({p})" for p in placeholder_patterns)
@@ -144,9 +143,7 @@ Active development ongoing.
 
 
 def validate_body_file_has_content(
-    file_path: str,
-    context: str,
-    min_chars: Optional[int] = None
+    file_path: str, context: str, min_chars: Optional[int] = None
 ) -> bool:
     """
     Validate that a body file has sufficient content.
@@ -170,15 +167,18 @@ def validate_body_file_has_content(
 
     # Check if file exists
     if not os.path.exists(file_path):
-        print(f"Error: Body file {file_path} does not exist for {context}", file=sys.stderr)
+        print(
+            f"Error: Body file {file_path} does not exist for {context}",
+            file=sys.stderr,
+        )
         return False
 
     # Read file content
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     # Get content length (excluding whitespace)
-    stripped_content = re.sub(r'\s', '', content)
+    stripped_content = re.sub(r"\s", "", content)
     content_length = len(stripped_content)
 
     # Check for placeholder text
@@ -188,26 +188,33 @@ def validate_body_file_has_content(
     needs_replacement = content_length < min_chars or has_placeholder
 
     if needs_replacement:
-        print(f"Warning: Body file {file_path} has insufficient content for {context}", file=sys.stderr)
-        print(f"  Content length: {content_length} chars (minimum: {min_chars})", file=sys.stderr)
+        print(
+            f"Warning: Body file {file_path} has insufficient content for {context}",
+            file=sys.stderr,
+        )
+        print(
+            f"  Content length: {content_length} chars (minimum: {min_chars})",
+            file=sys.stderr,
+        )
 
         if has_placeholder:
-            print(f"  Placeholder text detected - replacing with proper default", file=sys.stderr)
+            print(
+                "  Placeholder text detected - replacing with proper default",
+                file=sys.stderr,
+            )
 
         print("Adding appropriate default content...", file=sys.stderr)
 
         # Write default content
         default_content = get_default_content(context)
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(default_content)
 
     return True
 
 
 def strip_frontmatter_safe(
-    input_file: str,
-    output_file: str,
-    default_content: str = "Content pending."
+    input_file: str, output_file: str, default_content: str = "Content pending."
 ) -> None:
     """
     Strip YAML frontmatter from a markdown file safely.
@@ -219,21 +226,21 @@ def strip_frontmatter_safe(
     """
     if not os.path.exists(input_file):
         # If input doesn't exist, create output with default
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             f.write(default_content)
         return
 
-    with open(input_file, 'r', encoding='utf-8') as f:
+    with open(input_file, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     # Skip frontmatter if present
-    if lines and lines[0].strip() == '---':
+    if lines and lines[0].strip() == "---":
         # Find closing ---
         end_idx = 1
         while end_idx < len(lines):
-            if lines[end_idx].strip() == '---':
+            if lines[end_idx].strip() == "---":
                 # Found closing, content starts after
-                content_lines = lines[end_idx + 1:]
+                content_lines = lines[end_idx + 1 :]
                 break
             end_idx += 1
         else:
@@ -244,14 +251,14 @@ def strip_frontmatter_safe(
         content_lines = lines
 
     # Join and strip
-    content = ''.join(content_lines).strip()
+    content = "".join(content_lines).strip()
 
     # Use default if empty
     if not content:
         content = default_content
 
     # Write output
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(content)
 
 
@@ -268,27 +275,27 @@ def has_content_after_frontmatter(file_path: str) -> bool:
     if not os.path.exists(file_path):
         return False
 
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     if not lines:
         return False
 
     # Skip frontmatter if present
-    if lines[0].strip() == '---':
+    if lines[0].strip() == "---":
         # Find closing ---
         end_idx = 1
         while end_idx < len(lines):
-            if lines[end_idx].strip() == '---':
+            if lines[end_idx].strip() == "---":
                 # Found closing, check content after
-                content_lines = lines[end_idx + 1:]
-                content = ''.join(content_lines).strip()
+                content_lines = lines[end_idx + 1 :]
+                content = "".join(content_lines).strip()
                 return bool(content)
             end_idx += 1
         # No closing found, check remaining content
-        content = ''.join(lines[1:]).strip()
+        content = "".join(lines[1:]).strip()
         return bool(content)
     else:
         # No frontmatter, check all content
-        content = ''.join(lines).strip()
+        content = "".join(lines).strip()
         return bool(content)
