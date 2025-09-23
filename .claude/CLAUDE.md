@@ -4,14 +4,15 @@
 
 ## USE SUB-AGENTS FOR CONTEXT OPTIMIZATION
 
-### 1. Always use the file-analyzer sub-agent when asked to read files.
+### 1. Always use the file-analyzer sub-agent when asked to read files
+
 The file-analyzer agent is an expert in extracting and summarizing critical information from files, particularly log files and verbose outputs. It provides concise, actionable summaries that preserve essential information while dramatically reducing context usage.
 
-### 2. Always use the code-analyzer sub-agent when asked to search code, analyze code, research bugs, or trace logic flow.
+### 2. Always use the code-analyzer sub-agent when asked to search code, analyze code, research bugs, or trace logic flow
 
 The code-analyzer agent is an expert in code analysis, logic tracing, and vulnerability detection. It provides concise, actionable summaries that preserve essential information while dramatically reducing context usage.
 
-### 3. Always use the test-runner sub-agent to run tests and analyze the test results.
+### 3. Always use the test-runner sub-agent to run tests and analyze the test results
 
 Using the test-runner agent ensures:
 
@@ -38,7 +39,6 @@ Using the test-runner agent ensures:
 - If the test fails, consider checking if the test is structured correctly before deciding we need to refactor the codebase.
 - Tests to be verbose so we can use them for debugging.
 
-
 ## Tone and Behavior
 
 - Criticism is welcome. Please tell me when I am wrong or mistaken, or even when you think I might be wrong or mistaken.
@@ -51,7 +51,7 @@ Using the test-runner agent ensures:
 - Occasional pleasantries are fine.
 - Feel free to ask many questions. If you are in doubt of my intent, don't guess. Ask.
 
-## ABSOLUTE RULES:
+## ABSOLUTE RULES
 
 - NO PARTIAL IMPLEMENTATION
 - NO SIMPLIFICATION : no "//This is simplified stuff for now, complete implementation would blablabla"
@@ -63,3 +63,9 @@ Using the test-runner agent ensures:
 - NO OVER-ENGINEERING - Don't add unnecessary abstractions, factory patterns, or middleware when simple functions would work. Don't think "enterprise" when you need "working"
 - NO MIXED CONCERNS - Don't put validation logic inside API handlers, database queries inside UI components, etc. instead of proper separation
 - NO RESOURCE LEAKS - Don't forget to close database connections, clear timeouts, remove event listeners, or clean up file handles
+
+### 紀錄 issue status
+
+每次開始新task/issue 必需要詢問用戶 是否更新到 repository
+
+must ask user to create issue & commit  
