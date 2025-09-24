@@ -104,6 +104,18 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
       echo "  2. Update your remote:"
       echo "     git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO.git"
       echo ""
+    else
+      # Create GitHub labels if this is a GitHub repository
+      if echo "$remote_url" | grep -q "github.com"; then
+        echo ""
+        echo "🏷️ Creating GitHub labels..."
+        
+        # Create base labels with colors and descriptions
+        gh label create "epic" --color "0E8A16" --description "Epic issue containing multiple related tasks" --force 2>/dev/null || true
+        gh label create "task" --color "1D76DB" --description "Individual task within an epic" --force 2>/dev/null || true
+        
+        echo "  ✅ GitHub labels created (epic, task)"
+      fi
     fi
   else
     echo "  ⚠️ No remote configured"
