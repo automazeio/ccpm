@@ -5,22 +5,27 @@
 [![Claude Code](https://img.shields.io/badge/+-Claude%20Code-d97757)](https://github.com/automazeio/ccpm/blob/main/README.md)
 [![GitHub Issues](https://img.shields.io/badge/+-GitHub%20Issues-1f2328)](https://github.com/automazeio/ccpm)
 &nbsp;
-[![Tests](https://github.com/automazeio/ccpm/actions/workflows/test.yml/badge.svg)](https://github.com/automazeio/ccpm/actions/workflows/test.yml)
-[![Coverage](https://codecov.io/gh/automazeio/ccpm/branch/main/graph/badge.svg)](https://codecov.io/gh/automazeio/ccpm)
+[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code?tab=readme-ov-file#general-)
 &nbsp;
 [![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/automazeio/ccpm/blob/main/LICENSE)
 &nbsp;
 [![Follow on 𝕏](https://img.shields.io/badge/𝕏-@aroussi-1c9bf0)](http://x.com/intent/follow?screen_name=aroussi)
 &nbsp;
-[![Star this repo](https://img.shields.io/badge/★-Star%20this%20repo-e7b10b)](https://github.com/automazeio/ccpm)
+[![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
+
 
 ## Transform PRDs into shipped features using spec-driven development
-
-Transform PRDs into shipped features using GitHub Issues and parallel AI agents.
 
 Stop losing context. Eliminate task blocking. Reduce shipped bugs.
 This battle-tested system turns product requirements into production code
 with full traceability at every step.
+
+## Key Terminology
+
+- **PRD (Product Requirements Document)** - A comprehensive specification defining what to build, including user stories, acceptance criteria, and technical constraints
+- **Epic** - A technical implementation plan that breaks down a PRD into concrete development tasks with clear dependencies
+- **Issues** - Individual development tasks synced to GitHub Issues for tracking and collaboration
+- **Parallel Execution** - Multiple AI agents working simultaneously on different aspects of the same feature
 
 ![Claude Code PM](screenshot.webp)
 
@@ -29,16 +34,19 @@ with full traceability at every step.
 ### 1. Install CCPM
 
 ```bash
-# Install from GitHub
-pip install git+https://github.com/automazeio/ccpm.git
+# Navigate to your project directory
+cd /path/to/your/project
+
+# Install CCPM template files
+curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh | bash
 ```
 
 The installer automatically:
 
-- ✅ Installs GitHub CLI if needed
-- ✅ Sets up GitHub authentication
-- ✅ Installs required extensions
-- ✅ Configures your environment
+- ✅ Downloads CCPM template files
+- ✅ Backs up existing `.claude` directory
+- ✅ Sets up project structure
+- ✅ Preserves your customizations
 
 ### 2. Set Up Your Project
 
@@ -46,11 +54,11 @@ The installer automatically:
 # Navigate to your project
 cd /path/to/your/project
 
-# Set up CCPM
-ccpm setup .
+# Install CCPM template files
+curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh | bash
 
-# Initialize the PM system
-ccpm init
+# Initialize the PM system in Claude Code
+/pm:init
 ```
 
 ### 3. Ship Your First Feature
@@ -96,25 +104,35 @@ graph LR
 - **📈 Scalable Beyond Solo Work** - Add team members without friction
 - **🎯 Single Source of Truth** - Issues are the project state
 
+## Installation
+
+### Unix/Linux/macOS
+
+```bash
+cd path/to/your/project/
+curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh | bash
+```
+
+### Windows (PowerShell)
+
+```bash
+cd path/to/your/project/
+iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.bat | iex
+```
+
+### After Installation
+
+```bash
+# Initialize the PM system in Claude Code
+/pm:init
+
+# Create context for your project
+/context:create
+```
+
+> 💡 **Note**: If you already have a `.claude` directory, it will be automatically backed up and your content preserved.
+
 ## Commands
-
-### CLI Commands
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `ccpm setup <path>` | Set up CCPM in a project | `ccpm setup .` |
-| `ccpm init` | Initialize PM system | `ccpm init` |
-| `ccpm status` | Show project status | `ccpm status` |
-| `ccpm sync` | Sync with GitHub | `ccpm sync` |
-| `ccpm list` | List all PRDs | `ccpm list` |
-| `ccpm search <term>` | Search content | `ccpm search auth` |
-| `ccpm validate` | Validate system integrity | `ccpm validate` |
-| `ccpm clean` | Archive completed work | `ccpm clean` |
-| `ccpm import` | Import GitHub issues | `ccpm import` |
-| `ccpm update` | Update CCPM | `ccpm update` |
-| `ccpm uninstall` | Remove CCPM | `ccpm uninstall` |
-| `ccpm help` | Show help | `ccpm help` |
-| `ccpm --help` | Show help | `ccpm --help` |
 
 ### Claude Code Commands (/pm:*)
 
@@ -278,78 +296,39 @@ sudo apt install gh
 winget install --id GitHub.cli
 ```
 
-## Get Started Now
-
-### Quick Setup (2 minutes)
-
-1. **Install this repository into your project**:
-
-   #### Unix/Linux/macOS
-
-   ```bash
-   cd path/to/your/project/
-   curl -sSL https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.sh | bash
-   # or: 
-   wget -qO- https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.sh | bash
-   ```
-
-   #### Windows (PowerShell)
-
-   ```bash
-   cd path/to/your/project/
-   iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/ccpm.bat | iex
-   ```
-
-   > 💡 **Note**: If you already have a `.claude` directory, it will be
-   > automatically backed up to `.claude.backup` and your user content will be
-   > preserved during installation.
-
-   See full/other installation options in the
-   [installation guide ›](https://github.com/automazeio/ccpm/tree/main/install)
-
-2. **Initialize the PM system**:
-
-   ```bash
-   /pm:init
-   ```
-
-   This command will:
-   - Install GitHub CLI (if needed)
-   - Authenticate with GitHub
-   - Install [gh-sub-issue extension](https://github.com/yahsan2/gh-sub-issue)
-     for proper parent-child relationships
-   - Create required directories
-   - Update .gitignore
-
-3. **Create `CLAUDE.md`** with your repository information
-
-   ```bash
-   /init include rules from .claude/CLAUDE.md
-   ```
-
-   > If you already have a `CLAUDE.md` file, run: `/re-init` to update it with
-   > important rules from `.claude/CLAUDE.md`.
-
-4. **Prime the system**:
-
-   ```bash
-   /context:create
-   ```
-
-### Start Your First Feature
-
-**Python version issues?**
-CCPM requires Python 3.8+. Check with:
+## Complete Workflow Example
 
 ```bash
-python --version
+# 1. Create comprehensive requirements
+/pm:prd-new user-authentication
+
+# 2. Transform into technical plan  
+/pm:prd-parse user-authentication
+
+# 3. Break down into tasks and sync to GitHub
+/pm:epic-oneshot user-authentication
+
+# 4. Start working on first issue
+/pm:issue-start 1234
+
+# 5. Track progress
+/pm:status
 ```
 
-**Permission issues?**
+That's the complete cycle from idea to implementation!
+
+**Installation not working?**
+
+Try the alternative installation methods:
 
 ```bash
-# Install for current user only
-pip install --user git+https://github.com/automazeio/ccpm.git
+# Using wget instead of curl
+wget -qO- https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh | bash
+
+# Manual download and run
+wget https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh
+chmod +x ccpm.sh
+./ccpm.sh
 ```
 
 </details>
