@@ -7,7 +7,7 @@ if [ ! -d ".claude/epics" ]; then
   echo "📁 No epics directory found. Create your first epic with: /pm:prd-parse <feature-name>"
   exit 0
 fi
-epic_dirs=$(ls -d .claude/epics/*/ 2>/dev/null || true)
+epic_dirs=`ls -d .claude/epics/*/ 2>/dev/null || true`
 if [ -z "$epic_dirs" ]; then
   echo "📁 No epics found. Create your first epic with: /pm:prd-parse <feature-name>"
   exit 0
@@ -28,21 +28,21 @@ for dir in .claude/epics/*/; do
   [ -f "$dir/epic.md" ] || continue
 
   # Extract metadata
-  n=$(grep "^name:" "$dir/epic.md" | head -1 | sed 's/^name: *//')
-  s=$(grep "^status:" "$dir/epic.md" | head -1 | sed 's/^status: *//' | tr '[:upper:]' '[:lower:]')
-  p=$(grep "^progress:" "$dir/epic.md" | head -1 | sed 's/^progress: *//')
-  g=$(grep "^github:" "$dir/epic.md" | head -1 | sed 's/^github: *//')
+  n=`grep "^name:" "$dir/epic.md" | head -1 | sed 's/^name: *//'`
+  s=`grep "^status:" "$dir/epic.md" | head -1 | sed 's/^status: *//' | tr '[:upper:]' '[:lower:]'`
+  p=`grep "^progress:" "$dir/epic.md" | head -1 | sed 's/^progress: *//'`
+  g=`grep "^github:" "$dir/epic.md" | head -1 | sed 's/^github: *//'`
 
   # Defaults
-  [ -z "$n" ] && n=$(basename "$dir")
+  [ -z "$n" ] && n=`basename "$dir"`
   [ -z "$p" ] && p="0%"
 
   # Count tasks
-  t=$(ls "$dir"/[0-9]*.md 2>/dev/null | wc -l)
+  t=`ls "$dir"/[0-9]*.md 2>/dev/null | wc -l`
 
   # Format output with GitHub issue number if available
   if [ -n "$g" ]; then
-    i=$(echo "$g" | grep -o '/[0-9]*$' | tr -d '/')
+    i=`echo "$g" | grep -o '/[0-9]*$' | tr -d '/'`
     entry="   📋 ${dir}epic.md (#$i) - $p complete ($t tasks)"
   else
     entry="   📋 ${dir}epic.md - $p complete ($t tasks)"
@@ -93,8 +93,8 @@ fi
 # Summary
 echo ""
 echo "📊 Summary"
-total=$(ls -d .claude/epics/*/ 2>/dev/null | wc -l)
-tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+total=`ls -d .claude/epics/*/ 2>/dev/null | wc -l`
+tasks=`find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l`
 echo "   Total epics: $total"
 echo "   Total tasks: $tasks"
 

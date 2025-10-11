@@ -93,7 +93,7 @@ check_sync_content() {
     total_checks=$((total_checks + 1))
     
     # Check update files for proper path formats
-    update_files=$(find .claude/epics/*/updates/ -name "*.md" 2>/dev/null | head -10)
+    update_files=`find .claude/epics/*/updates/ -name "*.md" 2>/dev/null | head -10`
     
     if [ -z "$update_files" ]; then
         print_warning "No update files found, skipping this check"

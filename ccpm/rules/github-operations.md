@@ -8,7 +8,7 @@ Standard patterns for GitHub CLI operations across all commands.
 
 ```bash
 # Check if remote origin is the CCPM template repository
-remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+remote_url=`git remote get-url origin 2>/dev/null || echo ""`
 if [[ "$remote_url" == *"automazeio/ccpm"* ]] || [[ "$remote_url" == *"automazeio/ccpm.git"* ]]; then
   echo "❌ ERROR: You're trying to sync with the CCPM template repository!"
   echo ""
@@ -55,8 +55,8 @@ gh issue view {number} --json state,title,labels,body
 ### Create Issue
 ```bash
 # Always specify repo to avoid defaulting to wrong repository
-remote_url=$(git remote get-url origin 2>/dev/null || echo "")
-REPO=$(echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||')
+remote_url=`git remote get-url origin 2>/dev/null || echo ""`
+REPO=`echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||'`
 [ -z "$REPO" ] && REPO="user/repo"
 gh issue create --repo "$REPO" --title "{title}" --body-file {file} --label "{labels}"
 ```

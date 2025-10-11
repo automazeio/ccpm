@@ -53,10 +53,10 @@ normalize_paths() {
     
     # Check for changes
     if ! diff -q "$file" "$backup_file" >/dev/null 2>&1; then
-        print_success "File fixed: $(basename "$file")"
+        print_success "File fixed: `basename "$file"`"
         return 0
     else
-        print_info "File needs no changes: $(basename "$file")"
+        print_info "File needs no changes: `basename "$file"`"
         rm "$backup_file"  # Remove unnecessary backup
         return 1
     fi

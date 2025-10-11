@@ -26,13 +26,13 @@ echo "🗂️ Data Integrity:"
 for epic_dir in .claude/epics/*/; do
   [ -d "$epic_dir" ] || continue
   if [ ! -f "$epic_dir/epic.md" ]; then
-    echo "  ⚠️ Missing epic.md in $(basename "$epic_dir")"
+    echo "  ⚠️ Missing epic.md in `basename "$epic_dir"`"
     ((warnings++))
   fi
 done
 
 # Check for tasks without epics
-orphaned=$(find .claude -name "[0-9]*.md" -not -path ".claude/epics/*/*" 2>/dev/null | wc -l)
+orphaned=`find .claude -name "[0-9]*.md" -not -path ".claude/epics/*/*" 2>/dev/null | wc -l`
 [ $orphaned -gt 0 ] && echo "  ⚠️ Found $orphaned orphaned task files" && ((warnings++))
 
 # Check for broken references
@@ -43,22 +43,22 @@ for task_file in .claude/epics/*/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
   # Extract dependencies from task file
-  deps_line=$(grep "^depends_on:" "$task_file" | head -1)
+  deps_line=`grep "^depends_on:" "$task_file" | head -1`
   if [ -n "$deps_line" ]; then
-    deps=$(echo "$deps_line" | sed 's/^depends_on: *//')
-    deps=$(echo "$deps" | sed 's/^\[//' | sed 's/\]$//')
-    deps=$(echo "$deps" | sed 's/,/ /g')
+    deps=`echo "$deps_line" | sed 's/^depends_on: *//'`
+    deps=`echo "$deps" | sed 's/^\[//' | sed 's/\]$//'`
+    deps=`echo "$deps" | sed 's/,/ /g'`
     # Trim whitespace and handle empty cases
-    deps=$(echo "$deps" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+    deps=`echo "$deps" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//'`
     [ -z "$deps" ] && deps=""
   else
     deps=""
   fi
   if [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
-    epic_dir=$(dirname "$task_file")
+    epic_dir=`dirname "$task_file"`
     for dep in $deps; do
       if [ ! -f "$epic_dir/$dep.md" ]; then
-        echo "  ⚠️ Task $(basename "$task_file" .md) references missing task: $dep"
+        echo "  ⚠️ Task `basename "$task_file" .md` references missing task: $dep"
         ((warnings++))
       fi
     done
@@ -74,9 +74,9 @@ echo ""
 echo "📝 Frontmatter Validation:"
 invalid=0
 
-for file in $(find .claude -name "*.md" -path "*/epics/*" -o -path "*/prds/*" 2>/dev/null); do
+for file in `find .claude -name "*.md" -path "*/epics/*" -o -path "*/prds/*" 2>/dev/null`; do
   if ! grep -q "^---" "$file"; then
-    echo "  ⚠️ Missing frontmatter: $(basename "$file")"
+    echo "  ⚠️ Missing frontmatter: `basename "$file"`"
     ((invalid++))
   fi
 done

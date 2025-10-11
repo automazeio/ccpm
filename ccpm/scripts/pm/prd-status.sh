@@ -9,7 +9,7 @@ if [ ! -d ".claude/prds" ]; then
   exit 0
 fi
 
-total=$(ls .claude/prds/*.md 2>/dev/null | wc -l)
+total=`ls .claude/prds/*.md 2>/dev/null | wc -l`
 [ $total -eq 0 ] && echo "No PRDs found." && exit 0
 
 # Count by status
@@ -19,7 +19,7 @@ implemented=0
 
 for file in .claude/prds/*.md; do
   [ -f "$file" ] || continue
-  status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
+  status=`grep "^status:" "$file" | head -1 | sed 's/^status: *//'`
 
   case "$status" in
     backlog|draft|"") ((backlog++)) ;;
@@ -38,9 +38,9 @@ echo "📊 Distribution:"
 echo "================"
 
 echo ""
-echo "  Backlog:     $(printf '%-3d' $backlog) [$(printf '%0.s█' $(seq 1 $((backlog*20/total))))]"
-echo "  In Progress: $(printf '%-3d' $in_progress) [$(printf '%0.s█' $(seq 1 $((in_progress*20/total))))]"
-echo "  Implemented: $(printf '%-3d' $implemented) [$(printf '%0.s█' $(seq 1 $((implemented*20/total))))]"
+echo "  Backlog:     `printf '%-3d' $backlog` [$(printf '%0.s█' $(seq 1 $((backlog*20/total))))]"
+echo "  In Progress: `printf '%-3d' $in_progress` [$(printf '%0.s█' $(seq 1 $((in_progress*20/total))))]"
+echo "  Implemented: `printf '%-3d' $implemented` [$(printf '%0.s█' $(seq 1 $((implemented*20/total))))]"
 echo ""
 echo "  Total PRDs: $total"
 
@@ -48,8 +48,8 @@ echo "  Total PRDs: $total"
 echo ""
 echo "📅 Recent PRDs (last 5 modified):"
 ls -t .claude/prds/*.md 2>/dev/null | head -5 | while read file; do
-  name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//')
-  [ -z "$name" ] && name=$(basename "$file" .md)
+  name=`grep "^name:" "$file" | head -1 | sed 's/^name: *//'`
+  [ -z "$name" ] && name=`basename "$file" .md`
   echo "  • $name"
 done
 

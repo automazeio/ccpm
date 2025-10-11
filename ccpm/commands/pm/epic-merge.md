@@ -31,7 +31,7 @@ Navigate to worktree and check status:
 cd ../epic-$ARGUMENTS
 
 # Check for uncommitted changes
-if [[ $(git status --porcelain) ]]; then
+if [[ `git status --porcelain` ]]; then
   echo "⚠️ Uncommitted changes in worktree:"
   git status --short
   echo "Commit or stash changes before merging"
@@ -104,7 +104,7 @@ if [ -d ".claude/epics/$ARGUMENTS" ]; then
   cd .claude/epics/$ARGUMENTS
   for task_file in [0-9]*.md; do
     [ -f "$task_file" ] || continue
-    task_name=$(grep '^name:' "$task_file" | cut -d: -f2 | sed 's/^ *//')
+    task_name=`grep '^name:' "$task_file" | cut -d: -f2 | sed 's/^ *//'`
     feature_list="$feature_list\n- $task_name"
   done
   cd - > /dev/null
@@ -113,9 +113,9 @@ fi
 echo "$feature_list"
 
 # Extract epic issue number
-epic_github_line=$(grep 'github:' .claude/epics/$ARGUMENTS/epic.md 2>/dev/null || true)
+epic_github_line=`grep 'github:' .claude/epics/$ARGUMENTS/epic.md 2>/dev/null || true`
 if [ -n "$epic_github_line" ]; then
-  epic_issue=$(echo "$epic_github_line" | grep -oE '[0-9]+' || true)
+  epic_issue=`echo "$epic_github_line" | grep -oE '[0-9]+' || true`
   if [ -n "$epic_issue" ]; then
     echo "\nCloses epic #$epic_issue"
   fi
@@ -133,7 +133,7 @@ echo "
 ❌ Merge conflicts detected!
 
 Conflicts in:
-$(git diff --name-only --diff-filter=U)
+`git diff --name-only --diff-filter=U`
 
 Options:
 1. Resolve manually:
@@ -179,9 +179,9 @@ Close related issues:
 ```bash
 # Get issue numbers from epic
 # Extract epic issue number
-epic_github_line=$(grep 'github:' .claude/epics/archived/$ARGUMENTS/epic.md 2>/dev/null || true)
+epic_github_line=`grep 'github:' .claude/epics/archived/$ARGUMENTS/epic.md 2>/dev/null || true`
 if [ -n "$epic_github_line" ]; then
-  epic_issue=$(echo "$epic_github_line" | grep -oE '[0-9]+$' || true)
+  epic_issue=`echo "$epic_github_line" | grep -oE '[0-9]+$' || true`
 else
   epic_issue=""
 fi
@@ -193,9 +193,9 @@ gh issue close $epic_issue -c "Epic completed and merged to main"
 for task_file in .claude/epics/archived/$ARGUMENTS/[0-9]*.md; do
   [ -f "$task_file" ] || continue
   # Extract task issue number
-  task_github_line=$(grep 'github:' "$task_file" 2>/dev/null || true)
+  task_github_line=`grep 'github:' "$task_file" 2>/dev/null || true`
   if [ -n "$task_github_line" ]; then
-    issue_num=$(echo "$task_github_line" | grep -oE '[0-9]+$' || true)
+    issue_num=`echo "$task_github_line" | grep -oE '[0-9]+$' || true`
   else
     issue_num=""
   fi

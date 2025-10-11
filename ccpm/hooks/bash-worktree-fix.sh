@@ -22,7 +22,7 @@ shell_squote() {
 # Detect if CWD is inside a *linked worktree* and print the worktree root.
 # Returns 0 with path on stdout if yes; 1 otherwise.
 get_worktree_path() {
-    check_dir="$(pwd)"
+    check_dir="`pwd`"
 
     if [ ! -d "${check_dir}" ]; then
         debug_log "pwd is not a directory: ${check_dir}"
@@ -35,7 +35,7 @@ get_worktree_path() {
             if [ -r "${check_dir}/.git" ]; then
                 IFS= read -r gitdir_content < "${check_dir}/.git" || gitdir_content=""
                 # Strip a possible trailing CR (CRLF files)
-                gitdir_content=$(printf %s "$gitdir_content" | tr -d '\r')
+                gitdir_content=`printf %s "$gitdir_content" | tr -d '\r'`
             else
                 debug_log "Unreadable .git file at: ${check_dir}"
             fi
@@ -81,7 +81,7 @@ get_worktree_path() {
             return 1
         fi
 
-        check_dir=$(dirname "${check_dir}")
+        check_dir=`dirname "${check_dir}"`
     done
 
     debug_log "No git repository found"
@@ -141,7 +141,7 @@ inject_prefix() {
     worktree_path=$1
     command=$2
 
-    qpath=$(shell_squote "${worktree_path}")
+    qpath=`shell_squote "${worktree_path}"`
 
     # Right-trim spaces (portable loop)
     trimmed=${command}
@@ -170,7 +170,7 @@ main() {
     debug_log "Processing command: ${original_command}"
 
     # Fast path: if not in a worktree, pass through unchanged
-    if ! worktree_path="$(get_worktree_path)"; then
+    if ! worktree_path="`get_worktree_path`"; then
         debug_log "Not in worktree, passing through unchanged"
         printf '%s\n' "${original_command}"
         exit 0
@@ -180,7 +180,7 @@ main() {
         debug_log "Passing through unchanged"
         printf '%s\n' "${original_command}"
     else
-        modified_command="$(inject_prefix "${worktree_path}" "${original_command}")"
+        modified_command="`inject_prefix "${worktree_path}" "${original_command}"`"
         debug_log "Modified command: ${modified_command}"
         printf '%s\n' "${modified_command}"
     fi

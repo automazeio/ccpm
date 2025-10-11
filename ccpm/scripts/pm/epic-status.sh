@@ -12,7 +12,7 @@ if [ -z "$epic_name" ]; then
   echo ""
   echo "Available epics:"
   for dir in .claude/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
+    [ -d "$dir" ] && echo "  • `basename "$dir"`"
   done
   exit 1
 else
@@ -25,7 +25,7 @@ else
     echo ""
     echo "Available epics:"
     for dir in .claude/epics/*/; do
-      [ -d "$dir" ] && echo "  • $(basename "$dir")"
+      [ -d "$dir" ] && echo "  • `basename "$dir"`"
     done
     exit 1
   fi
@@ -35,9 +35,9 @@ else
   echo ""
 
   # Extract metadata
-  status=$(grep "^status:" "$epic_file" | head -1 | sed 's/^status: *//')
-  progress=$(grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//')
-  github=$(grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//')
+  status=`grep "^status:" "$epic_file" | head -1 | sed 's/^status: *//'`
+  progress=`grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//'`
+  github=`grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//'`
 
   # Count tasks
   total=0
@@ -50,8 +50,8 @@ else
     [ -f "$task_file" ] || continue
     ((total++))
 
-    task_status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
-    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//')
+    task_status=`grep "^status:" "$task_file" | head -1 | sed 's/^status: *//'`
+    deps=`grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//'`
 
     if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
       ((closed++))
@@ -69,8 +69,8 @@ else
     empty=$((20 - filled))
 
     echo -n "Progress: ["
-    [ $filled -gt 0 ] && printf '%0.s█' $(seq 1 $filled)
-    [ $empty -gt 0 ] && printf '%0.s░' $(seq 1 $empty)
+    [ $filled -gt 0 ] && printf '%0.s█' `seq 1 $filled`
+    [ $empty -gt 0 ] && printf '%0.s░' `seq 1 $empty`
     echo "] $percent%"
   else
     echo "Progress: No tasks created"

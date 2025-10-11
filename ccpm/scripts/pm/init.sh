@@ -74,7 +74,7 @@ mkdir -p .claude/scripts/pm
 echo "  ✅ Directories created"
 
 # Copy scripts if in main repo
-if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
+if [ -d "scripts/pm" ] && [ ! "`pwd`" = *"/.claude"* ]; then
   echo ""
   echo "📝 Copying PM scripts..."
   cp -r scripts/pm/* .claude/scripts/pm/
@@ -90,7 +90,7 @@ if git rev-parse --git-dir > /dev/null 2>&1; then
 
   # Check remote
   if git remote -v | grep -q origin; then
-    remote_url=$(git remote get-url origin)
+    remote_url=`git remote get-url origin`
     echo "  ✅ Remote configured: $remote_url"
     
     # Check if remote is the CCPM template repository
@@ -179,8 +179,8 @@ echo "=========================="
 echo ""
 echo "📊 System Status:"
 gh --version | head -1
-echo "  Extensions: $(gh extension list | wc -l) installed"
-echo "  Auth: $(gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated')"
+echo "  Extensions: `gh extension list | wc -l` installed"
+echo "  Auth: `gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated'`"
 echo ""
 echo "🎯 Next Steps:"
 echo "  1. Create your first PRD: /pm:prd-new <feature-name>"

@@ -74,7 +74,7 @@ EOF
 # Create old -> new ID mapping
 > /tmp/id-mapping.txt
 while IFS=: read -r task_file task_number; do
-  old_num=$(basename "$task_file" .md)
+  old_num=`basename "$task_file" .md`
   echo "$old_num:$task_number" >> /tmp/id-mapping.txt
 done < /tmp/task-mapping.txt
 
@@ -90,11 +90,11 @@ while IFS=: read -r task_file task_number; do
   echo "Processing: $task_file -> $task_number.md"
   
   # Read the file content
-  content=$(cat "$task_file")
+  content=`cat "$task_file"`
   
   # Update references
   while IFS=: read -r old_num new_num; do
-    content=$(echo "$content" | sed "s/\b$old_num\b/$new_num/g")
+    content=`echo "$content" | sed "s/\b$old_num\b/$new_num/g"`
   done < /tmp/id-mapping.txt
   
   # Write to new file

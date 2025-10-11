@@ -41,7 +41,7 @@ Follow `/rules/branch-operations.md`:
 
 ```bash
 # Check for uncommitted changes
-if [ -n "$(git status --porcelain)" ]; then
+if [ -n "`git status --porcelain`" ]; then
   echo "❌ You have uncommitted changes. Please commit or stash them before starting an epic."
   exit 1
 fi

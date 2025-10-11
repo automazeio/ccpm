@@ -20,7 +20,7 @@ if [ ! -f "$epic_file" ]; then
   echo ""
   echo "Available epics:"
   for dir in .claude/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
+    [ -d "$dir" ] && echo "  • `basename "$dir"`"
   done
   exit 1
 fi
@@ -31,10 +31,10 @@ echo "================================"
 echo ""
 
 # Extract metadata
-status=$(grep "^status:" "$epic_file" | head -1 | sed 's/^status: *//')
-progress=$(grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//')
-github=$(grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//')
-created=$(grep "^created:" "$epic_file" | head -1 | sed 's/^created: *//')
+status=`grep "^status:" "$epic_file" | head -1 | sed 's/^status: *//'`
+progress=`grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//'`
+github=`grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//'`
+created=`grep "^created:" "$epic_file" | head -1 | sed 's/^created: *//'`
 
 echo "📊 Metadata:"
 echo "  Status: ${status:-planning}"
@@ -52,10 +52,10 @@ closed_count=0
 for task_file in "$epic_dir"/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
-  task_num=$(basename "$task_file" .md)
-  task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
-  task_status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
-  parallel=$(grep "^parallel:" "$task_file" | head -1 | sed 's/^parallel: *//')
+  task_num=`basename "$task_file" .md`
+  task_name=`grep "^name:" "$task_file" | head -1 | sed 's/^name: *//'`
+  task_status=`grep "^status:" "$task_file" | head -1 | sed 's/^status: *//'`
+  parallel=`grep "^parallel:" "$task_file" | head -1 | sed 's/^parallel: *//'`
 
   if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
     echo "  ✅ #$task_num - $task_name"

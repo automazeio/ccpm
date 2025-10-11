@@ -72,9 +72,9 @@ config_path: "configs/"        # Configuration files directory
 normalize_paths() {
   local content="$1"
   # Remove user-specific paths (generic patterns)
-  content=$(echo "$content" | sed "s|/Users/[^/]*/[^/]*/|../|g")
-  content=$(echo "$content" | sed "s|/home/[^/]*/[^/]*/|../|g")  
-  content=$(echo "$content" | sed "s|C:\\\\Users\\\\[^\\\\]*\\\\[^\\\\]*\\\\|..\\\\|g")
+  content=`echo "$content" | sed "s|/Users/[^/]*/[^/]*/|../|g"`
+  content=`echo "$content" | sed "s|/home/[^/]*/[^/]*/|../|g"`  
+  content=`echo "$content" | sed "s|C:\\\\Users\\\\[^\\\\]*\\\\[^\\\\]*\\\\|..\\\\|g"`
   echo "$content"
 }
 ```

@@ -60,7 +60,7 @@ updated: 2024-01-15T14:30:45Z  # Use actual output from date command
 **Creating a new PRD:**
 ```bash
 # First, get current datetime
-CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+CURRENT_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 # Output: 2024-01-15T14:30:45Z
 
 # Then use in frontmatter:
@@ -75,7 +75,7 @@ created: 2024-01-15T14:30:45Z  # Use the actual $CURRENT_DATE value
 **Updating an existing task:**
 ```bash
 # Get current datetime for update
-UPDATE_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+UPDATE_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
 # Update only the 'updated' field:
 ---

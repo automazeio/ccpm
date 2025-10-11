@@ -39,8 +39,8 @@ Always strip frontmatter when:
 gh issue create --body-file task.md
 
 # Good - strips frontmatter and specifies repo
-remote_url=$(git remote get-url origin 2>/dev/null || echo "")
-REPO=$(echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||')
+remote_url=`git remote get-url origin 2>/dev/null || echo ""`
+REPO=`echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||'`
 [ -z "$REPO" ] && REPO="user/repo"
 sed '1,/^---$/d; 1,/^---$/d' task.md > /tmp/clean.md
 gh issue create --repo "$REPO" --body-file /tmp/clean.md
@@ -57,7 +57,7 @@ gh issue comment 123 --body-file /tmp/comment.md
 ```bash
 for file in *.md; do
   # Strip frontmatter from each file
-  sed '1,/^---$/d; 1,/^---$/d' "$file" > "/tmp/$(basename $file)"
+  sed '1,/^---$/d; 1,/^---$/d' "$file" > "/tmp/`basename $file`"
   # Use the clean version
 done
 ```

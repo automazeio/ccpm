@@ -34,7 +34,7 @@ Before modifying a shared file:
 git status {file}
 
 # If modified by another agent, wait
-if [[ $(git status --porcelain {file}) ]]; then
+if [[ `git status --porcelain {file}` ]]; then
   echo "Waiting for {file} to be available..."
   sleep 30
   # Retry

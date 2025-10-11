@@ -32,7 +32,7 @@ if [ $# -ge 2 ]; then
     LOG_FILE="tests/logs/${LOG_NAME}"
 else
     # Extract the test filename without extension for the log name
-    TEST_NAME=$(basename "$TEST_PATH")
+    TEST_NAME=`basename "$TEST_PATH"`
     TEST_NAME=${TEST_NAME%.*}  # Remove extension regardless of what it is
     LOG_FILE="tests/logs/${TEST_NAME}.log"
 fi
@@ -61,9 +61,9 @@ elif [[ "$TEST_PATH" =~ \.(js|ts)$ ]]; then
 elif [[ "$TEST_PATH" =~ \.java$ ]]; then
     # Java - try Maven, then Gradle
     if [ -f pom.xml ]; then
-        mvn test -Dtest="$(basename "$TEST_PATH" .java)" > "$LOG_FILE" 2>&1
+        mvn test -Dtest="`basename "$TEST_PATH" .java`" > "$LOG_FILE" 2>&1
     elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then
-        ./gradlew test --tests "$(basename "$TEST_PATH" .java)" > "$LOG_FILE" 2>&1
+        ./gradlew test --tests "`basename "$TEST_PATH" .java`" > "$LOG_FILE" 2>&1
     else
         echo "❌ Java test runner not found (need Maven or Gradle)" > "$LOG_FILE" 2>&1
         exit 1
@@ -91,10 +91,10 @@ elif [[ "$TEST_PATH" =~ \.php$ ]]; then
     fi
 elif [[ "$TEST_PATH" =~ \.go$ ]]; then
     # Go
-    go test "$(dirname "$TEST_PATH")" -v > "$LOG_FILE" 2>&1
+    go test "`dirname "$TEST_PATH"`" -v > "$LOG_FILE" 2>&1
 elif [[ "$TEST_PATH" =~ \.rs$ ]]; then
     # Rust
-    cargo test "$(basename "$TEST_PATH" .rs)" > "$LOG_FILE" 2>&1
+    cargo test "`basename "$TEST_PATH" .rs`" > "$LOG_FILE" 2>&1
 elif [[ "$TEST_PATH" =~ \.swift$ ]]; then
     # Swift
     swift test > "$LOG_FILE" 2>&1
