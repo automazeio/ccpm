@@ -20,7 +20,7 @@ The pre-tool-use hook automatically detects when you're in a worktree and inject
 
 ### Configuration
 
-Add to your `.claude/settings.json`:
+Add to your `ccpm/settings.json`:
 
 
 ```json
@@ -29,7 +29,7 @@ Add to your `.claude/settings.json`:
     "pre-tool-use": {
       "Bash": {
         "enabled": true,
-        "script": ".claude/hooks/bash-worktree-fix.sh",
+        "script": "ccpm/hooks/bash-worktree-fix.sh",
         "apply_to_subagents": true
       }
     }
@@ -46,11 +46,11 @@ To test the hook:
 export CLAUDE_HOOK_DEBUG=true
 
 # Test in main repo (should pass through)
-.claude/hooks/bash-worktree-fix.sh "ls -la"
+ccpm/hooks/bash-worktree-fix.sh "ls -la"
 
 # Test in worktree (should inject cd)
 cd /path/to/worktree
-.claude/hooks/bash-worktree-fix.sh "npm install"
+ccpm/hooks/bash-worktree-fix.sh "npm install"
 # Output: cd "/path/to/worktree" && npm install
 ```
 
@@ -79,7 +79,7 @@ If the hook isn't working:
 
 1. **Verify the hook is executable:**
    ```bash
-   chmod +x .claude/hooks/bash-worktree-fix.sh
+   chmod +x ccpm/hooks/bash-worktree-fix.sh
    ```
 
 2. **Enable debug logging to see what's happening:**
@@ -90,12 +90,12 @@ If the hook isn't working:
 3. **Test the hook manually with a sample command:**
    ```bash
    cd /path/to/worktree
-   .claude/hooks/bash-worktree-fix.sh "npm test"
+   ccpm/hooks/bash-worktree-fix.sh "npm test"
    ```
 
 4. **Check that your settings.json is valid JSON:**
    ```bash
-   cat .claude/settings.json | python -m json.tool
+   cat ccpm/settings.json | python -m json.tool
    ```
 
 ### Integration with Claude
