@@ -82,7 +82,7 @@ while IFS= read -r -d '' file; do
             files_modified=$((files_modified + 1))
         fi
     fi
-done < <(find .claude/ -name "*.md" -type f -print0 2>/dev/null)
+done < <(find ccpm/ -name "*.md" -type f -print0 2>/dev/null)
 
 # Output statistics
 echo -e "\n📊 Fix Results Summary:"
@@ -97,7 +97,7 @@ if [ $files_modified -gt 0 ]; then
     echo "To restore if needed: mv file.backup file"
     
     print_warning "Recommended: Run validation script to verify fixes:"
-    echo "./.claude/scripts/check-path-standards.sh"
+    echo "./ccpm/scripts/check-path-standards.sh"
     
 elif [ $files_processed -eq 0 ]; then
     print_success "No files found requiring fixes 🎉"
@@ -109,7 +109,7 @@ fi
 if [ $files_modified -gt 0 ]; then
     echo -e "\n🧹 Cleanup Backup Files (optional):"
     echo "If fixes are confirmed correct, run:"
-    echo "find .claude/ -name '*.backup' -delete"
+    echo "find ccpm/ -name '*.backup' -delete"
 fi
 
 echo -e "\n✨ Path standards fix completed!"

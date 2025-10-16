@@ -7,14 +7,14 @@ This directory contains tools for maintaining path format standards in project d
 
 ### 1. Validation Script
 ```bash
-./.claude/scripts/check-path-standards.sh
+./ccpm/scripts/check-path-standards.sh
 ```
 **Purpose**: Scans project documentation to detect path format violations  
 **Output**: Colored validation report showing pass/fail status
 
 ### 2. Fix Script  
 ```bash
-./.claude/scripts/fix-path-standards.sh
+./ccpm/scripts/fix-path-standards.sh
 ```
 **Purpose**: Automatically fixes absolute path issues in documentation  
 **Safety**: Creates backup files automatically, supports rollback
@@ -30,14 +30,14 @@ This directory contains tools for maintaining path format standards in project d
 Add the validation script to your CI pipeline:
 ```yaml
 - name: Path Standards Check
-  run: ./.claude/scripts/check-path-standards.sh
+  run: ./ccpm/scripts/check-path-standards.sh
 ```
 
 ### Clean Up Backups
 After confirming fixes are correct:
 ```bash
-find .claude/ -name '*.backup' -delete
+find ccpm/ -name '*.backup' -delete
 ```
 
 ## Standards Reference
-For detailed path usage guidelines, see: `.claude/rules/path-standards.md`
+For detailed path usage guidelines, see: `ccpm/rules/path-standards.md`

@@ -36,9 +36,9 @@ check_absolute_paths() {
     total_checks=$((total_checks + 1))
     
     # Check for absolute paths in .claude directory, excluding rules and backups
-    if rg -q "/Users/|/home/|C:\\\\\\\\" .claude/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null; then
+    if rg -q "/Users/|/home/|C:\\\\\\\\" ccpm/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null; then
         print_error "Found absolute path violations:"
-        rg -n "/Users/|/home/|C:\\\\\\\\" .claude/ -g '!rules/**' -g '!**/*.backup' | head -10
+        rg -n "/Users/|/home/|C:\\\\\\\\" ccpm/ -g '!rules/**' -g '!**/*.backup' | head -10
         failed_checks=$((failed_checks + 1))
         return 1
     else
@@ -53,9 +53,9 @@ check_user_specific_paths() {
     total_checks=$((total_checks + 1))
     
     # Check for paths containing usernames, excluding documentation examples
-    if rg -q "/[Uu]sers/[^/]*/|/home/[^/]*/" .claude/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null; then
+    if rg -q "/[Uu]sers/[^/]*/|/home/[^/]*/" ccpm/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null; then
         print_error "Found user-specific paths:"
-        rg -n "/[Uu]sers/[^/]*/|/home/[^/]*/" .claude/ -g '!rules/**' -g '!**/*.backup' | head -10
+        rg -n "/[Uu]sers/[^/]*/|/home/[^/]*/" ccpm/ -g '!rules/**' -g '!**/*.backup' | head -10
         failed_checks=$((failed_checks + 1))
         return 1
     else
@@ -73,8 +73,8 @@ check_path_format_consistency() {
     inconsistent_found=false
     
     # Check for mixed usage of ./ and direct paths
-    if rg -q "\\.\/" .claude/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null && \
-       rg -q "src/|lib/|internal/|cmd/|configs/" .claude/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null; then
+    if rg -q "\\.\/" ccpm/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null && \
+       rg -q "src/|lib/|internal/|cmd/|configs/" ccpm/ -g '!rules/**' -g '!**/*.backup' 2>/dev/null; then
         print_warning "Found inconsistent path formats (mixed ./ and direct paths)"
         inconsistent_found=true
     fi
@@ -93,7 +93,7 @@ check_sync_content() {
     total_checks=$((total_checks + 1))
     
     # Check update files for proper path formats
-    update_files=$(find .claude/epics/*/updates/ -name "*.md" 2>/dev/null | head -10)
+    update_files=$(find ccpm/epics/*/updates/ -name "*.md" 2>/dev/null | head -10)
     
     if [ -z "$update_files" ]; then
         print_warning "No update files found, skipping this check"
@@ -122,7 +122,7 @@ check_standards_file() {
     echo -e "\n📋 Check 5: Verifying standards file exists..."
     total_checks=$((total_checks + 1))
     
-    if [ -f ".claude/rules/path-standards.md" ]; then
+    if [ -f "ccpm/rules/path-standards.md" ]; then
         print_success "Path standards documentation exists"
         passed_checks=$((passed_checks + 1))
     else
@@ -153,6 +153,6 @@ else
     echo -e "\n💡 Remediation suggestions:"
     echo "1. Run path cleanup script to fix absolute paths"
     echo "2. Review and update relevant documentation formats"  
-    echo "3. Follow guidelines in .claude/rules/path-standards.md"
+    echo "3. Follow guidelines in ccpm/rules/path-standards.md"
     exit 1
 fi
