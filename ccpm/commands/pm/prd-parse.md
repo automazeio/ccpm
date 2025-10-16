@@ -14,7 +14,7 @@ Convert PRD to technical implementation epic.
 ## Required Rules
 
 **IMPORTANT:** Before executing this command, read and follow:
-- `.claude/rules/datetime.md` - For getting real current date/time
+- `ccpm/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
@@ -27,23 +27,23 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Stop execution if <feature_name> was not provided
 
 2. **Verify PRD exists:**
-   - Check if `.claude/prds/$ARGUMENTS.md` exists
+   - Check if `ccpm/prds/$ARGUMENTS.md` exists
    - If not found, tell user: "❌ PRD not found: $ARGUMENTS. First create it with: /pm:prd-new $ARGUMENTS"
    - Stop execution if PRD doesn't exist
 
 3. **Validate PRD frontmatter:**
    - Verify PRD has valid frontmatter with: name, description, status, created
-   - If frontmatter is invalid or missing, tell user: "❌ Invalid PRD frontmatter. Please check: .claude/prds/$ARGUMENTS.md"
+   - If frontmatter is invalid or missing, tell user: "❌ Invalid PRD frontmatter. Please check: ccpm/prds/$ARGUMENTS.md"
    - Show what's missing or invalid
 
 4. **Check for existing epic:**
-   - Check if `.claude/epics/$ARGUMENTS/epic.md` already exists
+   - Check if `ccpm/epics/$ARGUMENTS/epic.md` already exists
    - If it exists, ask user: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
    - If user says no, suggest: "View existing epic with: /pm:epic-show $ARGUMENTS"
 
 5. **Verify directory permissions:**
-   - Ensure `.claude/epics/` directory exists or can be created
+   - Ensure `ccpm/epics/` directory exists or can be created
    - If cannot create, tell user: "❌ Cannot create epic directory. Please check permissions."
 
 ## Instructions
@@ -51,7 +51,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 You are a technical lead converting a Product Requirements Document into a detailed implementation epic for: **$ARGUMENTS**
 
 ### 1. Read the PRD
-- Load the PRD from `.claude/prds/$ARGUMENTS.md`
+- Load the PRD from `ccpm/prds/$ARGUMENTS.md`
 - Analyze all requirements and constraints
 - Understand the user stories and success criteria
 - Extract the PRD description from frontmatter
@@ -63,7 +63,7 @@ You are a technical lead converting a Product Requirements Document into a detai
 - Identify integration points and dependencies
 
 ### 3. File Format with Frontmatter
-Create the epic file at: `.claude/epics/$ARGUMENTS/epic.md` with this exact structure:
+Create the epic file at: `ccpm/epics/$ARGUMENTS/epic.md` with this exact structure:
 
 ```markdown
 ---
@@ -71,7 +71,7 @@ name: $ARGUMENTS
 status: backlog
 created: [Current ISO date/time]
 progress: 0%
-prd: .claude/prds/$ARGUMENTS.md
+prd: ccpm/prds/$ARGUMENTS.md
 github: [Will be updated when synced to GitHub]
 ---
 
@@ -138,8 +138,8 @@ High-level task categories that will be created:
 
 ### 5. Output Location
 Create the directory structure if it doesn't exist:
-- `.claude/epics/$ARGUMENTS/` (directory)
-- `.claude/epics/$ARGUMENTS/epic.md` (epic file)
+- `ccpm/epics/$ARGUMENTS/` (directory)
+- `ccpm/epics/$ARGUMENTS/epic.md` (epic file)
 
 ### 6. Quality Validation
 
@@ -153,7 +153,7 @@ Before saving the epic, verify:
 ### 7. Post-Creation
 
 After successfully creating the epic:
-1. Confirm: "✅ Epic created: .claude/epics/$ARGUMENTS/epic.md"
+1. Confirm: "✅ Epic created: ccpm/epics/$ARGUMENTS/epic.md"
 2. Show summary of:
    - Number of task categories identified
    - Key architecture decisions

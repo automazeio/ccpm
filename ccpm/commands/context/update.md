@@ -4,12 +4,12 @@ allowed-tools: Bash, Read, Write, LS
 
 # Update Context
 
-This command updates the project context documentation in `.claude/context/` to reflect the current state of the project. Run this at the end of each development session to keep context accurate.
+This command updates the project context documentation in `ccpm/context/` to reflect the current state of the project. Run this at the end of each development session to keep context accurate.
 
 ## Required Rules
 
 **IMPORTANT:** Before executing this command, read and follow:
-- `.claude/rules/datetime.md` - For getting real current date/time
+- `ccpm/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
@@ -17,11 +17,11 @@ Before proceeding, complete these validation steps.
 Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
 
 ### 1. Context Validation
-- Run: `ls -la .claude/context/ 2>/dev/null`
+- Run: `ls -la ccpm/context/ 2>/dev/null`
 - If directory doesn't exist or is empty:
   - Tell user: "❌ No context to update. Please run /context:create first."
   - Exit gracefully
-- Count existing files: `ls -1 .claude/context/*.md 2>/dev/null | wc -l`
+- Count existing files: `ls -1 ccpm/context/*.md 2>/dev/null | wc -l`
 - Report: "📁 Found {count} context files to check for updates"
 
 ### 2. Change Detection
@@ -34,7 +34,7 @@ Gather information about what has changed:
 - Run: `git diff --stat HEAD~5..HEAD 2>/dev/null` to see files changed recently
 
 **File Modifications:**
-- Check context file ages: `find .claude/context -name "*.md" -type f -exec ls -lt {} + | head -5`
+- Check context file ages: `find ccpm/context -name "*.md" -type f -exec ls -lt {} + | head -5`
 - Note which context files are oldest and may need updates
 
 **Dependency Changes:**
@@ -208,7 +208,7 @@ For large projects:
 ## Context Gathering Commands
 
 Use these commands to detect changes:
-- Context directory: `.claude/context/`
+- Context directory: `ccpm/context/`
 - Current git status: `git status --short`
 - Recent commits: `git log --oneline -10`
 - Changed files: `git diff --name-only HEAD~5..HEAD 2>/dev/null`

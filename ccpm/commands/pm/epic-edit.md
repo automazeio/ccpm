@@ -15,7 +15,7 @@ Edit epic details after creation.
 
 ### 1. Read Current Epic
 
-Read `.claude/epics/$ARGUMENTS/epic.md`:
+Read `ccpm/epics/$ARGUMENTS/epic.md`:
 - Parse frontmatter
 - Read content sections
 
@@ -45,7 +45,7 @@ Ask: "Update GitHub issue? (yes/no)"
 
 If yes:
 ```bash
-gh issue edit {issue_number} --body-file .claude/epics/$ARGUMENTS/epic.md
+gh issue edit {issue_number} --body-file ccpm/epics/$ARGUMENTS/epic.md
 ```
 
 ### 5. Output

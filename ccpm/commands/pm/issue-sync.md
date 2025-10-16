@@ -14,7 +14,7 @@ Push local updates as GitHub issue comments for transparent audit trail.
 ## Required Rules
 
 **IMPORTANT:** Before executing this command, read and follow:
-- `.claude/rules/datetime.md` - For getting real current date/time
+- `ccpm/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
@@ -42,7 +42,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If issue is closed and completion < 100%, warn: "⚠️ Issue is closed but work incomplete"
 
 3. **Local Updates Check:**
-   - Check if `.claude/epics/*/updates/$ARGUMENTS/` directory exists
+   - Check if `ccpm/epics/*/updates/$ARGUMENTS/` directory exists
    - If not found, tell user: "❌ No local updates found for issue #$ARGUMENTS. Run: /pm:issue-start $ARGUMENTS"
    - Check if progress.md exists
    - If not, tell user: "❌ No progress tracking found. Initialize with: /pm:issue-start $ARGUMENTS"
@@ -63,7 +63,7 @@ You are synchronizing local development progress to GitHub as issue comments for
 
 ### 1. Gather Local Updates
 Collect all local updates for the issue:
-- Read from `.claude/epics/{epic_name}/updates/$ARGUMENTS/`
+- Read from `ccpm/epics/{epic_name}/updates/$ARGUMENTS/`
 - Check for new content in:
   - `progress.md` - Development progress
   - `notes.md` - Technical notes and decisions

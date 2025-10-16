@@ -15,7 +15,7 @@ Mark an issue as complete and close it on GitHub.
 
 ### 1. Find Local Task File
 
-First check if `.claude/epics/*/$ARGUMENTS.md` exists (new naming).
+First check if `ccpm/epics/*/$ARGUMENTS.md` exists (new naming).
 If not found, search for task file with `github:.*issues/$ARGUMENTS` in frontmatter (old naming).
 If not found: "❌ No local task for issue #$ARGUMENTS"
 
@@ -31,7 +31,7 @@ updated: {current_datetime}
 
 ### 3. Update Progress File
 
-If progress file exists at `.claude/epics/{epic}/updates/$ARGUMENTS/progress.md`:
+If progress file exists at `ccpm/epics/{epic}/updates/$ARGUMENTS/progress.md`:
 - Set completion: 100%
 - Add completion note with timestamp
 - Update last_sync with current datetime
@@ -61,7 +61,7 @@ Check the task checkbox in the epic issue:
 epic_name={extract_from_path}
 
 # Get epic issue number from epic.md
-epic_issue=$(grep 'github:' .claude/epics/$epic_name/epic.md | grep -oE '[0-9]+$')
+epic_issue=$(grep 'github:' ccpm/epics/$epic_name/epic.md | grep -oE '[0-9]+$')
 
 if [ ! -z "$epic_issue" ]; then
   # Get current epic body

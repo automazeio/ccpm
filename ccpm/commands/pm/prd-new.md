@@ -14,7 +14,7 @@ Launch brainstorming for new product requirement document.
 ## Required Rules
 
 **IMPORTANT:** Before executing this command, read and follow:
-- `.claude/rules/datetime.md` - For getting real current date/time
+- `ccpm/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
@@ -29,15 +29,15 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If invalid, tell user: "❌ Feature name must be kebab-case (lowercase letters, numbers, hyphens only). Examples: user-auth, payment-v2, notification-system"
 
 2. **Check for existing PRD:**
-   - Check if `.claude/prds/$ARGUMENTS.md` already exists
+   - Check if `ccpm/prds/$ARGUMENTS.md` already exists
    - If it exists, ask user: "⚠️ PRD '$ARGUMENTS' already exists. Do you want to overwrite it? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
    - If user says no, suggest: "Use a different name or run: /pm:prd-parse $ARGUMENTS to create an epic from the existing PRD"
 
 3. **Verify directory structure:**
-   - Check if `.claude/prds/` directory exists
+   - Check if `ccpm/prds/` directory exists
    - If not, create it first
-   - If unable to create, tell user: "❌ Cannot create PRD directory. Please manually create: .claude/prds/"
+   - If unable to create, tell user: "❌ Cannot create PRD directory. Please manually create: ccpm/prds/"
 
 ## Instructions
 
@@ -93,7 +93,7 @@ Create a comprehensive PRD with these sections:
 - Internal team dependencies
 
 ### 3. File Format with Frontmatter
-Save the completed PRD to: `.claude/prds/$ARGUMENTS.md` with this exact structure:
+Save the completed PRD to: `ccpm/prds/$ARGUMENTS.md` with this exact structure:
 
 ```markdown
 ---
@@ -134,7 +134,7 @@ Before saving the PRD, verify:
 ### 6. Post-Creation
 
 After successfully creating the PRD:
-1. Confirm: "✅ PRD created: .claude/prds/$ARGUMENTS.md"
+1. Confirm: "✅ PRD created: ccpm/prds/$ARGUMENTS.md"
 2. Show brief summary of what was captured
 3. Suggest next step: "Ready to create implementation epic? Run: /pm:prd-parse $ARGUMENTS"
 

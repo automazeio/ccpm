@@ -15,7 +15,7 @@ Update epic progress based on task states.
 
 ### 1. Count Task Status
 
-Scan all task files in `.claude/epics/$ARGUMENTS/`:
+Scan all task files in `ccpm/epics/$ARGUMENTS/`:
 - Count total tasks
 - Count tasks with `status: closed`
 - Count tasks with `status: open`
@@ -42,7 +42,7 @@ if [ ! -z "$epic_issue" ]; then
   gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
   
   # For each task, check its status and update checkbox
-  for task_file in .claude/epics/$ARGUMENTS/[0-9]*.md; do
+  for task_file in ccpm/epics/$ARGUMENTS/[0-9]*.md; do
     # Extract task issue number
     task_github_line=$(grep 'github:' "$task_file" 2>/dev/null || true)
     if [ -n "$task_github_line" ]; then

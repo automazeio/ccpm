@@ -19,7 +19,7 @@ Merge completed epic from worktree back to main branch.
    ```
 
 2. **Check for active agents:**
-   Read `.claude/epics/$ARGUMENTS/execution-status.md`
+   Read `ccpm/epics/$ARGUMENTS/execution-status.md`
    If active agents exist: "⚠️ Active agents detected. Stop them first with: /pm:epic-stop $ARGUMENTS"
 
 ## Instructions
@@ -78,7 +78,7 @@ fi
 
 Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
-Update `.claude/epics/$ARGUMENTS/epic.md`:
+Update `ccpm/epics/$ARGUMENTS/epic.md`:
 - Set status to "completed"
 - Update completion date
 - Add final summary
@@ -100,8 +100,8 @@ git merge epic/$ARGUMENTS --no-ff -m "Merge epic: $ARGUMENTS
 Completed features:
 # Generate feature list
 feature_list=""
-if [ -d ".claude/epics/$ARGUMENTS" ]; then
-  cd .claude/epics/$ARGUMENTS
+if [ -d "ccpm/epics/$ARGUMENTS" ]; then
+  cd ccpm/epics/$ARGUMENTS
   for task_file in [0-9]*.md; do
     [ -f "$task_file" ] || continue
     task_name=$(grep '^name:' "$task_file" | cut -d: -f2 | sed 's/^ *//')
@@ -113,7 +113,7 @@ fi
 echo "$feature_list"
 
 # Extract epic issue number
-epic_github_line=$(grep 'github:' .claude/epics/$ARGUMENTS/epic.md 2>/dev/null || true)
+epic_github_line=$(grep 'github:' ccpm/epics/$ARGUMENTS/epic.md 2>/dev/null || true)
 if [ -n "$epic_github_line" ]; then
   epic_issue=$(echo "$epic_github_line" | grep -oE '[0-9]+' || true)
   if [ -n "$epic_issue" ]; then
@@ -168,9 +168,9 @@ git branch -d epic/$ARGUMENTS
 git push origin --delete epic/$ARGUMENTS 2>/dev/null || true
 
 # Archive epic locally
-mkdir -p .claude/epics/archived/
-mv .claude/epics/$ARGUMENTS .claude/epics/archived/
-echo "✅ Epic archived: .claude/epics/archived/$ARGUMENTS"
+mkdir -p ccpm/epics/archived/
+mv ccpm/epics/$ARGUMENTS ccpm/epics/archived/
+echo "✅ Epic archived: ccpm/epics/archived/$ARGUMENTS"
 ```
 
 ### 7. Update GitHub Issues
@@ -179,7 +179,7 @@ Close related issues:
 ```bash
 # Get issue numbers from epic
 # Extract epic issue number
-epic_github_line=$(grep 'github:' .claude/epics/archived/$ARGUMENTS/epic.md 2>/dev/null || true)
+epic_github_line=$(grep 'github:' ccpm/epics/archived/$ARGUMENTS/epic.md 2>/dev/null || true)
 if [ -n "$epic_github_line" ]; then
   epic_issue=$(echo "$epic_github_line" | grep -oE '[0-9]+$' || true)
 else
@@ -190,7 +190,7 @@ fi
 gh issue close $epic_issue -c "Epic completed and merged to main"
 
 # Close task issues
-for task_file in .claude/epics/archived/$ARGUMENTS/[0-9]*.md; do
+for task_file in ccpm/epics/archived/$ARGUMENTS/[0-9]*.md; do
   [ -f "$task_file" ] || continue
   # Extract task issue number
   task_github_line=$(grep 'github:' "$task_file" 2>/dev/null || true)

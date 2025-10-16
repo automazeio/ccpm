@@ -20,13 +20,13 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
    If it fails: "❌ Cannot access issue #$ARGUMENTS. Check number or run: gh auth login"
 
 2. **Find local task file:**
-   - First check if `.claude/epics/*/$ARGUMENTS.md` exists (new naming)
+   - First check if `ccpm/epics/*/$ARGUMENTS.md` exists (new naming)
    - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter (old naming)
    - If not found: "❌ No local task for issue #$ARGUMENTS. This issue may have been created outside the PM system."
 
 3. **Check for analysis:**
    ```bash
-   test -f .claude/epics/*/$ARGUMENTS-analysis.md || echo "❌ No analysis found for issue #$ARGUMENTS
+   test -f ccpm/epics/*/$ARGUMENTS-analysis.md || echo "❌ No analysis found for issue #$ARGUMENTS
    
    Run: /pm:issue-analyze $ARGUMENTS first
    Or: /pm:issue-start $ARGUMENTS --analyze to do both"
@@ -51,7 +51,7 @@ fi
 
 ### 2. Read Analysis
 
-Read `.claude/epics/{epic_name}/$ARGUMENTS-analysis.md`:
+Read `ccpm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
 - Parse parallel streams
 - Identify which can start immediately
 - Note dependencies between streams
@@ -62,7 +62,7 @@ Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
 Create workspace structure:
 ```bash
-mkdir -p .claude/epics/{epic_name}/updates/$ARGUMENTS
+mkdir -p ccpm/epics/{epic_name}/updates/$ARGUMENTS
 ```
 
 Update task file frontmatter `updated` field with current datetime.
@@ -71,7 +71,7 @@ Update task file frontmatter `updated` field with current datetime.
 
 For each stream that can start immediately:
 
-Create `.claude/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md`:
+Create `ccpm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md`:
 ```markdown
 ---
 issue: $ARGUMENTS
@@ -109,10 +109,10 @@ Task:
     - Work to complete: {stream_description}
     
     Requirements:
-    1. Read full task from: .claude/epics/{epic_name}/{task_file}
+    1. Read full task from: ccpm/epics/{epic_name}/{task_file}
     2. Work ONLY in your assigned files
     3. Commit frequently with format: "Issue #$ARGUMENTS: {specific change}"
-    4. Update progress in: .claude/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md
+    4. Update progress in: ccpm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md
     5. Follow coordination rules in /rules/agent-coordination.md
     
     If you need to modify files outside your scope:
@@ -144,7 +144,7 @@ Launching {count} parallel agents:
   Stream C: {name} - Waiting (depends on A)
 
 Progress tracking:
-  .claude/epics/{epic_name}/updates/$ARGUMENTS/
+  ccpm/epics/{epic_name}/updates/$ARGUMENTS/
 
 Monitor with: /pm:epic-status {epic_name}
 Sync updates: /pm:issue-sync $ARGUMENTS
