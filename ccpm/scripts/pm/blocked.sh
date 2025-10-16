@@ -9,7 +9,7 @@ echo ""
 
 found=0
 
-for epic_dir in .claude/epics/*/; do
+for epic_dir in ccpm/epics/*/; do
   [ -d "$epic_dir" ] || continue
   epic_name=$(basename "$epic_dir")
 

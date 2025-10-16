@@ -13,17 +13,17 @@ warnings=0
 
 # Check directory structure
 echo "📁 Directory Structure:"
-[ -d ".claude" ] && echo "  ✅ .claude directory exists" || { echo "  ❌ .claude directory missing"; ((errors++)); }
-[ -d ".claude/prds" ] && echo "  ✅ PRDs directory exists" || echo "  ⚠️ PRDs directory missing"
-[ -d ".claude/epics" ] && echo "  ✅ Epics directory exists" || echo "  ⚠️ Epics directory missing"
-[ -d ".claude/rules" ] && echo "  ✅ Rules directory exists" || echo "  ⚠️ Rules directory missing"
+[ -d "ccpm" ] && echo "  ✅ ccpm directory exists" || { echo "  ❌ ccpm directory missing"; ((errors++)); }
+[ -d "ccpm/prds" ] && echo "  ✅ PRDs directory exists" || echo "  ⚠️ PRDs directory missing"
+[ -d "ccpm/epics" ] && echo "  ✅ Epics directory exists" || echo "  ⚠️ Epics directory missing"
+[ -d "ccpm/rules" ] && echo "  ✅ Rules directory exists" || echo "  ⚠️ Rules directory missing"
 echo ""
 
 # Check for orphaned files
 echo "🗂️ Data Integrity:"
 
 # Check epics have epic.md files
-for epic_dir in .claude/epics/*/; do
+for epic_dir in ccpm/epics/*/; do
   [ -d "$epic_dir" ] || continue
   if [ ! -f "$epic_dir/epic.md" ]; then
     echo "  ⚠️ Missing epic.md in $(basename "$epic_dir")"
@@ -32,14 +32,14 @@ for epic_dir in .claude/epics/*/; do
 done
 
 # Check for tasks without epics
-orphaned=$(find .claude -name "[0-9]*.md" -not -path ".claude/epics/*/*" 2>/dev/null | wc -l)
+orphaned=$(find ccpm -name "[0-9]*.md" -not -path "ccpm/epics/*/*" 2>/dev/null | wc -l)
 [ $orphaned -gt 0 ] && echo "  ⚠️ Found $orphaned orphaned task files" && ((warnings++))
 
 # Check for broken references
 echo ""
 echo "🔗 Reference Check:"
 
-for task_file in .claude/epics/*/[0-9]*.md; do
+for task_file in ccpm/epics/*/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
   # Extract dependencies from task file
@@ -74,7 +74,7 @@ echo ""
 echo "📝 Frontmatter Validation:"
 invalid=0
 
-for file in $(find .claude -name "*.md" -path "*/epics/*" -o -path "*/prds/*" 2>/dev/null); do
+for file in $(find ccpm -name "*.md" -path "*/epics/*" -o -path "*/prds/*" 2>/dev/null); do
   if ! grep -q "^---" "$file"; then
     echo "  ⚠️ Missing frontmatter: $(basename "$file")"
     ((invalid++))

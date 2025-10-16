@@ -66,19 +66,19 @@ fi
 # Create directory structure
 echo ""
 echo "📁 Creating directory structure..."
-mkdir -p .claude/prds
-mkdir -p .claude/epics
-mkdir -p .claude/rules
-mkdir -p .claude/agents
-mkdir -p .claude/scripts/pm
+mkdir -p ccpm/prds
+mkdir -p ccpm/epics
+mkdir -p ccpm/rules
+mkdir -p ccpm/agents
+mkdir -p ccpm/scripts/pm
 echo "  ✅ Directories created"
 
 # Copy scripts if in main repo
-if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
+if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/ccpm"* ]; then
   echo ""
   echo "📝 Copying PM scripts..."
-  cp -r scripts/pm/* .claude/scripts/pm/
-  chmod +x .claude/scripts/pm/*.sh
+  cp -r scripts/pm/* ccpm/scripts/pm/
+  chmod +x ccpm/scripts/pm/*.sh
   echo "  ✅ Scripts copied and made executable"
 fi
 

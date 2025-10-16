@@ -10,7 +10,7 @@ echo ""
 # Find tasks that are open and have no dependencies or whose dependencies are closed
 found=0
 
-for epic_dir in .claude/epics/*/; do
+for epic_dir in ccpm/epics/*/; do
   [ -d "$epic_dir" ] || continue
   epic_name=$(basename "$epic_dir")
 
