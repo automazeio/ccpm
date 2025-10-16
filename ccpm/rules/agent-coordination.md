@@ -68,7 +68,7 @@ git pull origin epic/{name}
 ### Through Progress Files
 Each stream maintains progress:
 ```markdown
-# .claude/epics/{epic}/updates/{issue}/stream-A.md
+# ccpm/epics/{epic}/updates/{issue}/stream-A.md
 ---
 stream: Database Layer
 agent: backend-specialist

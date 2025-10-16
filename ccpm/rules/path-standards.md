@@ -22,7 +22,7 @@ This specification defines file path usage standards within the Claude Code PM s
 # Correct Examples
 - `internal/auth/server.go` 
 - `cmd/server/main.go`
-- `.claude/commands/pm/sync.md`
+- `ccpm/commands/pm/sync.md`
 
 # Incorrect Examples ❌
 - `/Users/username/project/internal/auth/server.go`
@@ -98,7 +98,7 @@ normalize_paths() {
 # Check for absolute path violations
 check_absolute_paths() {
   echo "Checking for absolute path violations..."
-  rg -n "/Users/|/home/|C:\\\\\\\\" .claude/ || echo "✅ No absolute paths found"
+  rg -n "/Users/|/home/|C:\\\\\\\\" ccpm/ || echo "✅ No absolute paths found"
 }
 
 # Check GitHub sync content

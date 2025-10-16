@@ -63,7 +63,7 @@ Next: {Single suggested action}
 ### Check and Create
 ```markdown
 # Don't ask permission, just create what's needed
-mkdir -p .claude/{directory} 2>/dev/null
+mkdir -p ccpm/{directory} 2>/dev/null
 ```
 
 ### Read with Fallback

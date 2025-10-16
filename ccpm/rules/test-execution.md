@@ -4,7 +4,7 @@ Standard patterns for running tests across all testing commands.
 
 ## Core Principles
 
-1. **Always use test-runner agent** from `.claude/agents/test-runner.md`
+1. **Always use test-runner agent** from `ccpm/agents/test-runner.md`
 2. **No mocking** - use real services for accurate results
 3. **Verbose output** - capture everything for debugging
 4. **Check test structure first** - before assuming code bugs
