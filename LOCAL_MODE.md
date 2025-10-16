@@ -8,21 +8,21 @@ CCPM works perfectly in local-only mode without any GitHub integration. All mana
 ```bash
 /pm:prd-new user-authentication
 ```
-- Creates: `.claude/prds/user-authentication.md`
+- Creates: `ccpm/prds/user-authentication.md`
 - Output: Complete PRD with requirements and user stories
 
 ### 2. Convert to Technical Plan (Epic)
 ```bash
 /pm:prd-parse user-authentication
 ```
-- Creates: `.claude/epics/user-authentication/epic.md`
+- Creates: `ccpm/epics/user-authentication/epic.md`
 - Output: Technical implementation plan
 
 ### 3. Break Down Into Tasks
 ```bash
 /pm:epic-decompose user-authentication
 ```
-- Creates: `.claude/epics/user-authentication/001.md`, `002.md`, etc.
+- Creates: `ccpm/epics/user-authentication/001.md`, `002.md`, etc.
 - Output: Individual task files with acceptance criteria
 
 ### 4. View Your Work
@@ -35,16 +35,16 @@ CCPM works perfectly in local-only mode without any GitHub integration. All mana
 ### 5. Work on Tasks
 ```bash
 # View specific task details
-cat .claude/epics/user-authentication/001.md
+cat ccpm/epics/user-authentication/001.md
 
 # Update task status manually
-vim .claude/epics/user-authentication/001.md
+vim ccpm/epics/user-authentication/001.md
 ```
 
 ## What Gets Created Locally
 
 ```text
-.claude/
+ccpm/
 ├── prds/
 │   └── user-authentication.md      # Requirements document
 ├── epics/
@@ -80,7 +80,7 @@ vim .claude/epics/user-authentication/001.md
 - **✅ No external dependencies** - Works without GitHub account/internet
 - **✅ Full privacy** - All data stays local
 - **✅ Version control friendly** - All files are markdown
-- **✅ Team collaboration** - Share `.claude/` directory via git
+- **✅ Team collaboration** - Share `ccpm/` directory via git
 - **✅ Customizable** - Edit templates and workflows freely
 - **✅ Fast** - No API calls or network delays
 
