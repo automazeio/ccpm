@@ -1,10 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash .claude/scripts/test-and-log.sh:*)",
-      "Bash(.claude/scripts/test-and-log.sh:*)",
-      "Bash(bash .claude/scripts/pm/*)",
-      "Bash(.claude/scripts/pm/*)",
+      "Bash(bash ccpm/scripts/test-and-log.sh:*)",
+      "Bash(ccpm/scripts/test-and-log.sh:*)",
+      "Bash(bash ccpm/scripts/pm/*)",
+      "Bash(ccpm/scripts/pm/*)",
 
       "Bash(cat:*)",
       "Bash(cat:*)",
