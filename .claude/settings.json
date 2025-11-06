@@ -1,0 +1,14 @@
+{
+  "local_llm": {
+    "enabled": false,
+    "provider": "ollama",
+    "endpoint": "http://localhost:11434",
+    "model": "codellama:7b",
+    "timeout": 300,
+    "max_iterations": 3,
+    "options": {
+      "temperature": 0.7,
+      "top_p": 0.9
+    }
+  }
+}
