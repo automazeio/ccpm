@@ -1,8 +1,9 @@
 ---
 name: use-local-model-for-coding
-status: backlog
+status: complete
 created: 2025-11-06T17:24:32Z
-progress: 0%
+completed: 2025-11-06T20:15:00Z
+progress: 100%
 prd: .claude/prds/use-local-model-for-coding.md
 github: https://github.com/adambcoding/cheapcpm/issues/1
 ---
