@@ -1,0 +1,453 @@
+```mermaid
+graph TB
+    User[User Request] --> CCPM[CCPM Task System]
+    CCPM --> Hook[Routing Hook<br/>local-llm-route.sh]
+
+    Hook --> CheckEnabled{Local LLM<br/>Enabled?}
+    CheckEnabled -->|No| ClaudeDirect[Claude API<br/>Direct Processing]
+    CheckEnabled -->|Yes| CheckHealth{Ollama<br/>Healthy?}
+
+    CheckHealth -->|No| FallbackClaude[Fallback to Claude<br/>Log Warning]
+    CheckHealth -->|Yes| Classify[Classify Task<br/>Decision Tree]
+
+    Classify --> CheckSecurity{Security<br/>Critical?}
+    CheckSecurity -->|Yes| ClaudeSecurity[Route to Claude<br/>Security Override]
+    CheckSecurity -->|No| CheckKeywords{Planning<br/>Keywords?}
+
+    CheckKeywords -->|Yes| ClaudePlanning[Route to Claude<br/>Planning Task]
+    CheckKeywords -->|No| CheckCode{Code Gen<br/>Keywords?}
+
+    CheckCode -->|Yes| OllamaRoute[Route to Ollama<br/>Code Generation]
+    CheckCode -->|No| ClaudeDefault[Default to Claude<br/>Uncertain Task]
+
+    OllamaRoute --> LoadModel[Load Model<br/>Ollama]
+    LoadModel --> Generate[Generate Code<br/>local-code-generator]
+
+    Generate --> GenSuccess{Generation<br/>Success?}
+    GenSuccess -->|No| GenError[Error Handler<br/>Timeout/Connection]
+    GenSuccess -->|Yes| SaveGen[Save Generated Code<br/>Iteration File]
+
+    SaveGen --> Review[Claude Code Review<br/>claude-code-reviewer]
+
+    Review --> ReviewDecision{Review<br/>Decision}
+
+    ReviewDecision -->|APPROVE| Approved[Code Approved<br/>Return to User]
+    ReviewDecision -->|FAIL| CheckOverride{User<br/>Override?}
+    ReviewDecision -->|ITERATE| CheckIterations{Max<br/>Iterations?}
+
+    CheckIterations -->|No| ExtractFeedback[Extract Feedback<br/>Review Comments]
+    CheckIterations -->|Yes| AskUser{User<br/>Override?}
+
+    ExtractFeedback --> Regenerate[Regenerate with Feedback<br/>Iteration N+1]
+    Regenerate --> Generate
+
+    AskUser -->|Yes| AcceptOverride[Accept Code<br/>Warning Flag]
+    AskUser -->|No| RejectCode[Reject Code<br/>Manual Intervention]
+
+    CheckOverride -->|Yes| AcceptOverride
+    CheckOverride -->|No| RejectCode
+
+    GenError --> LogError[Log Error<br/>Provide Guidance]
+    LogError --> FallbackClaude
+
+    ClaudeDirect --> Output[Final Output]
+    ClaudeSecurity --> Output
+    ClaudePlanning --> Output
+    ClaudeDefault --> Output
+    FallbackClaude --> Output
+    Approved --> Output
+    AcceptOverride --> Output
+    RejectCode --> Output
+
+    style User fill:#e1f5ff
+    style CCPM fill:#e1f5ff
+    style Hook fill:#fff4e1
+    style OllamaRoute fill:#e8f5e9
+    style ClaudeDirect fill:#f3e5f5
+    style ClaudeSecurity fill:#f3e5f5
+    style ClaudePlanning fill:#f3e5f5
+    style ClaudeDefault fill:#f3e5f5
+    style Generate fill:#e8f5e9
+    style Review fill:#f3e5f5
+    style Approved fill:#c8e6c9
+    style RejectCode fill:#ffcdd2
+    style AcceptOverride fill:#fff9c4
+    style Output fill:#e1f5ff
+```
+
+---
+
+## Component Responsibilities
+
+### Routing Hook (`local-llm-route.sh`)
+- **Input**: Task description and context
+- **Process**:
+  - Check if local LLM is enabled
+  - Verify Ollama health
+  - Extract keywords and patterns
+  - Apply decision tree rules
+  - Check override conditions
+- **Output**: Routing decision (Claude or Ollama)
+- **Fallback**: Always defaults to Claude on uncertainty
+
+### Ollama Client (`ollama-client.sh`)
+- **Functions**:
+  - `ollama_health_check()`: Test connectivity
+  - `ollama_list_models()`: List available models
+  - `ollama_generate()`: Generate code with streaming
+  - `ollama_check_model()`: Verify model availability
+- **Error Handling**: Connection failures, timeouts, missing models
+- **Output**: Streaming JSON responses
+
+### Local Code Generator Agent
+- **Role**: Construct prompts and invoke Ollama
+- **Process**:
+  1. Gather context from existing code
+  2. Build structured prompt with examples
+  3. Call Ollama API with streaming
+  4. Parse and format generated code
+  5. Handle errors with guidance
+- **Output**: Generated code in structured format
+
+### Claude Code Reviewer Agent
+- **Role**: Review Ollama-generated code for quality
+- **Checks**:
+  - Logic correctness
+  - Security vulnerabilities
+  - Style compliance
+  - Requirements fulfillment
+  - Edge case handling
+- **Decisions**: APPROVE, ITERATE, FAIL
+- **Output**: Structured review with actionable feedback
+
+### Review Loop (`review-loop.sh`)
+- **Orchestration**: Manages generation → review → iteration cycle
+- **Max Iterations**: Configurable (default: 3)
+- **Features**:
+  - Saves each iteration for analysis
+  - Extracts feedback for regeneration
+  - Offers user override at max iterations
+  - Logs all decisions and outcomes
+- **Exit Codes**: 0 (approved), 1 (failed), 2 (user override)
+
+---
+
+## Data Flow Details
+
+### Task Classification Flow
+
+```mermaid
+flowchart LR
+    Task[Task Description] --> Keywords[Extract Keywords]
+    Keywords --> Security{Security<br/>Keywords?}
+    Security -->|Yes| C1[Claude]
+    Security -->|No| Planning{Planning<br/>Keywords?}
+    Planning -->|Yes| C2[Claude]
+    Planning -->|No| CodeGen{Code Gen<br/>Keywords?}
+    CodeGen -->|Yes| O1[Ollama]
+    CodeGen -->|No| Files{File Type?}
+    Files -->|.md PRD/Epic| C3[Claude]
+    Files -->|.js/.py/.sh| O2[Ollama]
+    Files -->|Unknown| C4[Claude]
+
+    style C1 fill:#f3e5f5
+    style C2 fill:#f3e5f5
+    style C3 fill:#f3e5f5
+    style C4 fill:#f3e5f5
+    style O1 fill:#e8f5e9
+    style O2 fill:#e8f5e9
+```
+
+### Review Decision Flow
+
+```mermaid
+flowchart TB
+    Start[Generated Code] --> Review[Claude Reviews Code]
+    Review --> CheckReqs{All Requirements<br/>Met?}
+    CheckReqs -->|No| ITERATE[ITERATE]
+    CheckReqs -->|Yes| CheckLogic{Logic<br/>Correct?}
+    CheckLogic -->|No| ITERATE
+    CheckLogic -->|Yes| CheckSec{Security<br/>Issues?}
+    CheckSec -->|Yes| ITERATE
+    CheckSec -->|No| CheckStyle{Major Style<br/>Issues?}
+    CheckStyle -->|Yes| ITERATE
+    CheckStyle -->|No| APPROVE[APPROVE]
+
+    ITERATE --> Feedback[Extract Feedback]
+    Feedback --> MaxIter{Max<br/>Iterations?}
+    MaxIter -->|No| Regen[Regenerate with Feedback]
+    MaxIter -->|Yes| UserOverride{User<br/>Accept?}
+    UserOverride -->|Yes| Override[OVERRIDE]
+    UserOverride -->|No| FAIL[FAIL]
+
+    Regen --> Review
+
+    style APPROVE fill:#c8e6c9
+    style FAIL fill:#ffcdd2
+    style Override fill:#fff9c4
+    style ITERATE fill:#ffe0b2
+```
+
+### Error Handling Flow
+
+```mermaid
+flowchart TB
+    Start[Task Routed to Ollama] --> HealthCheck{Ollama<br/>Healthy?}
+    HealthCheck -->|No| HC_Error[Connection Error]
+    HealthCheck -->|Yes| ModelCheck{Model<br/>Available?}
+    ModelCheck -->|No| Model_Error[Model Not Found]
+    ModelCheck -->|Yes| Generate[Generate Code]
+
+    Generate --> Gen_Success{Success?}
+    Gen_Success -->|Timeout| Timeout_Error[Timeout Error]
+    Gen_Success -->|Connection Lost| Conn_Error[Connection Lost]
+    Gen_Success -->|Yes| Continue[Continue to Review]
+
+    HC_Error --> Fallback1[Fallback to Claude]
+    Model_Error --> Guidance1[Show Install Instructions]
+    Timeout_Error --> Guidance2[Increase Timeout Guidance]
+    Conn_Error --> Fallback2[Fallback to Claude]
+
+    Guidance1 --> UserFix1{User<br/>Fixes?}
+    Guidance2 --> UserFix2{User<br/>Fixes?}
+    UserFix1 -->|Yes| Retry1[Retry]
+    UserFix1 -->|No| Fallback3[Fallback to Claude]
+    UserFix2 -->|Yes| Retry2[Retry]
+    UserFix2 -->|No| Fallback4[Fallback to Claude]
+
+    Retry1 --> Start
+    Retry2 --> Start
+
+    Fallback1 --> ClaudeProc[Claude Processes Task]
+    Fallback2 --> ClaudeProc
+    Fallback3 --> ClaudeProc
+    Fallback4 --> ClaudeProc
+    Continue --> ClaudeReview[Claude Reviews Code]
+
+    style HC_Error fill:#ffcdd2
+    style Model_Error fill:#ffcdd2
+    style Timeout_Error fill:#ffcdd2
+    style Conn_Error fill:#ffcdd2
+    style Fallback1 fill:#fff9c4
+    style Fallback2 fill:#fff9c4
+    style Fallback3 fill:#fff9c4
+    style Fallback4 fill:#fff9c4
+    style ClaudeProc fill:#e1bee7
+    style ClaudeReview fill:#e1bee7
+    style Continue fill:#c8e6c9
+```
+
+---
+
+## Sequence Diagrams
+
+### Successful Ollama Generation
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as CCPM
+    participant H as Routing Hook
+    participant O as Ollama
+    participant G as Code Generator
+    participant R as Code Reviewer
+    participant CL as Claude API
+
+    U->>C: Submit Task
+    C->>H: Route Task
+    H->>H: Classify Task
+    H->>O: Health Check
+    O-->>H: Healthy
+    H-->>C: Route to Ollama
+
+    C->>G: Generate Code
+    G->>G: Build Context
+    G->>O: Generate Request
+    O-->>G: Stream Response
+    G-->>C: Generated Code
+
+    C->>R: Review Code
+    R->>CL: Review Request
+    CL-->>R: Review Result
+    R->>R: Parse Decision
+    R-->>C: APPROVE
+
+    C-->>U: Final Code
+```
+
+### Iteration Scenario
+
+```mermaid
+sequenceDiagram
+    participant O as Ollama
+    participant G as Code Generator
+    participant R as Code Reviewer
+    participant CL as Claude API
+    participant RL as Review Loop
+
+    RL->>G: Generate (Iteration 1)
+    G->>O: Generate Request
+    O-->>G: Code V1
+    G-->>RL: Save Iteration 1
+
+    RL->>R: Review V1
+    R->>CL: Review Request
+    CL-->>R: Issues Found
+    R-->>RL: ITERATE + Feedback
+
+    RL->>G: Regenerate (Iteration 2)
+    Note over G: Include Feedback
+    G->>O: Generate Request
+    O-->>G: Code V2
+    G-->>RL: Save Iteration 2
+
+    RL->>R: Review V2
+    R->>CL: Review Request
+    CL-->>R: Still Issues
+    R-->>RL: ITERATE + Feedback
+
+    RL->>G: Regenerate (Iteration 3)
+    Note over G: Include Feedback
+    G->>O: Generate Request
+    O-->>G: Code V3
+    G-->>RL: Save Iteration 3
+
+    RL->>R: Review V3
+    R->>CL: Review Request
+    CL-->>R: Looks Good
+    R-->>RL: APPROVE
+
+    RL-->>G: Return Approved Code
+```
+
+### Error and Fallback
+
+```mermaid
+sequenceDiagram
+    participant C as CCPM
+    participant H as Routing Hook
+    participant O as Ollama
+    participant CL as Claude API
+    participant U as User
+
+    C->>H: Route Task
+    H->>O: Health Check
+    O-->>H: Connection Refused
+    H->>H: Log Error
+    H-->>C: Fallback to Claude
+
+    C->>CL: Direct Request
+    CL-->>C: Response
+    C-->>U: Result + Warning
+
+    Note over U: User sees warning:<br/>"Ollama unavailable,<br/>used Claude instead"
+```
+
+---
+
+## Configuration Impact
+
+### Routing Strategy Effects
+
+```mermaid
+graph LR
+    Task[Same Task] --> Aggressive[Aggressive Strategy]
+    Task --> Balanced[Balanced Strategy]
+    Task --> Conservative[Conservative Strategy]
+
+    Aggressive -->|80%| O1[Ollama]
+    Aggressive -->|20%| C1[Claude]
+
+    Balanced -->|60%| O2[Ollama]
+    Balanced -->|40%| C2[Claude]
+
+    Conservative -->|40%| O3[Ollama]
+    Conservative -->|60%| C3[Claude]
+
+    O1 -->|Lower Cost| Cost1[$$]
+    C1 -->|Quality Gate| Cost1
+
+    O2 -->|Medium Cost| Cost2[$$$]
+    C2 -->|Quality Gate| Cost2
+
+    O3 -->|Higher Cost| Cost3[$$$$]
+    C3 -->|Quality Gate| Cost3
+
+    Cost1 --> Outcome1[Highest Savings<br/>More Iterations]
+    Cost2 --> Outcome2[Good Balance<br/>Tested Default]
+    Cost3 --> Outcome3[Lower Savings<br/>Fewer Iterations]
+
+    style O1 fill:#e8f5e9
+    style O2 fill:#e8f5e9
+    style O3 fill:#e8f5e9
+    style C1 fill:#f3e5f5
+    style C2 fill:#f3e5f5
+    style C3 fill:#f3e5f5
+    style Cost1 fill:#c8e6c9
+    style Cost2 fill:#fff9c4
+    style Cost3 fill:#ffcdd2
+```
+
+---
+
+## Logging and Monitoring
+
+### Log File Locations
+
+```
+Project Root
+├── .claude/
+│   ├── settings.json                          [Configuration]
+│   └── epics/
+│       └── use-local-model-for-coding/
+│           └── updates/2/
+│               ├── iterations.log             [Review Loop Log]
+│               ├── iteration_1_generated.txt  [Generated Code V1]
+│               ├── iteration_1_review.md      [Review Result V1]
+│               ├── iteration_2_generated.txt  [Generated Code V2]
+│               └── ...
+└── /tmp/
+    └── local-llm-route.log                    [Routing Decisions]
+```
+
+### Monitoring Dashboard (Conceptual)
+
+```mermaid
+graph TB
+    subgraph "Routing Metrics"
+        RM1[Total Tasks: 1000]
+        RM2[Ollama: 600 60%]
+        RM3[Claude: 400 40%]
+    end
+
+    subgraph "Quality Metrics"
+        QM1[Avg Iterations: 1.8]
+        QM2[Approval Rate: 92%]
+        QM3[Override Rate: 3%]
+    end
+
+    subgraph "Performance Metrics"
+        PM1[Avg Gen Time: 4.5s]
+        PM2[Avg Review Time: 2.1s]
+        PM3[Timeout Rate: 0.5%]
+    end
+
+    subgraph "Cost Metrics"
+        CM1[Claude-Only Cost: $15.00]
+        CM2[Hybrid Cost: $5.69]
+        CM3[Savings: $9.31 62%]
+    end
+
+    style RM1 fill:#e1f5ff
+    style RM2 fill:#e8f5e9
+    style RM3 fill:#f3e5f5
+    style QM1 fill:#fff9c4
+    style QM2 fill:#c8e6c9
+    style QM3 fill:#ffcdd2
+    style PM1 fill:#e8f5e9
+    style PM2 fill:#e8f5e9
+    style PM3 fill:#ffcdd2
+    style CM1 fill:#ffcdd2
+    style CM2 fill:#c8e6c9
+    style CM3 fill:#c8e6c9
+```
