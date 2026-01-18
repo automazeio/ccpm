@@ -309,3 +309,45 @@ class SyncCoordinator:
             lines.append("- None recorded")
         self.gh.comment_issue(issue_number, "\n".join(lines))
         return True
+
+    def post_help_request(
+        self,
+        *,
+        state: Mapping[str, Any],
+        help_path: Path | str,
+        reason: str,
+        remediation: list[Mapping[str, Any]],
+    ) -> bool:
+        epic_id = state.get("active_epic")
+        issue_number = self._epic_issue_number(epic_id)
+        if issue_number is None:
+            return False
+        help_path_value = Path(help_path)
+        try:
+            help_display = str(help_path_value.relative_to(self.base_dir))
+        except ValueError:
+            help_display = str(help_path_value)
+        last_error = state.get("last_error") or {}
+        lines = [
+            "## Orchestrator help request",
+            f"- Epic: {epic_id or 'unknown'}",
+            f"- Phase: {state.get('phase')}",
+            f"- Reason: {reason}",
+            f"- Last error: {last_error.get('message') or 'unknown'}",
+            f"- Help file: `{help_display}`",
+            f"- Timestamp: {_utc_now()}",
+            "",
+            "### Remediation attempts",
+        ]
+        if remediation:
+            for attempt in remediation:
+                detail = ", ".join(
+                    f"{key}={value}"
+                    for key, value in attempt.items()
+                    if value is not None
+                )
+                lines.append(f"- {detail}")
+        else:
+            lines.append("- None recorded")
+        self.gh.comment_issue(issue_number, "\n".join(lines))
+        return True

@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence, TYPE_CHECKING
 
 from ccpm.orchestrator.config import OrchestratorConfig
-from ccpm.orchestrator.state import record_error
+from ccpm.orchestrator.help import write_help_request
+from ccpm.orchestrator.state import record_error, save_state
 
 if TYPE_CHECKING:
     from ccpm.orchestrator.events import EventLogger
@@ -261,6 +263,50 @@ def _retry_limit_exceeded(
     return current > limit
 
 
+def _resolve_base_dir(
+    base_dir: Path | str | None, syncer: "SyncCoordinator | None"
+) -> Path:
+    if base_dir is not None:
+        return Path(base_dir)
+    if syncer is not None:
+        return syncer.base_dir
+    return Path.cwd()
+
+
+def _halt_for_retry_exhaustion(
+    *,
+    state: dict[str, Any],
+    base_dir: Path,
+    classification: str,
+    remediation: Sequence[RemediationRequest],
+    reason: str | None,
+    syncer: "SyncCoordinator | None",
+) -> dict[str, Any]:
+    updated_state = dict(state)
+    updated_state["halted"] = True
+    updated_state["halt_reason"] = "retry_exhausted"
+    help_path, timestamp = write_help_request(
+        state=updated_state,
+        base_dir=base_dir,
+        remediation=[r.__dict__ for r in remediation],
+        reason=reason or classification,
+    )
+    updated_state["help_request"] = {
+        "path": str(help_path),
+        "timestamp": timestamp,
+        "classification": classification,
+    }
+    save_state(updated_state, base_dir)
+    if syncer:
+        syncer.post_help_request(
+            state=updated_state,
+            help_path=help_path,
+            reason=reason or classification,
+            remediation=[r.__dict__ for r in remediation],
+        )
+    return updated_state
+
+
 def process_merge_queue(
     *,
     state: dict[str, Any],
@@ -272,11 +318,13 @@ def process_merge_queue(
     batch_size: int = 1,
     event_logger: "EventLogger | None" = None,
     syncer: "SyncCoordinator | None" = None,
+    base_dir: Path | str | None = None,
 ) -> MergeGateResult:
     queue = load_merge_queue(state)
     remaining = list(queue.entries)
     outcomes: list[MergeGateOutcome] = []
     remediation: list[RemediationRequest] = []
+    resolved_base_dir = _resolve_base_dir(base_dir, syncer)
 
     integration_branch = _integration_branch(config, epic)
     main_branch = _main_branch(config)
@@ -330,6 +378,15 @@ def process_merge_queue(
                     classification="conflict",
                     step="merge_gate",
                     remediation=[r.__dict__ for r in remediation],
+                )
+            if _retry_limit_exceeded(updated_state, "conflict", config):
+                updated_state = _halt_for_retry_exhaustion(
+                    state=updated_state,
+                    base_dir=resolved_base_dir,
+                    classification="conflict",
+                    remediation=remediation,
+                    reason=merge_result.message if merge_result else None,
+                    syncer=syncer,
                 )
             updated_state["merge_queue"] = MergeQueue(entries=tuple(remaining)).to_payload()
             return MergeGateResult(
@@ -405,6 +462,15 @@ def process_merge_queue(
                     step="merge_gate",
                     remediation=[r.__dict__ for r in remediation],
                 )
+            if _retry_limit_exceeded(updated_state, "verification", config):
+                updated_state = _halt_for_retry_exhaustion(
+                    state=updated_state,
+                    base_dir=resolved_base_dir,
+                    classification="verification",
+                    remediation=remediation,
+                    reason=gate_result.message,
+                    syncer=syncer,
+                )
             updated_state["merge_queue"] = MergeQueue(entries=tuple(remaining)).to_payload()
             return MergeGateResult(
                 state=updated_state,
@@ -477,6 +543,15 @@ def process_merge_queue(
                 classification="conflict",
                 step="merge_gate",
                 remediation=[r.__dict__ for r in remediation],
+            )
+        if _retry_limit_exceeded(updated_state, "conflict", config):
+            updated_state = _halt_for_retry_exhaustion(
+                state=updated_state,
+                base_dir=resolved_base_dir,
+                classification="conflict",
+                remediation=remediation,
+                reason=integration_merge.message,
+                syncer=syncer,
             )
         updated_state["merge_queue"] = []
         return MergeGateResult(
@@ -551,6 +626,15 @@ def process_merge_queue(
                 classification="verification",
                 step="merge_gate",
                 remediation=[r.__dict__ for r in remediation],
+            )
+        if _retry_limit_exceeded(updated_state, "verification", config):
+            updated_state = _halt_for_retry_exhaustion(
+                state=updated_state,
+                base_dir=resolved_base_dir,
+                classification="verification",
+                remediation=remediation,
+                reason=full_result.message,
+                syncer=syncer,
             )
         updated_state["merge_queue"] = []
         return MergeGateResult(
