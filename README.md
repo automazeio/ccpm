@@ -198,6 +198,17 @@ Pushes epic and tasks to GitHub as issues with appropriate labels and relationsh
 ```
 Specialized agents implement tasks while maintaining progress updates and an audit trail.
 
+## Agentic Orchestrator Layer
+
+This fork adds a fully autonomous orchestration layer that runs the CCPM workflow end-to-end once an initial idea is accepted. The orchestrator interprets the CCPM workflow as a state machine, invokes skills derived from existing commands, and continues until every epic on the roadmap is complete. The roadmap introduces an explicit planning step above epics so the system can queue multiple epics before execution.
+
+Key additions:
+- **Roadmap-first planning**: maintain `.claude/roadmap.md` to capture the high-level plan and list future epics before decomposition.
+- **Skill-based orchestration**: existing commands are treated as skills the orchestrator can invoke without user command triggers.
+- **Autonomous execution**: the orchestrator advances phases automatically, runs tests, and retries on failure before asking for help.
+
+See the detailed architecture in `doc/ORCHESTRATOR_ARCHITECTURE.md`.
+
 ## Command Reference
 
 > [!TIP]
