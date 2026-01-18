@@ -1,3 +1,8 @@
+"""Orchestrator service modules."""
+
+from ccpm.orchestrator.roadmap import EpicEntry, RoadmapIssue, RoadmapService
+
+__all__ = ["EpicEntry", "RoadmapIssue", "RoadmapService"]
 """CCPM orchestrator module."""
 
 from ccpm.orchestrator.config import load_config
