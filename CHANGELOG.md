@@ -1,5 +1,10 @@
 # CCPM Changelog
 
+## [2025-02-14] - Documentation Cleanup
+
+### 🔄 Changed
+- Consolidated Chinese documentation to `doc/` and removed the duplicate `zh-docs/` directory to avoid redundant files and link drift.
+
 ## [2025-01-24] - Major Cleanup & Issue Resolution Release
 
 ### 🎯 Overview
