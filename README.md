@@ -15,8 +15,6 @@
 
 ### Claude Code workflow to ship ~~faster~~ _better_ using spec-driven development, GitHub issues, Git worktrees, and multiple AI agents running in parallel.
 
-**[中文文档 (Chinese Documentation)](doc/README_ZH.md)**
-
 Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns PRDs into epics, epics into GitHub issues, and issues into production code – with full traceability at every step.
 
 ![Claude Code PM](screenshot.webp)
@@ -30,7 +28,7 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tes
 - [Core Principle: No Vibe Coding](#core-principle-no-vibe-coding)
 - [System Architecture](#system-architecture)
 - [Workflow Phases](#workflow-phases)
-- [Command Reference](#command-reference)
+- [Skill Reference](#skill-reference)
 - [The Parallel Execution System](#the-parallel-execution-system)
 - [Key Features & Benefits](#key-features--benefits)
 - [Proven Results](#proven-results)
@@ -63,15 +61,8 @@ graph LR
 ### See It In Action (60 seconds)
 
 ```bash
-# Create a comprehensive PRD through guided brainstorming
-/pm:prd-new memory-system
-
-# Transform PRD into a technical epic with task breakdown
-/pm:prd-parse memory-system
-
-# Push to GitHub and start parallel execution
-/pm:epic-oneshot memory-system
-/pm:issue-start 1235
+# Orchestrator-driven flow (skills are invoked automatically after idea acceptance)
+# The orchestrator references CLAUDE.md + skills/ to advance phases.
 ```
 
 ## What Makes This Different?
@@ -136,10 +127,7 @@ No shortcuts. No assumptions. No regrets.
 .claude/
 ├── CLAUDE.md          # Always-on instructions (copy content to your project's CLAUDE.md file)
 ├── agents/            # Task-oriented agents (for context preservation)
-├── commands/          # Command definitions
-│   ├── context/       # Create, update, and prime context
-│   ├── pm/            # ← Project management commands (this system)
-│   └── testing/       # Prime and execute tests (edit this)
+├── skills/            # Skill definitions used by the orchestrator
 ├── context/           # Project-wide context files
 ├── epics/             # ← PM's local workspace (place in .gitignore)
 │   └── [epic-name]/   # Epic and related tasks
@@ -151,12 +139,16 @@ No shortcuts. No assumptions. No regrets.
 └── scripts/           # Place any script files you'd like to use here
 ```
 
+Repository-level files:
+- `CLAUDE.md`: orchestrator contract for Claude Code.
+- `skills/`: skill definitions loaded at startup.
+
 ## Workflow Phases
 
 ### 1. Product Planning Phase
 
 ```bash
-/pm:prd-new feature-name
+# Orchestrator invokes pm:prd-new for the next roadmap epic
 ```
 Launches comprehensive brainstorming to create a Product Requirements Document capturing vision, user stories, success criteria, and constraints.
 
@@ -165,7 +157,7 @@ Launches comprehensive brainstorming to create a Product Requirements Document c
 ### 2. Implementation Planning Phase
 
 ```bash
-/pm:prd-parse feature-name
+# Orchestrator invokes pm:prd-parse to turn PRD into epic plan
 ```
 Transforms PRD into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
 
@@ -174,7 +166,7 @@ Transforms PRD into a technical implementation plan with architectural decisions
 ### 3. Task Decomposition Phase
 
 ```bash
-/pm:epic-decompose feature-name
+# Orchestrator invokes pm:epic-decompose to create task files
 ```
 Breaks epic into concrete, actionable tasks with acceptance criteria, effort estimates, and parallelization flags.
 
@@ -183,48 +175,44 @@ Breaks epic into concrete, actionable tasks with acceptance criteria, effort est
 ### 4. GitHub Synchronization
 
 ```bash
-/pm:epic-sync feature-name
-# Or for confident workflows:
-/pm:epic-oneshot feature-name
+# Orchestrator invokes pm:epic-sync or pm:epic-oneshot as configured
 ```
 Pushes epic and tasks to GitHub as issues with appropriate labels and relationships.
 
 ### 5. Execution Phase
 
 ```bash
-/pm:issue-start 1234  # Launch specialized agent
-/pm:issue-sync 1234   # Push progress updates
-/pm:next             # Get next priority task
+# Orchestrator invokes pm:issue-start, pm:issue-sync, and pm:next as needed
 ```
 Specialized agents implement tasks while maintaining progress updates and an audit trail.
 
 ## Agentic Orchestrator Layer
 
-This fork adds a fully autonomous orchestration layer that runs the CCPM workflow end-to-end once an initial idea is accepted. The orchestrator interprets the CCPM workflow as a state machine, invokes skills derived from existing commands, and continues until every epic on the roadmap is complete. The roadmap introduces an explicit planning step above epics so the system can queue multiple epics before execution.
+This fork adds a fully autonomous orchestration layer that runs the CCPM workflow end-to-end once an initial idea is accepted. The orchestrator interprets the CCPM workflow as a state machine, invokes skills from `skills/`, and continues until every epic on the roadmap is complete. The roadmap introduces an explicit planning step above epics so the system can queue multiple epics before execution. The orchestrator behavior lives in `CLAUDE.md`, and Claude Code loads skill names/descriptions from `skills/` at startup.
 
 Key additions:
 - **Roadmap-first planning**: maintain `.claude/roadmap.md` to capture the high-level plan and list future epics before decomposition.
-- **Skill-based orchestration**: existing commands are treated as skills the orchestrator can invoke without user command triggers.
+- **Skill-based orchestration**: skills are invoked directly by the orchestrator without user command triggers.
 - **Autonomous execution**: the orchestrator advances phases automatically, runs tests, and retries on failure before asking for help.
 
 See the detailed architecture in `doc/ORCHESTRATOR_ARCHITECTURE.md`.
 
-## Command Reference
+## Skill Reference
 
 > [!TIP]
-> Type `/pm:help` for a concise command summary
+> These skill names mirror the historical `/pm:*` command names and are invoked by the orchestrator.
 
 ### Initial Setup
 - `/pm:init` - Install dependencies and configure GitHub
 
-### PRD Commands
+### PRD Skills
 - `/pm:prd-new` - Launch brainstorming for new product requirement
 - `/pm:prd-parse` - Convert PRD to implementation epic
 - `/pm:prd-list` - List all PRDs
 - `/pm:prd-edit` - Edit existing PRD
 - `/pm:prd-status` - Show PRD implementation status
 
-### Epic Commands
+### Epic Skills
 - `/pm:epic-decompose` - Break epic into task files
 - `/pm:epic-sync` - Push epic and tasks to GitHub
 - `/pm:epic-oneshot` - Decompose and sync in one command
@@ -234,7 +222,7 @@ See the detailed architecture in `doc/ORCHESTRATOR_ARCHITECTURE.md`.
 - `/pm:epic-edit` - Edit epic details
 - `/pm:epic-refresh` - Update epic progress from tasks
 
-### Issue Commands
+### Issue Skills
 - `/pm:issue-show` - Display issue and sub-issues
 - `/pm:issue-status` - Check issue status
 - `/pm:issue-start` - Begin work with specialized agent
@@ -243,18 +231,18 @@ See the detailed architecture in `doc/ORCHESTRATOR_ARCHITECTURE.md`.
 - `/pm:issue-reopen` - Reopen closed issue
 - `/pm:issue-edit` - Edit issue details
 
-### Workflow Commands
+### Workflow Skills
 - `/pm:next` - Show next priority issue with epic context
 - `/pm:status` - Overall project dashboard
 - `/pm:standup` - Daily standup report
 - `/pm:blocked` - Show blocked tasks
 - `/pm:in-progress` - List work in progress
 
-### Sync Commands
+### Sync Skills
 - `/pm:sync` - Full bidirectional sync with GitHub
 - `/pm:import` - Import existing GitHub issues
 
-### Maintenance Commands
+### Maintenance Skills
 - `/pm:validate` - Check system integrity
 - `/pm:clean` - Archive completed work
 - `/pm:search` - Search across all content
@@ -475,7 +463,7 @@ Watch as structured planning transforms into shipped code.
 
 ### Design Decisions
 - Intentionally avoids GitHub Projects API complexity
-- All commands operate on local files first for speed
+- All skills operate on local files first for speed
 - Synchronization with GitHub is explicit and controlled
 - Worktrees provide clean git isolation for parallel work
 - GitHub Projects can be added separately for visualization

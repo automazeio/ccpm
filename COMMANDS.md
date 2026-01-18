@@ -1,21 +1,21 @@
-# Commands
+# Skills
 
-**[中文文档 (Chinese Documentation)](doc/COMMANDS_ZH.md)**
+Complete reference of all skills available in the Claude Code PM system.
 
-Complete reference of all commands available in the Claude Code PM system.
+In this fork, skills are the primary interface for orchestration. Claude Code loads skill metadata from `skills/` at startup, and the orchestrator uses those skills to advance phases.
 
-> **Note**: Project Management commands (`/pm:*`) are documented in the main [README.md](README.md#command-reference).
+> **Note**: Skill names mirror the historical `/pm:*` command names documented in the main [README.md](README.md#skill-reference).
 
 ## Table of Contents
 
-- [Context Commands](#context-commands)
-- [Testing Commands](#testing-commands)
-- [Utility Commands](#utility-commands)
-- [Review Commands](#review-commands)
+- [Context Skills](#context-skills)
+- [Testing Skills](#testing-skills)
+- [Utility Skills](#utility-skills)
+- [Review Skills](#review-skills)
 
-## Context Commands
+## Context Skills
 
-Commands for managing project context in `.claude/context/`.
+Skills for managing project context in `.claude/context/`.
 
 ### `/context:create`
 - **Purpose**: Create initial project context documentation
@@ -38,9 +38,9 @@ Commands for managing project context in `.claude/context/`.
 - **When to use**: At the start of any work session
 - **Output**: Confirmation of loaded context
 
-## Testing Commands
+## Testing Skills
 
-Commands for test configuration and execution.
+Skills for test configuration and execution.
 
 ### `/testing:prime`
 - **Purpose**: Configure testing setup
@@ -77,9 +77,9 @@ Commands for test configuration and execution.
 - **Description**: Executes the full lane if configured; otherwise maps to the default test runner and reports the scope as full.
 - **Output**: Full lane test summary with failure analysis
 
-## Utility Commands
+## Utility Skills
 
-General utility and maintenance commands.
+General utility and maintenance skills.
 
 ### `/prompt`
 - **Purpose**: Handle complex prompts with multiple references
@@ -95,9 +95,9 @@ General utility and maintenance commands.
 - **When to use**: After cloning PM system or updating rules
 - **Output**: Updated CLAUDE.md in project root
 
-## Review Commands
+## Review Skills
 
-Commands for handling external code review tools.
+Skills for handling external code review tools.
 
 ### `/code-rabbit`
 - **Purpose**: Process CodeRabbit review comments intelligently
@@ -110,34 +110,34 @@ Commands for handling external code review tools.
    - Parallel processing for multiple files
 - **Output**: Summary of accepted/ignored suggestions with reasoning
 
-## Command Patterns
+## Skill Patterns
 
-All commands follow consistent patterns:
+All skills follow consistent patterns:
 
 ### Allowed Tools
-Each command specifies its required tools in frontmatter:
+Each skill specifies its required tools in frontmatter:
 - `Read, Write, LS` - File operations
 - `Bash` - System commands
 - `Task` - Sub-agent spawning
 - `Grep` - Code searching
 
 ### Error Handling
-Commands follow fail-fast principles:
+Skills follow fail-fast principles:
 - Check prerequisites first
 - Clear error messages with solutions
 - Never leave partial state
 
 ### Context Preservation
-Commands that process lots of information:
+Skills that process lots of information:
 - Use agents to shield main thread from verbose output
 - Return summaries, not raw data
 - Preserve only essential information
 
-## Creating Custom Commands
+## Creating Custom Skills
 
-To add new commands:
+To add new skills:
 
-1. **Create file**: `commands/category/command-name.md`
+1. **Create file**: `skills/category/skill-name.md`
 2. **Add frontmatter**:
    ```yaml
    ---
@@ -159,7 +159,7 @@ To add new commands:
 
 ## Integration with Agents
 
-Commands often use agents for heavy lifting:
+Skills often use agents for heavy lifting:
 
 - **test-runner**: Executes tests, analyzes results
 - **file-analyzer**: Summarizes verbose files
@@ -170,8 +170,8 @@ This keeps the main conversation context clean while doing complex work.
 
 ## Notes
 
-- Commands are markdown files interpreted as instructions
-- The `/` prefix triggers command execution
-- Commands can spawn agents for context preservation
-- All PM commands (`/pm:*`) are documented in the main README
-- Commands follow rules defined in `/rules/`
+- Skills are markdown files interpreted as instructions
+- Skill names mirror the historical `/pm:*` command names
+- Skills can spawn agents for context preservation
+- All PM skills (`/pm:*`) are documented in the main README
+- Skills follow rules defined in `/rules/`

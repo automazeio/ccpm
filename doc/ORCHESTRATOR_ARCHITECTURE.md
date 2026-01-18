@@ -7,7 +7,7 @@ This document defines the autonomous orchestration layer for CCPM. The orchestra
 - **Fully autonomous execution** after the initial idea is accepted.
 - **Roadmap-first planning** to sequence multiple epics before execution.
 - **Stateful orchestration** with resilient retries and automatic recovery.
-- **Skill-based execution** built from CCPM commands (converted into deterministic skills).
+- **Skill-based execution** built from CCPM skills (deterministic, machine-invokable steps).
 - **Parallel delivery** with up to **12 workers**, without creating merge bottlenecks.
 - **Safe, no-human-review merging** via an **integration branch merge gate**.
 - **End-to-end delivery** including test/run/fix loops until the roadmap is complete.
@@ -310,7 +310,7 @@ If `.claude/orchestrator/STOP` exists:
 
 ## Skills Inventory
 
-Commands are treated as skills. The orchestrator chooses from these based on state:
+Skills are the primary interface. The orchestrator chooses from these based on state:
 
 ### Core Workflow Skills
 - `pm:init`
@@ -370,7 +370,7 @@ These are useful interactively, but not required for the orchestrator loop itsel
 
 ### Skill Discovery (Recommended)
 
-Rather than hardcoding forever, the orchestrator should dynamically discover available skills from CCPM’s `.claude/commands/**` directory and build a registry. The list above is the preferred subset for the autonomous loop.
+Rather than hardcoding forever, the orchestrator should dynamically discover available skills from the repo `skills/` directory (and any project-level `.claude/skills/**` overrides) and build a registry. The list above is the preferred subset for the autonomous loop.
 
 ## Skill Invocation Policy
 
@@ -458,7 +458,7 @@ To minimize complexity while ensuring quality, define three test lanes:
    - runs after merging epic to `main`, and again at roadmap completion
    - objective: high confidence the system remains healthy
 
-**Note:** If the repo doesn’t yet have distinct commands, lanes can initially map to the same underlying test runner, but the lane abstraction must exist.
+**Note:** If the repo doesn’t yet have distinct skills, lanes can initially map to the same underlying test runner, but the lane abstraction must exist.
 
 ## Tests and Fixes
 

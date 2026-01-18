@@ -22,7 +22,7 @@ This specification defines file path usage standards within the Claude Code PM s
 # Correct Examples
 - `internal/auth/server.go` 
 - `cmd/server/main.go`
-- `.claude/commands/pm/sync.md`
+- `.claude/skills/pm-sync.md`
 
 # Incorrect Examples ❌
 - `/Users/username/project/internal/auth/server.go`
