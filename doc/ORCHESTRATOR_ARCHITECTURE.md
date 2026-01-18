@@ -14,6 +14,15 @@ This document defines the autonomous orchestration layer for CCPM. The orchestra
 
 ## Authoritative State: GitHub + Local Cache
 
+## Primary Orchestration Guide (CLAUDE.md)
+
+The orchestrator’s behavioral contract lives in the repository root `CLAUDE.md`. This file instructs Claude Code to act as the autonomous orchestrator, follow the workflow state machine, honor the kill-switch, and use the skills registry to advance phases without manual prompts. The `.claude/orchestrator/` directory supplies runtime inputs (config/state/logs), while `CLAUDE.md` supplies the always-on guidance.
+
+**Responsibility split:**
+- `CLAUDE.md`: role, workflow phases, reconciliation policy, retry/escalation rules, safety checks.
+- `.claude/orchestrator/config.yaml`: tuning knobs (parallelism, sync cadence, testing lanes).
+- `.claude/orchestrator/state.json`: resumable state cache.
+
 ### GitHub as Source of Truth
 
 GitHub Issues remain the authoritative state for:
