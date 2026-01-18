@@ -368,12 +368,19 @@ Rather than hardcoding forever, the orchestrator should dynamically discover ava
 - Skills can be invoked without user action once the idea is accepted.
 - The orchestrator should prefer the minimal skill that advances the workflow.
 - For irreversible actions (e.g., creating issues, merging to main):
-  - run quick preflight checks (auth, clean git state, required files present)
+  - run quick preflight checks in the orchestrator core:
+    - auth validated (GitHub token, repo access)
+    - clean git state (no uncommitted changes, correct branch)
+    - required artifacts present (PRD/epic/task files, roadmap cache)
   - proceed automatically under the merge-gate policy
+  - if preflight fails, mark blocked and request help with a clear reason
 - Use explicit idempotency checks:
   - artifact already exists? (PRD/epic/task files)
   - issues already created? (GitHub ids present)
   - branch already merged? (merge-base checks)
+- For skill invocations that mutate state (GitHub writes, merges, deletions), the orchestrator should:
+  - log a preflight decision in state.json (what was checked, what passed)
+  - re-check idempotency if a retry is triggered
 
 ## Worker Runtime (Concrete Mechanism)
 
