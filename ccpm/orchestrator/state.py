@@ -4,7 +4,10 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ccpm.orchestrator.events import EventLogger
 
 
 STATE_VERSION = 1
@@ -91,7 +94,10 @@ def save_state(state: Mapping[str, Any], base_dir: Path | str | None = None) -> 
 
 
 def increment_retry(
-    state: dict[str, Any], step: str, classification: str
+    state: dict[str, Any],
+    step: str,
+    classification: str,
+    event_logger: "EventLogger | None" = None,
 ) -> dict[str, Any]:
     counters = dict(state.get("retry_counters") or {})
     if classification not in counters:
@@ -103,6 +109,12 @@ def increment_retry(
     by_step[step] = step_entry
     counters["by_step"] = by_step
     state["retry_counters"] = counters
+    if event_logger:
+        event_logger.log_retry(
+            step=step,
+            classification=classification,
+            counters=counters,
+        )
     return state
 
 
@@ -111,6 +123,7 @@ def record_error(
     step: str,
     classification: str,
     message: str,
+    event_logger: "EventLogger | None" = None,
 ) -> dict[str, Any]:
     state["last_error"] = {
         "step": step,
@@ -118,4 +131,4 @@ def record_error(
         "message": message,
         "timestamp": _utc_now(),
     }
-    return increment_retry(state, step, classification)
+    return increment_retry(state, step, classification, event_logger=event_logger)

@@ -5,8 +5,10 @@ from pathlib import Path
 from typing import Any, Callable, Mapping
 
 from ccpm.orchestrator.config import OrchestratorConfig, load_config
+from ccpm.orchestrator.events import EventLogger
 from ccpm.orchestrator.reconcile import ReconcileResult, reconcile_state
 from ccpm.orchestrator.state import OrchestratorState, load_state, save_state
+from ccpm.orchestrator.sync import SyncCoordinator
 
 
 PHASES = (
@@ -81,6 +83,8 @@ def run_orchestrator(
     resolved_config = config or load_config(base)
     resolved_state = state or load_state(base)
     state_data = dict(resolved_state.data)
+    event_logger = EventLogger(base)
+    syncer = SyncCoordinator.from_config(resolved_config, base)
 
     if _should_halt(resolved_config, base):
         state_data["halted"] = True
@@ -107,6 +111,16 @@ def run_orchestrator(
 
         next_phase = _advance_phase(state_data)
         state_data = _apply_transition(state_data, next_phase)
+        event_logger.log_transition(
+            kind="phase",
+            from_state=current_phase,
+            to_state=next_phase,
+            metadata={
+                "active_epic": state_data.get("active_epic"),
+                "active_issue_ids": state_data.get("active_issue_ids"),
+            },
+        )
+        state_data = syncer.maybe_post_epic_summary(state_data)
         save_state(state_data, base)
 
         if on_transition:
