@@ -59,6 +59,24 @@ Commands for test configuration and execution.
    - Pattern: Run tests matching pattern
 - **Output**: Test summary with failures analyzed, no verbose output in main thread
 
+### `/testing:fast`
+- **Purpose**: Run the fast test lane on worker branches
+- **Usage**: `/testing:fast`
+- **Description**: Executes the fast lane if configured; otherwise maps to the default test runner and reports the scope as fast.
+- **Output**: Fast lane test summary with failure analysis
+
+### `/testing:gate`
+- **Purpose**: Run the merge-gate test lane on integration branches
+- **Usage**: `/testing:gate`
+- **Description**: Executes the gate lane if configured; otherwise maps to the default test runner and reports the scope as gate.
+- **Output**: Gate lane test summary with failure analysis
+
+### `/testing:full`
+- **Purpose**: Run the full verification test lane
+- **Usage**: `/testing:full`
+- **Description**: Executes the full lane if configured; otherwise maps to the default test runner and reports the scope as full.
+- **Output**: Full lane test summary with failure analysis
+
 ## Utility Commands
 
 General utility and maintenance commands.
