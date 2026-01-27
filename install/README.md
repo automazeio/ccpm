@@ -18,10 +18,11 @@ wget -qO- https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.sh
 iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.bat -OutFile ccpm.bat; .\ccpm.bat
 ```
 
-Or download and execute:
+Or download and execute separately:
 
 ```powershell
-curl -o ccpm.bat https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.bat && ccpm.bat
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.bat -OutFile ccpm.bat
+.\ccpm.bat
 ```
 
 ## One-liner alternatives
