@@ -401,7 +401,7 @@ Teams using this system report:
    cd path/to/your/project/
    iwr -useb https://raw.githubusercontent.com/automazeio/ccpm/main/install/ccpm.bat -OutFile ccpm.bat; .\ccpm.bat
    ```
-   > ⚠️ **IMPORTANT**: If you already have a `.claude` directory, clone this repository to a different directory and copy the contents of the cloned `.claude` directory to your project's `.claude` directory.
+   > **Note**: The installer automatically handles existing projects. If you have a `.claude` directory, it will merge the ccpm files while preserving your existing customizations.
 
    See full/other installation options in the [installation guide ›](https://github.com/automazeio/ccpm/tree/main/install)
 
