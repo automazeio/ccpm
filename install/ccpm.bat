@@ -14,31 +14,34 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
+REM The repo has ccpm/ folder that should become .claude/
+set SOURCE_DIR=%TEMP_DIR%\ccpm
+
 if exist "%TARGET_DIR%\.claude" (
     echo Existing .claude directory detected.
     echo Merging ccpm files into existing .claude directory...
 
-    REM Backup existing CLAUDE.md if it exists
-    if exist "%TARGET_DIR%\.claude\CLAUDE.md" (
-        echo Backing up existing CLAUDE.md to CLAUDE.md.backup
-        copy /Y "%TARGET_DIR%\.claude\CLAUDE.md" "%TARGET_DIR%\.claude\CLAUDE.md.backup" >nul
-    )
-
-    REM Copy directories using xcopy (won't overwrite existing files)
-    for %%d in (agents commands context prds rules) do (
-        if exist "%TEMP_DIR%\.claude\%%d" (
+    REM Copy directories using xcopy
+    for %%d in (agents commands context prds rules scripts hooks) do (
+        if exist "%SOURCE_DIR%\%%d" (
             if not exist "%TARGET_DIR%\.claude\%%d" mkdir "%TARGET_DIR%\.claude\%%d"
-            xcopy /E /Y /I "%TEMP_DIR%\.claude\%%d" "%TARGET_DIR%\.claude\%%d" >nul 2>&1
+            xcopy /E /I /D "%SOURCE_DIR%\%%d" "%TARGET_DIR%\.claude\%%d" >nul 2>&1
         )
     )
 
-    REM Copy CLAUDE.md
-    copy /Y "%TEMP_DIR%\.claude\CLAUDE.md" "%TARGET_DIR%\.claude\CLAUDE.md" >nul
+    REM Copy config files if they don't exist
+    for %%f in (ccpm.config settings.json.example settings.local.json) do (
+        if exist "%SOURCE_DIR%\%%f" (
+            if not exist "%TARGET_DIR%\.claude\%%f" (
+                copy "%SOURCE_DIR%\%%f" "%TARGET_DIR%\.claude\%%f" >nul
+            )
+        )
+    )
 
     echo Merge complete. Your existing customizations are preserved.
 ) else (
     echo Creating new .claude directory...
-    xcopy /E /I "%TEMP_DIR%\.claude" "%TARGET_DIR%\.claude" >nul
+    xcopy /E /I "%SOURCE_DIR%" "%TARGET_DIR%\.claude" >nul
 )
 
 REM Create epics directory if it doesn't exist
@@ -52,7 +55,7 @@ echo Claude Code PM installed successfully!
 echo.
 echo Next steps:
 echo   1. Run '/pm:init' in Claude Code to complete setup
-echo   2. Check .claude/CLAUDE.md for configuration options
+echo   2. Copy relevant instructions from README.md to your CLAUDE.md
 echo.
 
 endlocal

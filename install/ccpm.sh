@@ -16,43 +16,49 @@ echo "Cloning repository to temporary directory..."
 
 git clone --depth 1 "$REPO_URL" "$TEMP_DIR"
 
+# The repo has ccpm/ folder that should become .claude/
+SOURCE_DIR="$TEMP_DIR/ccpm"
+
 if [ -d "$TARGET_DIR/.claude" ]; then
     echo "Existing .claude directory detected."
     echo "Merging ccpm files into existing .claude directory..."
 
-    # Backup existing CLAUDE.md if it exists and differs
-    if [ -f "$TARGET_DIR/.claude/CLAUDE.md" ]; then
-        if ! cmp -s "$TARGET_DIR/.claude/CLAUDE.md" "$TEMP_DIR/.claude/CLAUDE.md" 2>/dev/null; then
-            echo "Backing up existing CLAUDE.md to CLAUDE.md.backup"
-            cp "$TARGET_DIR/.claude/CLAUDE.md" "$TARGET_DIR/.claude/CLAUDE.md.backup"
-        fi
-    fi
-
-    # Copy directories (agents, commands, context, prds, rules) - merge without overwriting existing files
-    for dir in agents commands context prds rules; do
-        if [ -d "$TEMP_DIR/.claude/$dir" ]; then
+    # Copy directories - merge without overwriting existing files
+    for dir in agents commands context prds rules scripts hooks; do
+        if [ -d "$SOURCE_DIR/$dir" ]; then
             mkdir -p "$TARGET_DIR/.claude/$dir"
-            cp -rn "$TEMP_DIR/.claude/$dir/." "$TARGET_DIR/.claude/$dir/" 2>/dev/null || \
-            rsync -a --ignore-existing "$TEMP_DIR/.claude/$dir/" "$TARGET_DIR/.claude/$dir/"
+            # Use cp -n (no clobber) or rsync as fallback
+            if cp -rn "$SOURCE_DIR/$dir/." "$TARGET_DIR/.claude/$dir/" 2>/dev/null; then
+                :
+            else
+                # macOS cp might not support -n, use rsync
+                rsync -a --ignore-existing "$SOURCE_DIR/$dir/" "$TARGET_DIR/.claude/$dir/" 2>/dev/null || \
+                cp -r "$SOURCE_DIR/$dir/." "$TARGET_DIR/.claude/$dir/"
+            fi
         fi
     done
 
-    # Copy CLAUDE.md (overwrite with new version, backup already made)
-    cp "$TEMP_DIR/.claude/CLAUDE.md" "$TARGET_DIR/.claude/CLAUDE.md"
+    # Copy config files if they don't exist
+    for file in ccpm.config settings.json.example settings.local.json; do
+        if [ -f "$SOURCE_DIR/$file" ] && [ ! -f "$TARGET_DIR/.claude/$file" ]; then
+            cp "$SOURCE_DIR/$file" "$TARGET_DIR/.claude/$file"
+        fi
+    done
 
     echo "Merge complete. Your existing customizations are preserved."
 else
     echo "Creating new .claude directory..."
-    cp -r "$TEMP_DIR/.claude" "$TARGET_DIR/.claude"
+    mkdir -p "$TARGET_DIR/.claude"
+    cp -r "$SOURCE_DIR/." "$TARGET_DIR/.claude/"
 fi
 
 # Create epics directory if it doesn't exist
 mkdir -p "$TARGET_DIR/.claude/epics"
 
 echo ""
-echo "✓ Claude Code PM installed successfully!"
+echo "Claude Code PM installed successfully!"
 echo ""
 echo "Next steps:"
 echo "  1. Run '/pm:init' in Claude Code to complete setup"
-echo "  2. Check .claude/CLAUDE.md for configuration options"
+echo "  2. Copy relevant instructions from README.md to your CLAUDE.md"
 echo ""
