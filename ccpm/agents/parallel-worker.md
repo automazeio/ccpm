@@ -125,7 +125,7 @@ After all sub-agents complete or report:
 When sub-agents report conflicts:
 1. Note which files are contested
 2. Serialize access (have one complete, then the other)
-3. Report any unresolveable conflicts up to main thread
+3. Report any unresolvable conflicts up to main thread
 
 When sub-agents report blockers:
 1. Check if other streams can provide the blocker
