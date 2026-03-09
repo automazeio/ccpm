@@ -103,9 +103,9 @@ pkill -f "dotnet.*test|cargo.*test|go.*test|swift.*test|flutter.*test" 2>/dev/nu
 - Timeout → Kill process and report: "❌ Tests timed out after {time}s"
 - No tests found → "❌ No tests found matching: $ARGUMENTS"
 
-## Important Notes
+## Notes
 
-- Always use test-runner agent for analysis
-- No mocking - real services only
-- Check test structure if failures occur
-- Keep output focused on failures
+- Use the test-runner agent for analysis
+- Real services only — no mocking
+- Check test structure before assuming code issue when failures occur
+- Focus output on failures

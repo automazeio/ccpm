@@ -58,8 +58,8 @@ If PRD has associated epic:
 Next: /pm:prd-parse $ARGUMENTS to update epic
 ```
 
-## Important Notes
+## Notes
 
-Preserve original creation date.
-Keep version history in frontmatter if needed.
-Follow `/rules/frontmatter-operations.md`.
+- Preserve original creation date.
+- Keep version history in frontmatter if needed.
+- Follow `/rules/frontmatter-operations.md`.

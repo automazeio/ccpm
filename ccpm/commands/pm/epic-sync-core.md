@@ -25,7 +25,7 @@ ls .claude/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
 
 If no tasks found: "❌ No tasks to sync. Run: /pm:epic-decompose $ARGUMENTS"
 
-## Instructions
+<instructions>
 
 ### 0. Check Remote Repository
 
@@ -244,7 +244,7 @@ Task:
        - Without: gh issue create --repo "$REPO" --title "$task_name" --body-file /tmp/task-body.md --label "task,epic:$ARGUMENTS"
     4. Record the mapping: task_file:issue_number
 
-    CRITICAL: Always include --label "task,epic:$ARGUMENTS" for proper tracking.
+    Include --label "task,epic:$ARGUMENTS" for proper tracking.
     </instructions>
 
     <output_format>
@@ -261,7 +261,7 @@ Consolidate results from parallel agents:
 # Collect all mappings from agents
 cat /tmp/batch-*/mapping.txt >> /tmp/task-mapping.txt
 
-# IMPORTANT: After consolidation, follow step 3 to:
+# After consolidation, follow step 3 to:
 # 1. Build old->new ID mapping
 # 2. Update all task references (depends_on, conflicts_with)
 # 3. Rename files with proper frontmatter updates
@@ -339,7 +339,7 @@ if [ "$use_subissues" = false ]; then
 fi
 ```
 
-With gh-sub-issue, this is automatic!
+With gh-sub-issue, this is automatic.
 
 ### 5. Update Epic File
 
@@ -469,7 +469,9 @@ echo "✅ Created worktree: ../epic-$ARGUMENTS"
   - Worktree: ../epic-$ARGUMENTS
 ```
 
-**DO NOT suggest next steps or mention other commands.**
+**Do not suggest next steps or mention other commands.**
+
+</instructions>
 
 ## Error Handling
 
@@ -478,11 +480,10 @@ Follow `/rules/github-operations.md` for GitHub CLI errors.
 If any issue creation fails:
 - Report what succeeded
 - Note what failed
-- Don't attempt rollback (partial sync is fine)
+- Partial sync is acceptable — do not attempt rollback
 
-## Important Notes
+## Rules
 
-- Trust GitHub CLI authentication
-- Don't pre-check for duplicates
-- Update frontmatter only after successful creation
-- Keep operations simple and atomic
+- Trust GitHub CLI authentication — do not pre-check credentials.
+- Update frontmatter only after successful creation.
+- Keep operations simple and atomic.

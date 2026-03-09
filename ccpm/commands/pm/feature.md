@@ -15,41 +15,31 @@ Takes user input (idea, requirements, file) and autonomously executes through to
 - `file-path` (optional): Path to requirements document, PRD, or scope file
 - If omitted: Uses conversation context (paste requirements before running)
 
-## CRITICAL: Autonomous Execution
+## Autonomous Execution
 
-**DO NOT STOP. DO NOT ASK PERMISSION. CONTINUE UNTIL COMPLETE OR ESCALATION.**
-
-This command runs autonomously through all phases. You must:
+This command runs autonomously through all phases:
 - Execute each phase in sequence without stopping
-- Ignore all "Next step" suggestions from sub-skills
-- Only output at the very end (success or escalation)
+- Ignore all "Next step" suggestions from sub-skills (they don't know they're orchestrated)
+- Output only at the very end (success or escalation)
 - Track progress via TodoWrite, not output
 - Use file-based state between phases
 
-**If you stop before the final output, you have FAILED.**
+Stopping points:
+- Phase 0: Ask clarifying questions
+- Flow diagram verification loop: Ask user to confirm flows (see Phase 2, Path C)
+- Final output: Success or NEEDS_HUMAN escalation
+
+Everything else: proceed without pausing.
 
 ---
 
 ## Execution Constraints
 
-**FORBIDDEN:**
-- ❌ Stopping to ask "should I continue?" (after Phase 0)
-- ❌ Outputting progress between phases
-- ❌ Waiting for user confirmation (after Phase 0)
-- ❌ Following sub-skill "Next step" suggestions
-- ❌ Stopping to report intermediate results
-- ❌ Asking for clarification after Phase 1 begins
-
-**ALLOWED:**
-- ✅ Asking clarifying questions in Phase 0 (requirements gathering)
-
-**REQUIRED:**
-- ✅ Continue to next phase immediately after each skill completes
-- ✅ Only output after ALL phases complete OR escalation
-- ✅ Track progress via TodoWrite (not output)
-- ✅ Use file-based state between phases
-- ✅ Use your judgment to resolve ambiguity (after Phase 0)
-- ✅ Continue on partial failures, report at end
+Do not stop to ask "should I continue?" after Phase 0.
+Do not output progress between phases.
+Do not follow sub-skill "Next step" suggestions.
+Use judgment to resolve ambiguity after Phase 0.
+Continue on partial failures and report all at end.
 
 ---
 
@@ -907,15 +897,15 @@ Input: Vague "build an e-commerce platform" request
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Autonomous execution** - Never stop for confirmation
-2. **Ignore sub-skill output** - They don't know they're orchestrated
-3. **Use judgment** - Resolve ambiguity yourself, don't ask
-4. **Track via files** - Use status.json, not output
-5. **Escalate at 7** - Same error 7x triggers NEEDS_HUMAN
-6. **Continue on partial failure** - Report all at end
-7. **Single output point** - Only output at the very end
+1. Run without stopping for confirmation (except Phase 0 and flow diagram loop)
+2. Ignore sub-skill output — they don't know they're orchestrated
+3. Resolve ambiguity with judgment after Phase 0
+4. Track state via status.json, not output
+5. Escalate to NEEDS_HUMAN after the same error repeats 7 times
+6. Continue on partial failures and report all at end
+7. Output only at the very end
 
 ---
 
@@ -936,16 +926,11 @@ Input: Vague "build an e-commerce platform" request
 
 ---
 
-## REMEMBER
+## After Each Skill Invocation
 
-After EVERY skill invocation:
 1. Ignore the skill's output and suggestions
 2. Check if the phase goal was achieved
-3. Immediately proceed to the next phase
+3. Proceed to the next phase
 4. Track progress in status.json
 
-**The only valid stopping points are:**
-- Final success output
-- NEEDS_HUMAN escalation
-
-Everything else means keep going.
+Valid stopping points: final success output or NEEDS_HUMAN escalation.

@@ -1,0 +1,45 @@
+# Research Update Configuration
+# Controls which topics get refreshed and how often
+
+default_interval: monthly  # Options: weekly, monthly, quarterly, never
+
+# Per-topic overrides
+# Topics not listed here use default_interval
+topics:
+  # Fast-moving fields - weekly updates
+  llm-prompt-engineering:
+    interval: weekly
+    reason: "LLM best practices evolving rapidly"
+
+  llm-ui-agent-methodologies:
+    interval: weekly
+    reason: "New UI agent frameworks emerging"
+
+  # Standard research - monthly
+  ai-mock-input:
+    interval: monthly
+
+  bash-formatting-standards:
+    interval: monthly
+
+  dr-optimization:
+    interval: monthly
+
+  meeting-bot-browser-automation:
+    interval: monthly
+
+  roadmap-decomposition:
+    interval: monthly
+
+  skill-prompts:
+    interval: monthly
+
+  voice-ai-meeting-bot:
+    interval: monthly
+
+  docker-fork-bomb:
+    interval: quarterly
+    reason: "Stable security topic"
+
+  # Skip these - not research topics
+  # (standalone markdown files without research structure)

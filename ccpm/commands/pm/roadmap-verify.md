@@ -464,15 +464,15 @@ Saved: .claude/scopes/{session-name}/08_roadmap_verification.md
 
 ---
 
-## Important Rules
+## Rules
 
-1. **READ-ONLY**: This command only audits, it doesn't modify the roadmap
-2. **Be thorough**: Check every feature from scope documents
-3. **Be specific**: Point to exact features, phases, line numbers
-4. **Suggest actions**: Don't just report gaps, suggest research queries
-5. **Validate dependencies**: Check for cycles and sequencing errors
-6. **Statistical analysis**: Use z-scores for RICE outlier detection when possible
-7. **Prioritize gaps**: HIGH blocks progress, MEDIUM should fix, LOW is optional
+1. This command is read-only — audit only, no roadmap modifications
+2. Check every feature from scope documents
+3. Point to exact features, phases, line numbers
+4. Suggest research queries alongside each gap
+5. Check for dependency cycles and sequencing errors
+6. Use z-scores for RICE outlier detection when possible
+7. HIGH gaps block progress, MEDIUM should be fixed, LOW is optional
 
 ---
 

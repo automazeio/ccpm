@@ -154,7 +154,9 @@ verify_with_ai() {
     index_summary=$(head -100 "$INDEX_FILE")
   fi
 
-  local prompt="You are a diagram validator. Analyze this mermaid diagram for correctness.
+  local prompt="<role>
+You are a diagram validator. Analyze mermaid diagrams for correctness against architecture constraints.
+</role>
 
 <diagram>
 $diagram_content
@@ -168,22 +170,23 @@ $index_summary
 $requirements
 </requirements>
 
-Validate the diagram and respond in this exact format:
+<output_format>
+Respond in this exact format:
 
 SCORE: [1-10]
 ISSUES:
 - [issue 1 if any]
-- [issue 2 if any]
 SUGGESTIONS:
 - [suggestion 1 if any]
 NEW_ELEMENTS:
-- [element]: [why it's needed or if it should use existing element]
+- [element]: [why it's needed or whether an existing element should be used instead]
+</output_format>
 
-Be concise. Focus on:
-1. Are node names consistent with the architecture index?
-2. Does the flow make logical sense?
-3. Are there orphan nodes or missing connections?
-4. Does it match the requirements?"
+Check:
+1. Node names match the architecture index
+2. Flow is logically consistent
+3. No orphan nodes or missing connections
+4. Diagram matches requirements"
 
   claude --dangerously-skip-permissions --print "$prompt" 2>/dev/null || echo "AI verification unavailable"
 }

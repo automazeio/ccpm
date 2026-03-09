@@ -2,18 +2,13 @@
 
 Execute a scope using an agentic test-driven loop.
 
-## CRITICAL: Autonomous Operation
+## Autonomous Operation
 
-**DO NOT STOP. DO NOT ASK PERMISSION. KEEP LOOPING.**
-
-This command runs autonomously until completion. You must:
+This command runs autonomously until completion:
 - Loop continuously until `test.json.passed = true`
-- After creating a PRD, immediately run `/pm:batch-process` on it
-- After batch-process completes, immediately re-run tests
-- Never pause to ask "should I continue?" - just continue
-- Only stop when: passed=true OR same error 7x OR user sends Ctrl+C
-
-If you find yourself wanting to ask permission, don't. Just do the next step.
+- After creating a PRD, run `/pm:batch-process` on it immediately
+- After batch-process completes, re-run tests immediately
+- Stop only when: passed=true OR same error 7x OR user sends Ctrl+C
 
 ## Usage
 ```
@@ -332,11 +327,9 @@ Please investigate and re-run /pm:scope-run gslr
 5. **Escalate at 7** - Don't spin forever on the same error
 6. **Keep PRDs minimal** - Let batch-process do the heavy lifting
 
-## CRITICAL: Success Criteria
+## Success Criteria
 
-**test.json.passed = true ONLY when the app is FULLY FUNCTIONAL.**
-
-NOT just "it compiles" or "tests pass". The app must:
+`test.json.passed = true` when the app is fully functional — not just when it compiles or tests pass. The app must:
 - Run end-to-end (frontend + backend + database)
 - Core features actually work
 - Users can interact with the app
@@ -362,15 +355,10 @@ If the scope says "Admin can log in" then test that. Don't mark passed=true unti
 
 If you need those, use separate commands or build them into your test suite.
 
-## REMEMBER
+## Loop Behavior
 
-After EVERY action, ask yourself: "Is test.json.passed = true?"
-- If NO → take the next action immediately
-- If YES → stop and report success
+After every action: check if `test.json.passed = true`.
+- If false → take the next action immediately
+- If true → stop and report success
 
-Never ask the user:
-- "Should I continue?"
-- "Want me to proceed?"
-- "Ready for the next step?"
-
-Just do it.
+Do not ask the user for permission to continue. Take the next step.

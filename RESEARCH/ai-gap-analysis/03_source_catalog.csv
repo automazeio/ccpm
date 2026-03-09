@@ -1,0 +1,19 @@
+source_id,url,title,type,quality,subquestions,date_accessed,notes
+S01,https://arxiv.org/html/2503.15850,Uncertainty Quantification and Confidence Calibration in LLMs: A Survey,Academic,A,SQ1;SQ5,2026-02-02,Comprehensive UQ survey - key source
+S02,https://arxiv.org/html/2507.02564v1,LLMREI: Automating Requirements Elicitation Interviews with LLMs,Academic,A,SQ1;SQ6,2026-02-02,Direct relevance - automated elicitation
+S03,https://arxiv.org/html/2410.13788,Modeling Future Conversation Turns to Teach LLMs to Ask Clarifying Questions,Academic,A,SQ5;SQ6,2026-02-02,Key paper on clarification decisions
+S04,https://arxiv.org/abs/2305.18153,Do Large Language Models Know What They Don't Know?,Academic,A,SQ5,2026-02-02,LLM self-knowledge evaluation
+S05,https://arxiv.org/html/2507.02858v1,Requirements Elicitation Follow-Up Question Generation,Academic,A,SQ6;SQ7,2026-02-02,14 mistake types framework
+S06,https://arxiv.org/html/2505.07270v1,Automated Repair of Ambiguous Natural Language Requirements,Academic,B,SQ7,2026-02-02,Ambiguity detection and repair
+S07,https://arxiv.org/html/2404.11972v1,Aligning Language Models to Explicitly Handle Ambiguity,Academic,A,SQ7;SQ5,2026-02-02,Ambiguity handling methodology
+S08,https://www.augmentcode.com/tools/the-context-gap-why-some-ai-coding-tools-break,The Context Gap: Why Some AI Coding Tools Break,Industry,B,SQ4,2026-02-02,Context gap detection methods
+S09,https://learn.microsoft.com/en-us/azure/ai-services/language-service/conversational-language-understanding/concepts/multi-turn-conversations,CLU Multi-Turn Conversations,Industry,B,SQ1;SQ3,2026-02-02,Slot filling implementation guide
+S10,https://agilealliance.org/glossary/invest/,INVEST Criteria,Industry,A,SQ2;SQ3,2026-02-02,Authoritative INVEST definition
+S11,https://dl.acm.org/doi/10.1145/3744238,Survey on UQ of LLMs: Taxonomy and Open Challenges,Academic,A,SQ5,2026-02-02,ACM survey on uncertainty
+S12,https://www.qodo.ai/,Qodo AI Agents for Code Review,Industry,B,SQ4,2026-02-02,Context-aware code analysis
+S13,https://medium.com/@aixplain/slot-filling-a-first-step-towards-ambitious-nlp-systems,Slot Filling: A First Step Towards Ambitious NLP Systems,Practitioner,C,SQ1,2026-02-02,Slot filling overview
+S14,https://arxiv.org/html/2406.03441v1,Cycles of Thought: Measuring LLM Confidence through Stable Explanations,Academic,B,SQ5,2026-02-02,Confidence measurement approach
+S15,https://www.ipr.mdu.se/pdf_publications/7221.pdf,Requirements Ambiguity Detection and Explanation with LLMs,Academic,B,SQ7,2026-02-02,Industrial ambiguity study
+S16,https://link.springer.com/chapter/10.1007/978-3-032-02867-9_23,Ambiguity Detection in Business Process Descriptions,Academic,B,SQ7,2026-02-02,94.3% of descriptions have ambiguity
+S17,https://www.boost.co.nz/blog/2022/07/definition-of-ready-agile-user-stories,Definition of Ready for User Stories,Practitioner,C,SQ2;SQ3,2026-02-02,INVEST as DoR
+S18,https://www.researchgate.net/publication/220428129_Towards_automated_requirements_prioritization_and_triage,Automated Requirements Prioritization and Triage,Academic,B,SQ6,2026-02-02,Prioritization algorithms

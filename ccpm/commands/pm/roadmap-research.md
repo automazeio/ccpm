@@ -136,7 +136,7 @@ Based on research findings, determine how to update the roadmap:
 
 ### Step 4: Apply Roadmap Updates
 
-**IMPORTANT:** Updates are applied directly to `07_roadmap.md`.
+Updates are applied directly to `07_roadmap.md`.
 
 For each gap researched:
 
@@ -356,15 +356,15 @@ Saved:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Only research HIGH/MEDIUM gaps** - Skip LOW severity
-2. **Limit to 5 gaps max** - Control research time and /dr calls
-3. **Update roadmap directly** - This skill modifies 07_roadmap.md
-4. **Add audit comments** - Mark all changes with GAP ID reference
-5. **Preserve structure** - Make targeted edits, don't rewrite entire sections
-6. **Log everything** - All research goes in 09_roadmap_research.md
-7. **Cite sources** - Include URLs from /dr research
+1. Research HIGH/MEDIUM gaps only — skip LOW severity
+2. Limit to 5 gaps max (controls /dr call count)
+3. This skill modifies 07_roadmap.md directly
+4. Mark all changes with GAP ID audit comments
+5. Make targeted edits — preserve document structure
+6. Log all research in 09_roadmap_research.md
+7. Include source URLs from /dr research
 
 ---
 

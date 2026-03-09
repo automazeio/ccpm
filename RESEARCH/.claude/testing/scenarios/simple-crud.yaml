@@ -1,0 +1,73 @@
+# simple-crud.yaml - Simple Todo List Application Scenario
+# A minimal scenario for quick testing of the E2E pipeline
+
+metadata:
+  name: "simple-todo"
+  description: "A simple todo list application for personal task management"
+  type: "productivity"
+  expected_duration: "10m"
+
+# Predefined responses for interrogation Q&A
+interrogation:
+  responses:
+    - question_pattern: "What type of application"
+      answer: "A personal todo list web application for managing daily tasks"
+
+    - question_pattern: "primary users"
+      answer: "Individual users who want to organize their personal tasks and to-dos"
+
+    - question_pattern: "key features"
+      answer: |
+        - Create, read, update, delete tasks
+        - Mark tasks as complete/incomplete
+        - Set due dates for tasks
+        - Organize tasks into categories/lists
+        - Search and filter tasks
+        - Basic user authentication
+
+    - question_pattern: "technical requirements"
+      answer: |
+        - Angular frontend (Single Page Application)
+        - GraphQL API
+        - Python backend with FastAPI
+        - PostgreSQL database
+        - JWT authentication
+
+    - question_pattern: "integrations"
+      answer: "No external integrations required for MVP"
+
+    - question_pattern: "scale"
+      answer: "Single user application, no multi-tenancy needed initially"
+
+    - question_pattern: "deployment"
+      answer: "Docker containers, simple VPS deployment"
+
+# Mock credentials (none needed for this simple app)
+credentials:
+  integrations: []
+
+# Expected outputs for verification
+expected:
+  scope_files:
+    - "00_scope_document.md"
+    - "01_features.md"
+    - "02_user_journeys.md"
+    - "04_technical_architecture.md"
+    - "07_roadmap.md"
+
+  features:
+    min_count: 4
+    must_include:
+      - "create"
+      - "task"
+      - "authentication"
+
+  prds:
+    min_count: 5
+    max_count: 15
+
+  journeys:
+    min_count: 2
+    must_include:
+      - "create-task"
+      - "complete-task"

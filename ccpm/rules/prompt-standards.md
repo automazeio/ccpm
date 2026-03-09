@@ -54,6 +54,12 @@ Standards for writing agent prompts, skill templates, and pipeline instructions.
 - Use tiered detail: bare rules for Claude 4.x (which follows precise instructions), rules with rationale for non-obvious constraints, rules with examples only for genuinely novel patterns.
 - Do not use an LLM to "summarize" or "compress" prompts. LLM summarization destroys specificity (documented 9.6% accuracy drop). Use LLMs only to *identify* redundancies or *optimize* structure, not to rewrite shorter.
 
+## Agent Dispatch
+
+- Route all sub-agent work through `/delegate`, not native Claude Code tools (Task, Agent). See `/rules/agent-dispatch.md` for rationale and migration patterns.
+- Agent prompt files (`agents/*.md`) define agent behavior only — they do not dispatch other agents.
+- Commands that need parallel work streams describe the streams and invoke `/delegate`.
+
 ## Security
 
 When writing prompts that process untrusted input (user data, external content, RAG results):

@@ -82,45 +82,43 @@ load_context() {
     context+="## Requirements\n$(cat "$SESSION_DIR/refined-requirements.md")\n\n"
   fi
 
-  # Previous feedback (CRITICAL - must address this)
+  # Previous feedback (address all points)
   if [ -f "$SESSION_DIR/flow-feedback.md" ]; then
-    context+="## PREVIOUS FEEDBACK (MUST ADDRESS)\n$(cat "$SESSION_DIR/flow-feedback.md")\n\n"
+    context+="## Previous Feedback (address all points)\n$(cat "$SESSION_DIR/flow-feedback.md")\n\n"
   fi
 
-  # EXISTING DIAGRAMS (for targeted refinement based on feedback)
-  # Include previously generated diagrams so Claude can make isolated changes
+  # Existing diagrams for targeted refinement based on feedback
   local has_existing_diagrams=false
 
   if [ -f "$SESSION_DIR/diagram-system-flow.md" ]; then
     has_existing_diagrams=true
-    context+="## EXISTING SYSTEM FLOW DIAGRAM (modify only what feedback requires)\n"
+    context+="## Existing System Flow Diagram (modify only what feedback requires)\n"
     context+="$(cat "$SESSION_DIR/diagram-system-flow.md")\n\n"
   fi
 
   if [ -f "$SESSION_DIR/diagram-user-journey.md" ]; then
     has_existing_diagrams=true
-    context+="## EXISTING USER JOURNEY DIAGRAM (modify only what feedback requires)\n"
+    context+="## Existing User Journey Diagram (modify only what feedback requires)\n"
     context+="$(cat "$SESSION_DIR/diagram-user-journey.md")\n\n"
   fi
 
   if [ -f "$SESSION_DIR/diagram-sequence.md" ]; then
     has_existing_diagrams=true
-    context+="## EXISTING SEQUENCE DIAGRAM (modify only what feedback requires)\n"
+    context+="## Existing Sequence Diagram (modify only what feedback requires)\n"
     context+="$(cat "$SESSION_DIR/diagram-sequence.md")\n\n"
   fi
 
   if [ -f "$SESSION_DIR/diagram-state.md" ]; then
     has_existing_diagrams=true
-    context+="## EXISTING STATE DIAGRAM (modify only what feedback requires)\n"
+    context+="## Existing State Diagram (modify only what feedback requires)\n"
     context+="$(cat "$SESSION_DIR/diagram-state.md")\n\n"
   fi
 
   if [ "$has_existing_diagrams" = true ] && [ -f "$SESSION_DIR/flow-feedback.md" ]; then
-    context+="## IMPORTANT: TARGETED MODIFICATION REQUIRED\n"
-    context+="You have received feedback on existing diagrams above.\n"
-    context+="- Make ONLY the changes requested in the feedback\n"
-    context+="- Keep all other aspects of the diagrams unchanged\n"
-    context+="- Preserve node names, structure, and styling unless specifically asked to change\n\n"
+    context+="## Targeted Modification Required\n"
+    context+="Existing diagrams are provided above with feedback.\n"
+    context+="- Apply only the changes requested in the feedback section\n"
+    context+="- Preserve node names, structure, and styling for unchanged elements\n\n"
   fi
 
   # Repo context
@@ -242,7 +240,7 @@ CONSISTENCY CHECK:
 </data_layer_rules>
 
 <backend_to_data_connections>
-Every arrow from Backend to Data Layer MUST be labeled:
+Label every arrow from Backend to Data Layer:
 
 LABEL SCHEMA:
 - "CRUD: {table}" - Primary table this endpoint manages (one per endpoint)
@@ -250,15 +248,14 @@ LABEL SCHEMA:
 - "JOIN: {table}" - Related data fetched together with primary
 - "writes" / "reads" - Operation type
 
-REASONING REQUIREMENT:
 For each endpoint, identify:
 1. PRIMARY TABLE: The resource noun in the URL path
 2. SECONDARY TABLES: Foreign key references needed
 
-STRICT RULES:
+Rules:
 - Each endpoint has exactly ONE primary table (labeled "CRUD: {table}")
-- Secondary connections labeled with purpose (FK, JOIN)
-- If architecture_index shows existing relationships, use those exactly
+- Label secondary connections with purpose (FK, JOIN)
+- Use existing relationships from architecture_index exactly when present
 </backend_to_data_connections>
 
 <error_handling>
@@ -393,8 +390,8 @@ This produces zero crossings because node order matches connection order.
 
 <syntax_rules>
 These prevent common Mermaid rendering errors:
-1. Never use "end" as a node ID - use "done", "finish", or "complete"
-2. In state diagrams: avoid multiline note blocks
+1. Use "done", "finish", or "complete" as node IDs ("end" is a reserved word)
+2. In state diagrams: omit multiline note blocks (they cause rendering errors)
 3. Wrap labels with special characters in quotes: A["Label (with parens)"]
 4. Keep node/state names as simple alphanumeric identifiers
 </syntax_rules>

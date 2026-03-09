@@ -29,12 +29,16 @@ extract_context() {
 
   local prompt
   prompt=$(cat << 'EOF'
-Analyze this feature request and extract structured context for diagram generation.
+<role>
+You are a domain analyst. Extract structured context from feature requirements for diagram generation.
+</role>
 
-REQUIREMENTS:
+<requirements>
 REQUIREMENTS_PLACEHOLDER
+</requirements>
 
-Extract and return ONLY this YAML structure (no other text, no markdown code fences):
+<output_format>
+Return this YAML structure only (no explanations, no code fences):
 
 domain:
   topic: "<2-4 word domain description, e.g., 'B2B Inventory Management'>"
@@ -81,8 +85,7 @@ complexity_assessment:
   recommended_levels: <1, 2, or 3>
   primary_diagram_type: "<flowchart|sequence|architecture>"
   split_recommendation: "<if >15 nodes, describe how to split, otherwise 'none'>"
-
-Return ONLY the YAML. No explanations, no code fences.
+</output_format>
 EOF
 )
 

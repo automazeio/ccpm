@@ -8,8 +8,7 @@ This command loads essential context for a new agent session by reading the proj
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding.
 
 ### 1. Context Availability Check
 - Run: `ls -la .claude/context/ 2>/dev/null`
@@ -137,10 +136,10 @@ For large contexts:
 - Skip extremely large files (>10000 lines) with warning
 - Cache parsed frontmatter for faster subsequent loads
 
-## Important Notes
+## Notes
 
-- **Always validate** files before attempting to read
-- **Load in priority order** to get essential context first
-- **Handle missing files gracefully** - don't fail completely
-- **Provide clear summary** of what was loaded and project state
-- **Note any issues** that might affect development work
+- Validate files before reading
+- Load in priority order to get essential context first
+- Handle missing files gracefully (partial context is better than failure)
+- Provide clear summary of what was loaded and project state
+- Note any issues that might affect development work

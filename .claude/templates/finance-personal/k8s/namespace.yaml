@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: finance-personal
+  labels:
+    app.kubernetes.io/name: finance-personal
+    app.kubernetes.io/managed-by: ccpm

@@ -13,13 +13,12 @@ Launch brainstorming for new product requirement document.
 
 ## Required Rules
 
-**IMPORTANT:** Before executing this command, read and follow:
+Read and follow before executing:
 - `.claude/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding.
 
 ### Input Validation
 1. **Validate feature name format:**
@@ -118,9 +117,7 @@ created: [Current ISO date/time]
 - **name**: Use the exact feature name (same as $ARGUMENTS)
 - **description**: Write a concise one-line summary of what this PRD covers
 - **status**: Always start with "backlog" for new PRDs
-- **created**: Get REAL current datetime by running: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
-  - Never use placeholder text
-  - Must be actual system time in ISO 8601 format
+- **created**: Run `date -u +"%Y-%m-%dT%H:%M:%SZ"` and use the result (ISO 8601 format, no placeholders)
 
 ### 5. Quality Checks
 
@@ -141,8 +138,7 @@ After successfully creating the PRD:
 ## Error Recovery
 
 If any step fails:
-- Clearly explain what went wrong
-- Provide specific steps to fix the issue
-- Never leave partial or corrupted files
+- Explain what went wrong with specific steps to fix the issue
+- Remove partial or corrupted files before exiting
 
-Conduct a thorough brainstorming session before writing the PRD. Ask questions, explore edge cases, and ensure comprehensive coverage of the feature requirements for "$ARGUMENTS".
+Conduct a brainstorming session before writing the PRD. Ask questions, explore edge cases, and cover feature requirements comprehensively for "$ARGUMENTS".

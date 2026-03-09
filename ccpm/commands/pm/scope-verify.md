@@ -231,10 +231,10 @@ PRDs are ready to be moved to .claude/prds/
 Run: .claude/scripts/prd-scope.sh {scope-name} --verify
 ```
 
-### Important Rules
+### Rules
 
-1. **READ-ONLY**: This command only audits, it doesn't modify PRDs
-2. **Be thorough**: Check every item from discovery
-3. **Be specific**: Point to exact locations (line numbers, PRD names)
-4. **Suggest actions**: Don't just report gaps, suggest fixes
-5. **Validate dependencies**: Check for cycles and missing references
+1. This command is read-only — audit only, no PRD modifications
+2. Check every item from discovery
+3. Point to exact locations (line numbers, PRD names)
+4. Suggest fixes alongside each gap
+5. Check for dependency cycles and missing references

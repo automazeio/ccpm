@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccpm-infra-config
+  namespace: robert
+  labels:
+    app: ccpm-infra
+data:
+  repos.json: |
+    [
+      {
+        "owner": "elysenko",
+        "repo": "ccpm",
+        "branch": "main"
+      }
+    ]

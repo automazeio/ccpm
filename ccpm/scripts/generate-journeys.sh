@@ -315,7 +315,7 @@ For each journey, identify:
 </task>
 
 <output_format>
-Respond with ONLY valid JSON. No markdown, no explanation.
+Respond with valid JSON only (no markdown, no explanation):
 
 {
   "journeys": [
@@ -342,14 +342,14 @@ Respond with ONLY valid JSON. No markdown, no explanation.
 </output_format>
 
 <constraints>
-- Extract ONLY journeys explicitly supported by the requirements
-- Each journey MUST map to at least one acceptance criterion
-- Use exact actor names from requirements (do not invent roles)
-- If a field cannot be determined, use null
-- Minimum 3 journeys, maximum 15 journeys
-- Journey names must be unique and use verb-noun format
-- Prefix any inferred/assumed information with "[INFERRED]"
-- Each journey MUST include required_privileges — the privilege codes from the privilege_map that a user needs to complete the journey
+- Extract journeys that are explicitly supported by the requirements
+- Each journey maps to at least one acceptance criterion
+- Use exact actor names from requirements (invent no roles)
+- Use null for any field that cannot be determined
+- Extract 3-15 journeys
+- Journey names are unique and use verb-noun format
+- Prefix inferred or assumed information with "[INFERRED]"
+- Each journey includes required_privileges — the privilege codes from the privilege_map that a user needs to complete the journey
 - Map journey actions to privilege codes: viewing pages needs *.view, creating resources needs *.create or *.edit, deleting needs *.delete
 - Include organizations.view for any journey that accesses organization-scoped data
 </constraints>
@@ -470,22 +470,29 @@ decompose_journey() {
   prompt_file=$(mktemp)
 
   cat > "$prompt_file" << PROMPT_EOF
-You are a senior UX engineer decomposing user journeys into steps.
+<role>
+You are a senior UX engineer. Decompose user journeys into ordered, atomic steps with full stack traceability.
+</role>
 
-## Journey
+<journey>
 $journey_json
+</journey>
 
-## Endpoint Mapping
+<endpoint_mapping>
 $endpoint_mapping
+</endpoint_mapping>
 
-## Flow Diagram
+<flow_diagram>
 $flow_content
+</flow_diagram>
 
-## Task
-Break this journey into individual steps. For each step, trace the complete flow.
-Use the endpoint mapping to match API endpoints to database tables.
+<task>
+Break this journey into individual steps. For each step, trace the complete flow from UI action through API to database.
+Match API endpoints exactly from the endpoint mapping above.
+</task>
 
-Respond with ONLY valid JSON:
+<output_format>
+Respond with ONLY valid JSON (no explanation, no markdown fences):
 
 {
   "journey_name": "$journey_name",
@@ -511,7 +518,8 @@ Respond with ONLY valid JSON:
   ]
 }
 
-Use null for unknown fields. Match endpoints exactly from the mapping above.
+Use null for unknown fields.
+</output_format>
 PROMPT_EOF
 
   # Generate using Claude CLI

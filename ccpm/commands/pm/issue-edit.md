@@ -69,8 +69,8 @@ gh issue edit $ARGUMENTS --remove-label "{removed_labels}"
 Synced to GitHub: ✅
 ```
 
-## Important Notes
+## Notes
 
-Always update local first, then GitHub.
-Preserve frontmatter fields not being edited.
-Follow `/rules/frontmatter-operations.md`.
+- Update local file before GitHub
+- Preserve frontmatter fields not being edited
+- Follow `/rules/frontmatter-operations.md`

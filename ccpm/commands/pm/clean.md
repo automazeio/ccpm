@@ -14,7 +14,7 @@ Clean up completed work and archive old epics.
 Options:
 - `--dry-run` - Show what would be cleaned without doing it
 
-## Instructions
+<instructions>
 
 ### 1. Identify Completed Epics
 
@@ -39,13 +39,13 @@ Find:
 Completed Epics to Archive:
   {epic_name} - Completed {days} days ago
   {epic_name} - Completed {days} days ago
-  
+
 Stale Progress to Remove:
   {count} progress files for closed issues
-  
+
 Empty Directories:
   {list_of_empty_dirs}
-  
+
 Space to Recover: ~{size}KB
 
 {If --dry-run}: This is a dry run. No changes made.
@@ -54,7 +54,7 @@ Space to Recover: ~{size}KB
 
 ### 4. Execute Cleanup
 
-If user confirms:
+After user confirms:
 
 **Archive Epics:**
 ```bash
@@ -85,18 +85,20 @@ Create `.claude/epics/.archived/archive-log.md`:
 
 Archived:
   {count} completed epics
-  
+
 Removed:
   {count} stale files
   {count} empty directories
-  
+
 Space recovered: {size}KB
 
 System is clean and organized.
 ```
 
-## Important Notes
+</instructions>
 
-Always offer --dry-run to preview changes.
-Never delete PRDs or incomplete work.
-Keep archive log for history.
+## Rules
+
+- Offer `--dry-run` to preview changes before executing.
+- Skip PRDs and incomplete work — archive completed epics only.
+- Keep archive log for history.

@@ -399,7 +399,7 @@ Constraints:
 ---
 
 OUTPUT FORMAT:
-Return all 5 diagrams in markdown format with headers. No additional explanations outside the code blocks.
+Return all 5 diagrams in markdown format with headers. Omit explanations outside the code blocks.
 PROMPT_INSTRUCTIONS
 )
 

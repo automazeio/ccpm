@@ -75,8 +75,8 @@ Status:
   {or list any sync failures}
 ```
 
-## Important Notes
+## Notes
 
-Follow `/rules/github-operations.md` for GitHub commands.
-Follow `/rules/frontmatter-operations.md` for local updates.
-Always backup before sync in case of issues.
+- Follow `/rules/github-operations.md` for GitHub commands.
+- Follow `/rules/frontmatter-operations.md` for local updates.
+- Back up before syncing in case of issues.

@@ -1,0 +1,17 @@
+query_id,subquestion,query_text,source_count,quality_sources,notes
+Q01,SQ1 SQ2,"AI requirements elicitation software development feature specification interview techniques 2025 2026",10,3,LLM interview automation research found
+Q02,SQ6,"GitHub Copilot Workspace requirements gathering feature planning AI coding assistant",10,3,Copilot Workspace workflow detailed
+Q03,SQ5,"conversational AI dialogue management slot filling multi-turn requirements extraction",10,3,Slot filling patterns identified
+Q04,SQ3,"Definition of Ready Agile requirements completeness checklist user story ready criteria",10,4,DoR criteria well documented
+Q05,SQ2,"interview questioning techniques funnel laddering probing requirements gathering",10,4,Funnel and laddering techniques found
+Q06,SQ6,"Cursor AI v0.dev feature planning requirements specification how does it work",10,4,Cursor planning workflow documented
+Q07,SQ4,"codebase-aware AI coding assistant existing patterns context inference implementation",10,4,Context engine approaches found
+Q08,SQ1,"acceptance criteria template patterns format user story edge cases error handling",10,5,Given-When-Then and rule formats
+Q09,SQ5,"LLM multi-turn dialogue state management conversation AI graceful I don't know handling",1,1,Limited results on graceful handling
+Q10,SQ2 SQ4,"software requirements elicitation edge cases what if scenario questions techniques",2,2,Edge case questioning techniques
+Q11,SQ3,"minimum viable specification software requirements just enough information before coding",10,3,MVP approach to requirements
+Q12,SQ1,"requirements checklist software feature functional non-functional security performance accessibility",10,4,Complete NFR checklist found
+Q13,SQ5 SQ6,"AI coding assistant asks clarifying questions examples patterns workflow",10,5,Golden prompt pattern discovered
+Q14,SQ1,"software feature requirements template checklist before development starts",10,4,Requirements templates found
+Q15,SQ4,"AI code assistant analyze existing codebase patterns before implementation suggestions",10,4,Codebase analysis tools documented
+Q16,SQ3,"Agile Definition of Ready INVEST checklist criteria complete story",10,4,INVEST criteria detailed

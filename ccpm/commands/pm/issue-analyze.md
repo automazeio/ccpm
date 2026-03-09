@@ -168,7 +168,7 @@ Without parallel execution:
 
 Ensure:
 - All major work is covered by streams
-- File patterns don't unnecessarily overlap
+- File patterns are distinct with minimal overlap
 - Dependencies are logical
 - Agent types match the work type
 - Time estimates are reasonable
@@ -193,10 +193,10 @@ Files at risk of conflict:
 Next: Start work with /pm:issue-start $ARGUMENTS
 ```
 
-## Important Notes
+## Notes
 
-- Analysis is local only - not synced to GitHub
+- Analysis is local only — not synced to GitHub
 - Focus on practical parallelization, not theoretical maximum
-- Consider agent expertise when assigning streams
-- Account for coordination overhead in estimates
-- Prefer clear separation over maximum parallelization
+- Match agent type to stream expertise
+- Include coordination overhead in time estimates
+- Prefer clear file scope separation over maximizing stream count

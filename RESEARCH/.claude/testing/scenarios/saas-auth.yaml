@@ -1,0 +1,201 @@
+# saas-auth.yaml - SaaS Platform with Authentication Scenario
+# Tests complex multi-tenant authentication and authorization
+
+metadata:
+  name: "saas-platform"
+  description: "Multi-tenant SaaS platform with advanced authentication and team management"
+  type: "saas-b2b"
+  expected_duration: "25m"
+
+# Predefined responses for interrogation Q&A
+interrogation:
+  responses:
+    - question_pattern: "What type of application"
+      answer: "A B2B SaaS platform for project management with multi-tenant architecture, team collaboration, and enterprise authentication"
+
+    - question_pattern: "primary users"
+      answer: |
+        - Organization administrators who manage teams and settings
+        - Team managers who organize projects and assign tasks
+        - Team members who work on tasks and collaborate
+        - Super admins who manage the entire platform (internal)
+        - Billing administrators who manage subscriptions
+
+    - question_pattern: "key features"
+      answer: |
+        Authentication & Authorization:
+        - Email/password authentication
+        - SSO via SAML 2.0 and OIDC
+        - Social login (Google, GitHub, Microsoft)
+        - Multi-factor authentication (TOTP, SMS)
+        - Magic link authentication
+        - API key management
+        - Role-based access control (RBAC)
+        - Team invitations and onboarding
+
+        Organization Management:
+        - Organization creation and settings
+        - Team/workspace management
+        - Member management and permissions
+        - Custom roles and permissions
+        - Audit logging
+
+        Subscription & Billing:
+        - Multiple pricing tiers (Free, Pro, Enterprise)
+        - Seat-based billing
+        - Usage-based billing components
+        - Subscription management
+        - Invoice history
+
+        Project Management Core:
+        - Project creation and organization
+        - Task management with assignments
+        - Due dates and milestones
+        - Comments and discussions
+        - File attachments
+        - Activity feed
+
+    - question_pattern: "technical requirements"
+      answer: |
+        - Angular 17+ frontend with standalone components
+        - GraphQL API with subscriptions for real-time
+        - Python backend with FastAPI
+        - PostgreSQL with row-level security
+        - Redis for sessions and caching
+        - JWT + refresh tokens
+        - WebSocket for real-time updates
+        - S3-compatible storage for files
+        - Event sourcing for audit trail
+
+    - question_pattern: "integrations"
+      answer: |
+        - Stripe for payment processing
+        - Auth0 or Keycloak for SSO
+        - SendGrid for transactional email
+        - Slack for notifications
+        - GitHub/GitLab for OAuth and webhooks
+        - Zapier for workflow automation
+        - Segment for analytics
+        - Sentry for error tracking
+
+    - question_pattern: "scale"
+      answer: |
+        - Support 1000+ organizations
+        - Up to 500 users per organization
+        - 100,000+ total users
+        - 99.9% uptime SLA
+        - Sub-100ms API response times
+        - Global CDN for static assets
+
+    - question_pattern: "deployment"
+      answer: |
+        - Kubernetes on AWS EKS
+        - Multi-region deployment
+        - Blue-green deployments
+        - Feature flags for gradual rollout
+        - Automated scaling based on load
+
+    - question_pattern: "compliance"
+      answer: |
+        - SOC 2 Type II compliance
+        - GDPR compliance with data export/deletion
+        - HIPAA ready architecture
+        - Complete audit trail
+        - Data encryption at rest and in transit
+        - Regular security audits
+
+# Mock credentials for integrations
+credentials:
+  integrations:
+    - type: "stripe"
+      purpose: "Payment processing and subscription billing"
+      values:
+        publishable_key: "pk_test_stripe_123abc"
+        secret_key: "sk_test_stripe_456def"
+        webhook_secret: "whsec_test_789ghi"
+        price_free: "price_test_free_000"
+        price_pro: "price_test_pro_001"
+        price_enterprise: "price_test_enterprise_002"
+
+    - type: "auth0"
+      purpose: "SSO and identity management"
+      values:
+        domain: "test-saas.auth0.com"
+        client_id: "auth0_client_123"
+        client_secret: "auth0_secret_456"
+        audience: "https://api.test-saas.com"
+
+    - type: "sendgrid"
+      purpose: "Transactional and marketing email"
+      values:
+        api_key: "SG.test_sendgrid_key_abc123"
+        template_welcome: "d-template_welcome_123"
+        template_invite: "d-template_invite_456"
+        template_password_reset: "d-template_reset_789"
+
+    - type: "slack"
+      purpose: "Team notifications and bot integration"
+      values:
+        bot_token: "xoxb-test-slack-bot-token"
+        signing_secret: "test_slack_signing_secret"
+        client_id: "slack_client_123"
+        client_secret: "slack_secret_456"
+
+    - type: "aws_s3"
+      purpose: "File storage for attachments"
+      values:
+        access_key_id: "AKIA_TEST_ACCESS_KEY"
+        secret_access_key: "test_secret_access_key_abc123"
+        bucket_name: "test-saas-attachments"
+        region: "us-east-1"
+
+    - type: "segment"
+      purpose: "Product analytics and user tracking"
+      values:
+        write_key: "test_segment_write_key_xyz"
+
+    - type: "sentry"
+      purpose: "Error tracking and performance monitoring"
+      values:
+        dsn: "https://test@sentry.io/123456"
+        auth_token: "test_sentry_auth_token"
+
+# Expected outputs for verification
+expected:
+  scope_files:
+    - "00_scope_document.md"
+    - "01_features.md"
+    - "02_user_journeys.md"
+    - "03_integrations.md"
+    - "04_technical_architecture.md"
+    - "05_data_model.md"
+    - "06_security_requirements.md"
+    - "07_roadmap.md"
+
+  features:
+    min_count: 15
+    must_include:
+      - "authentication"
+      - "sso"
+      - "mfa"
+      - "organization"
+      - "team"
+      - "rbac"
+      - "subscription"
+      - "billing"
+      - "audit"
+
+  prds:
+    min_count: 18
+    max_count: 40
+
+  journeys:
+    min_count: 8
+    must_include:
+      - "sign-up"
+      - "login"
+      - "sso-login"
+      - "invite-team"
+      - "create-project"
+      - "manage-subscription"
+      - "admin-settings"

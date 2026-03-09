@@ -88,4 +88,4 @@ If task file exists, show progress:
 - Check for network/authentication issues
 - Provide helpful error messages and alternatives
 
-Provide comprehensive issue information to help developers understand context and current status for Issue #$ARGUMENTS.
+Provide comprehensive issue information including context and current status for Issue #$ARGUMENTS.

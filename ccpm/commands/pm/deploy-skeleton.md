@@ -18,7 +18,7 @@ Deploy the generated skeleton application to Kubernetes. Creates namespace, appl
 4. Waits for pods to be ready
 5. Verifies deployment health
 
-## Instructions
+<instructions>
 
 ### Step 1: Parse Arguments
 
@@ -210,6 +210,8 @@ Next steps:
   2. Continue with PRD decomposition
   3. Full deployment will upgrade skeleton in-place
 ```
+
+</instructions>
 
 ## Error Handling
 

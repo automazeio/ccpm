@@ -119,24 +119,26 @@ phase1_decompose_goal() {
   # Create prompt for Claude
   local prompt_file=$(mktemp)
   cat > "${prompt_file}" << PROMPT
-You are a senior software test automation engineer. Decompose this user journey into ordered, atomic test steps.
+<role>
+You are a senior software test automation engineer. Decompose user journeys into ordered, atomic test steps.
+</role>
 
-JOURNEY DEFINITION:
+<journey>
 - Name: ${journey_name}
 - Actor: ${journey_actor}
 - Trigger: ${journey_trigger}
 - Goal: ${journey_goal}
 - Preconditions: ${journey_preconditions}
 - Success Criteria: ${journey_success}
+</journey>
 
-AVAILABLE PAGES IN THE APPLICATION:
+<available_pages>
 ${pages_json}
+</available_pages>
 
-OUTPUT REQUIREMENTS:
-Generate a JSON array of steps. Each step should be specific and testable.
-For a finance app, typical steps include: navigate to page, click button, fill form field, submit form, verify result.
+<output_format>
+Respond with ONLY valid JSON (no explanation, no markdown fences):
 
-OUTPUT FORMAT (JSON only, no explanation):
 {
   "journey_name": "${journey_name}",
   "steps": [
@@ -155,7 +157,8 @@ OUTPUT FORMAT (JSON only, no explanation):
   ]
 }
 
-Generate 3-8 steps that cover the complete journey from start to goal completion.
+Generate 3-8 steps covering the complete journey from trigger to goal completion.
+</output_format>
 PROMPT
 
   # Call Claude CLI to generate steps

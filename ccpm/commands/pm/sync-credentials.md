@@ -167,10 +167,10 @@ To apply: kubectl apply -f k8s-secret.yaml
 
 ## Security Notes
 
-1. **Never commit k8s-secret.yaml** - It's gitignored but be careful
-2. **Secrets are base64 encoded, not encrypted** - Use sealed-secrets for production
-3. **Backup .env before pulling** - from-k8s creates .env.backup
-4. **Check namespace carefully** - Wrong namespace = wrong credentials
+1. Do not commit k8s-secret.yaml (gitignored, but verify before pushing)
+2. Secrets are base64 encoded, not encrypted — use sealed-secrets for production
+3. Back up .env before pulling (`from-k8s` creates .env.backup automatically)
+4. Verify namespace before running — wrong namespace means wrong credentials
 
 ---
 

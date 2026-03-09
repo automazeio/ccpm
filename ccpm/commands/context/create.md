@@ -8,13 +8,12 @@ This command creates the initial project context documentation in `.claude/conte
 
 ## Required Rules
 
-**IMPORTANT:** Before executing this command, read and follow:
+Read and follow before executing:
 - `.claude/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding.
 
 ### 1. Context Directory Check
 - Run: `ls -la .claude/context/ 2>/dev/null`
@@ -112,7 +111,7 @@ After creating each file:
 If any file fails to create:
 - Report which files were successfully created
 - Provide option to continue with partial context
-- Never leave corrupted or incomplete files
+- Remove partial or corrupted files before exiting
 
 ### 6. Post-Creation Summary
 
@@ -150,12 +149,12 @@ Use these commands to gather project information:
 - Documentation scan: `find . -type f -name '*.md' -path '*/docs/*' 2>/dev/null | head -10`
 - Test detection: `find . \(  -path '*/.*' -prune\) -o \(  -type d \( -name 'test' -o -name 'tests' -o -name '__tests__' -o -name 'spec' \) -o -type f \( -name '*[._]test.*' -o -name '*[._]spec.*' -o -name 'test_*.*' -o -name '*_test.*' \)\) 2>/dev/null | head -10`
 
-## Important Notes
+## Notes
 
-- **Always use real datetime** from system clock, never placeholders
-- **Ask for confirmation** before overwriting existing context
-- **Validate each file** is created successfully
-- **Provide detailed summary** of what was created
-- **Handle errors gracefully** with specific guidance
+- Use real datetime from system clock, never placeholders
+- Ask for confirmation before overwriting existing context
+- Validate each file after creation
+- Provide detailed summary of what was created
+- Handle errors with specific guidance
 
 $ARGUMENTS

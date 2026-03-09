@@ -24,7 +24,7 @@ Merge completed epic from worktree back to main branch.
    Read `.claude/epics/$ARGUMENTS/execution-status.md`
    If active agents exist: "⚠️ Active agents detected. Stop them first with: /pm:epic-stop $ARGUMENTS"
 
-## Instructions
+<instructions>
 
 ### 1. Pre-Merge Validation
 
@@ -225,7 +225,9 @@ Cleanup completed:
   ✓ GitHub issues closed
 ```
 
-**DO NOT suggest next steps or mention other commands.**
+**Do not suggest next steps or mention other commands.**
+
+</instructions>
 
 ## Conflict Resolution Help
 
@@ -251,10 +253,10 @@ Or abort and try later:
   git merge --abort
 ```
 
-## Important Notes
+## Rules
 
-- Always check for uncommitted changes first
-- Run tests before merging when possible
-- Use --no-ff to preserve epic history
-- Archive epic data instead of deleting
-- Close GitHub issues to maintain sync
+- Check for uncommitted changes before merging.
+- Run tests before merging when possible.
+- Use --no-ff to preserve epic history in the git log.
+- Archive epic data instead of deleting (data loss is unrecoverable).
+- Close GitHub issues to maintain sync.

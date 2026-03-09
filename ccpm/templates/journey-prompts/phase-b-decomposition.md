@@ -31,7 +31,7 @@ Extract from the flow diagram:
 </task>
 
 <output_format>
-Respond with ONLY valid JSON. No markdown, no explanation.
+Respond with valid JSON only. No markdown, no explanation.
 
 {
   "journey_id": "{{JOURNEY_ID}}",
@@ -66,21 +66,21 @@ Respond with ONLY valid JSON. No markdown, no explanation.
 </output_format>
 
 <constraints>
-- Each step must have a single, clear user action
-- API endpoints MUST match those in the ENDPOINT TABLE MAPPING
-- Database tables MUST match those in the flow diagram
-- Steps should be ordered logically (navigation before action)
-- Include validation/error steps where appropriate
+- Each step has a single, clear user action
+- API endpoints match those in the endpoint mapping (set api_endpoint to null when no match exists)
+- Database tables match those in the flow diagram
+- Order steps logically (navigation before action)
+- Include validation and error steps where appropriate
 - Maximum 15 steps per journey
-- Step names should be concise (3-5 words)
+- Step names are concise (3-5 words)
 </constraints>
 
 <endpoint_mapping_rules>
 When mapping steps to endpoints:
-1. Find the matching endpoint in ENDPOINT TABLE MAPPING
+1. Find the matching endpoint in the endpoint mapping
 2. Use the PRIMARY table as the main db_tables_affected entry
-3. Include SECONDARY tables if the step involves relationships
-4. If no endpoint matches, set api_endpoint to null and db_operation to null
+3. Include SECONDARY tables when the step involves relationships
+4. When no endpoint matches, set api_endpoint to null and db_operation to null
 </endpoint_mapping_rules>
 
 <examples>

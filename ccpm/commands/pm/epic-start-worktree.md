@@ -27,7 +27,7 @@ Launch parallel agents to work on epic tasks in a shared worktree.
    git worktree list | grep "epic-$ARGUMENTS"
    ```
 
-## Instructions
+<instructions>
 
 ### 1. Create or Enter Worktree
 
@@ -165,7 +165,9 @@ As agents complete streams:
 - Launch new agents for newly-ready work
 - Update execution-status.md
 
-## Output Format
+</instructions>
+
+<output_format>
 
 ```
 🚀 Epic Execution Started: $ARGUMENTS
@@ -191,6 +193,8 @@ Blocked Issues (2):
 Monitor with: /pm:epic-status $ARGUMENTS
 ```
 
+</output_format>
+
 ## Error Handling
 
 If agent launch fails:
@@ -212,10 +216,10 @@ Try: git worktree prune
 Or: Check existing worktrees with: git worktree list
 ```
 
-## Important Notes
+## Rules
 
 - Follow `/rules/worktree-operations.md` for git operations
 - Follow `/rules/agent-coordination.md` for parallel work
 - Agents work in the SAME worktree (not separate ones)
-- Maximum parallel agents should be reasonable (e.g., 5-10)
-- Monitor system resources if launching many agents
+- Keep concurrent agent count reasonable (5-10 max)
+- Monitor system resources when launching many agents

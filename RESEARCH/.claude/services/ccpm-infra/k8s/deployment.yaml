@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccpm-infra
+  namespace: robert
+  labels:
+    app: ccpm-infra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccpm-infra
+  template:
+    metadata:
+      labels:
+        app: ccpm-infra
+    spec:
+      containers:
+        - name: webhook-handler
+          image: ubuntu.desmana-truck.ts.net:30500/ccpm-infra:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ccpm-infra-secrets
+                  key: webhook-secret
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ccpm-infra-secrets
+                  key: github-token
+            - name: REPOS_CONFIG
+              value: /config/repos.json
+            - name: OUTPUT_DIR
+              value: /data/output
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: ccpm-infra-config
+        - name: data
+          emptyDir: {}

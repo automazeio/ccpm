@@ -1,0 +1,14 @@
+query_id,query,subquestion,date,results_count,useful_count,notes
+Q01,"LLM uncertainty quantification confidence scoring missing information detection 2026",SQ1,2026-02-02,10,5,Strong academic results on UQ methods
+Q02,"AI requirements gap analysis incomplete information detection NLP 2025 2026",SQ2,2026-02-02,10,3,Mixed relevance - some market research noise
+Q03,"slot filling dialogue systems missing slot detection conversational AI 2025",SQ1,2026-02-02,10,6,Excellent conversational AI sources
+Q04,"LLM self-assessment calibration overconfidence detection when to ask clarifying questions",SQ5,2026-02-02,10,8,Key sources on calibration and clarification
+Q05,"ambiguity detection natural language processing vague terms classification 2025",SQ7,2026-02-02,10,5,Good NLP ambiguity research
+Q06,"AI coding assistant context aware gap detection codebase analysis requirements",SQ4,2026-02-02,10,5,Strong industry sources
+Q07,"LLM requirements elicitation information completeness automated question generation",SQ1,2026-02-02,10,7,Excellent LLMREI and follow-up question sources
+Q08,"INVEST criteria user story completeness validation automated checking",SQ2,2026-02-02,10,4,Good agile methodology sources
+Q09,"LLM know what they don't know epistemic uncertainty information gap detection",SQ5,2026-02-02,2,2,Key self-knowledge paper found
+Q10,"feature request triage prioritization blocking dependencies critical path analysis",SQ3,2026-02-02,10,4,Project management sources
+Q11,"LLM prompt engineering definition of done completeness criteria checklist generation",SQ2,2026-02-02,10,4,Prompt engineering best practices
+Q12,"information extraction incomplete data detection AI analysis",SQ1,2026-02-02,10,2,More focused on ML data than requirements
+Q13,"GitHub Copilot Cursor AI asks questions clarifying feature implementation 2025 2026",SQ4,2026-02-02,10,4,AI coding tool comparison sources

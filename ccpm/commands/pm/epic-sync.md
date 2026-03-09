@@ -228,7 +228,7 @@ Task:
            --label "task,epic:$ARGUMENTS"
     4. Record: task_file:issue_number
 
-    IMPORTANT: Always include --label parameter with "task,epic:$ARGUMENTS"
+    Include --label parameter with "task,epic:$ARGUMENTS" for proper tracking.
 
     Return mapping of files to issue numbers.
 ```
@@ -238,7 +238,7 @@ Consolidate results from parallel agents:
 # Collect all mappings from agents
 cat /tmp/batch-*/mapping.txt >> /tmp/task-mapping.txt
 
-# IMPORTANT: After consolidation, follow step 3 to:
+# After consolidation, follow step 3 to:
 # 1. Build old->new ID mapping
 # 2. Update all task references (depends_on, conflicts_with)
 # 3. Rename files with proper frontmatter updates
@@ -458,11 +458,11 @@ Follow `/rules/github-operations.md` for GitHub CLI errors.
 If any issue creation fails:
 - Report what succeeded
 - Note what failed
-- Don't attempt rollback (partial sync is fine)
+- Leave partial sync as-is — rollback is not needed
 
 ## Important Notes
 
 - Trust GitHub CLI authentication
-- Don't pre-check for duplicates
+- Skip pre-checking for duplicates
 - Update frontmatter only after successful creation
 - Keep operations simple and atomic

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finance-personal-backend
+  namespace: finance-personal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finance-personal-backend
+  template:
+    metadata:
+      labels:
+        app: finance-personal-backend
+    spec:
+      containers:
+      - name: backend
+        image: ubuntu.desmana-truck.ts.net:30500/finance-personal-backend:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        envFrom:
+        - secretRef:
+            name: finance-personal-secrets
+            optional: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5

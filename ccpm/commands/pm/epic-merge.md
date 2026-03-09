@@ -22,7 +22,7 @@ Merge completed epic from worktree back to main branch.
    Read `.claude/epics/$ARGUMENTS/execution-status.md`
    If active agents exist: "⚠️ Active agents detected. Stop them first with: /pm:epic-stop $ARGUMENTS"
 
-## Instructions
+<instructions>
 
 ### 1. Pre-Merge Validation
 
@@ -140,10 +140,10 @@ Options:
    - Edit conflicted files
    - git add {files}
    - git commit
-   
+
 2. Abort merge:
    git merge --abort
-   
+
 3. Get help:
    /pm:epic-resolve $ARGUMENTS
 
@@ -215,18 +215,20 @@ Summary:
   Commits merged: {count}
   Files changed: {count}
   Issues closed: {count}
-  
+
 Cleanup completed:
   ✓ Worktree removed
   ✓ Branch deleted
   ✓ Epic archived
   ✓ GitHub issues closed
-  
+
 Next steps:
   - Deploy changes if needed
   - Start new epic: /pm:prd-new {feature}
   - View completed work: git log --oneline -20
 ```
+
+</instructions>
 
 ## Conflict Resolution Help
 
@@ -252,10 +254,10 @@ Or abort and try later:
   git merge --abort
 ```
 
-## Important Notes
+## Rules
 
-- Always check for uncommitted changes first
-- Run tests before merging when possible
-- Use --no-ff to preserve epic history
-- Archive epic data instead of deleting
-- Close GitHub issues to maintain sync
+- Check for uncommitted changes before merging.
+- Run tests before merging when possible.
+- Use --no-ff to preserve epic history in the git log.
+- Archive epic data instead of deleting (data loss is unrecoverable).
+- Close GitHub issues to maintain sync.

@@ -13,13 +13,12 @@ Push local updates as GitHub issue comments for transparent audit trail.
 
 ## Required Rules
 
-**IMPORTANT:** Before executing this command, read and follow:
+Read and follow before executing:
 - `.claude/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding.
 
 0. **Repository Protection Check:**
    Follow `/rules/github-operations.md` - check remote origin:
@@ -226,7 +225,7 @@ This task is ready for review and can be closed.
 ```
 
 ### 10. Frontmatter Maintenance
-- Always update task file frontmatter with current timestamp
+- Update task file frontmatter with current timestamp
 - Track completion percentages in progress files
 - Update epic progress when tasks complete
 - Maintain sync timestamps for audit trail

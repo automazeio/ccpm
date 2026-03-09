@@ -391,9 +391,7 @@ Based on the section name, ask these specific questions:
 
 ### Handling Unknown Answers - Research On The Fly
 
-When user says "I don't know", "not sure", "research this", or similar:
-
-**DO NOT just mark as UNKNOWN and move on.** Instead:
+When user says "I don't know", "not sure", "research this", or similar, research before marking as UNKNOWN:
 
 1. **Offer to research immediately:**
    ```
@@ -531,12 +529,12 @@ Next section: {next_section_name}
 Or run: .claude/scripts/prd-scope.sh {scope-name} --discover
 ```
 
-### Important Rules
+### Rules
 
-1. **One section only** - Don't ask questions from other sections
-2. **Research before marking unknown** - Always offer to research first
-3. **Write immediately** - Save section file when complete
-4. **Be conversational** - This is interactive, not an interrogation
-5. **Extract key points** - Don't just record raw answers
-6. **Use context** - Reference earlier answers when making recommendations
-7. **One search per topic** - Don't over-research, present top 2-3 options
+1. Ask questions from this section only
+2. Offer to research before marking any answer UNKNOWN
+3. Save section file immediately on completion
+4. Keep the interaction conversational
+5. Extract key points — do not record raw answers verbatim
+6. Reference earlier answers when making recommendations
+7. One search per topic — present top 2-3 options

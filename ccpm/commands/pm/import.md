@@ -91,8 +91,8 @@ Next steps:
   Run /pm:sync to ensure full synchronization
 ```
 
-## Important Notes
+## Notes
 
-Preserve all GitHub metadata in frontmatter.
-Mark imported files with `imported: true` flag.
-Don't overwrite existing local files.
+- Preserve all GitHub metadata in frontmatter
+- Mark imported files with `imported: true` flag
+- Skip existing local files — do not overwrite

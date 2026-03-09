@@ -75,4 +75,4 @@ If checking multiple issues, support comma-separated list:
 /pm:issue-status 123,124,125
 ```
 
-Keep the output concise but informative, perfect for quick status checks during development of Issue #$ARGUMENTS.
+Keep output concise and informative for quick status checks on Issue #$ARGUMENTS.

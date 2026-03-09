@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ccpm.dev/schemas/feedback.schema.json",
+  "title": "Synthetic Persona Feedback",
+  "description": "Schema for synthetic user feedback generated from persona test experiences",
+  "type": "object",
+  "required": ["session", "generatedAt", "testRun", "summary", "feedback"],
+  "properties": {
+    "session": {
+      "type": "string",
+      "description": "Session name identifier"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "testRun": {
+      "type": "object",
+      "required": ["timestamp", "totalTests", "passed", "failed", "successRate"],
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "duration": { "type": "string" },
+        "totalTests": { "type": "integer", "minimum": 0 },
+        "passed": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "successRate": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["averageRating", "averageNPS", "recommendationRate", "totalBugs", "totalFeatureRequests"],
+      "properties": {
+        "averageRating": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "averageNPS": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100
+        },
+        "recommendationRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "totalBugs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalFeatureRequests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "topFrustrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["theme", "mentions"],
+            "properties": {
+              "theme": { "type": "string" },
+              "mentions": { "type": "integer", "minimum": 1 }
+            }
+          }
+        }
+      }
+    },
+    "feedback": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/personaFeedback"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "personaFeedback": {
+      "type": "object",
+      "required": [
+        "personaId", "personaName", "personaRole", "feedbackStyle",
+        "testContext", "overallRating", "overallComment",
+        "positives", "frustrations", "bugs", "featureRequests",
+        "recommendation", "recommendationReason", "npsScore", "generatedAt"
+      ],
+      "properties": {
+        "personaId": {
+          "type": "string",
+          "pattern": "^persona-[0-9]{2}$"
+        },
+        "personaName": {
+          "type": "string"
+        },
+        "personaRole": {
+          "type": "string"
+        },
+        "feedbackStyle": {
+          "type": "string",
+          "enum": ["detailed", "brief", "frustrated", "enthusiastic"]
+        },
+        "testContext": {
+          "type": "object",
+          "required": ["totalTests", "passed", "failed", "successRate", "journeysTested"],
+          "properties": {
+            "totalTests": { "type": "integer", "minimum": 0 },
+            "passed": { "type": "integer", "minimum": 0 },
+            "failed": { "type": "integer", "minimum": 0 },
+            "successRate": { "type": "number", "minimum": 0, "maximum": 100 },
+            "journeysTested": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^J-[0-9]{3}$" }
+            }
+          }
+        },
+        "overallRating": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "overallComment": {
+          "type": "string",
+          "minLength": 10
+        },
+        "positives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item"],
+            "properties": {
+              "item": { "type": "string" },
+              "journeyRef": { "type": "string", "pattern": "^J-[0-9]{3}$" },
+              "featureRef": { "type": "string" }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 5
+        },
+        "frustrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["item", "severity"],
+            "properties": {
+              "item": { "type": "string" },
+              "severity": {
+                "type": "string",
+                "enum": ["minor", "moderate", "major"]
+              },
+              "journeyRef": { "type": "string", "pattern": "^J-[0-9]{3}$" },
+              "screenshot": { "type": "string" }
+            }
+          }
+        },
+        "bugs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "description", "severity"],
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"]
+              },
+              "stepsToReproduce": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "journeyRef": { "type": "string", "pattern": "^J-[0-9]{3}$" },
+              "screenshot": { "type": "string" }
+            }
+          }
+        },
+        "featureRequests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "description", "priority"],
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "priority": {
+                "type": "string",
+                "enum": ["nice-to-have", "important", "critical"]
+              },
+              "personaImpact": { "type": "string" }
+            }
+          }
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": ["yes", "no", "maybe"]
+        },
+        "recommendationReason": {
+          "type": "string"
+        },
+        "npsScore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rawFeedback": {
+          "type": "string",
+          "description": "Original LLM output for reference"
+        }
+      }
+    }
+  }
+}

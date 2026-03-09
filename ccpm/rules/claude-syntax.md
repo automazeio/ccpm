@@ -4,16 +4,10 @@ Rules for writing effective prompts for Claude, based on LLM prompt engineering 
 
 ## XML Tags
 
-Claude was trained with XML tags, making them highly effective for structure.
+Claude was trained with XML tags, making them highly effective for structural delineation.
 
-### Benefits
-- Clearer parsing of prompt sections
-- Reduced misinterpretation errors
-- Easier extraction of specific response parts
-
-### Recommended Tags
-
-Use semantically meaningful names:
+- XML tags reduce misinterpretation errors and make prompt sections easy to extract
+- Use semantically meaningful names:
 
 ```xml
 <task>What to do</task>
@@ -24,10 +18,9 @@ Use semantically meaningful names:
 <output_format>Expected response structure</output_format>
 ```
 
-### Best Practices
+### Example
 
 ```xml
-<!-- Good: Clear structure -->
 <task>
 Fix the bug in the login function.
 </task>
@@ -38,7 +31,7 @@ Users report intermittent failures.
 </context>
 
 <constraints>
-- Do not change the function signature
+- Keep the function signature unchanged (callers depend on it)
 - Maintain backward compatibility
 </constraints>
 
@@ -51,15 +44,11 @@ Provide the fixed code in a python code block.
 
 Claude 4.x follows instructions precisely. Vague requests get vague results.
 
-### Less Effective
-
 ```
+# Less effective
 Create a dashboard
-```
 
-### More Effective
-
-```
+# More effective
 Create an analytics dashboard with:
 - Line chart showing daily active users
 - Bar chart showing revenue by product
@@ -67,37 +56,28 @@ Create an analytics dashboard with:
 - Date range selector (default: last 30 days)
 ```
 
-## Provide Context for Constraints
+## Provide Rationale for Constraints
 
-Explain WHY rules matter, not just WHAT they are.
-
-### Less Effective
+Explain why rules matter — Claude generalizes from explanations, which reduces the need for exhaustive rule lists.
 
 ```
+# Less effective
 Never use ellipses
+
+# More effective
+Never use ellipses (the text-to-speech engine cannot pronounce them, causing awkward pauses)
 ```
 
-### More Effective
-
-```
-Never use ellipses because the text-to-speech engine
-cannot pronounce them, causing awkward pauses.
-```
-
-## Tell What TO Do
+## Positive Instructions
 
 Positive instructions outperform negative ones.
 
-### Less Effective
-
 ```
+# Less effective
 Don't include implementation details in steps.
 Don't use technical jargon.
-```
 
-### More Effective
-
-```
+# More effective
 Write steps in user-focused language.
 Use domain terms the business user would recognize.
 Example: "submit the form" not "POST to /api/users"
@@ -106,8 +86,6 @@ Example: "submit the form" not "POST to /api/users"
 ## Few-Shot Examples
 
 For complex or novel formats, include 2-5 examples.
-
-### Structure
 
 ```xml
 <examples>
@@ -134,20 +112,19 @@ Feature: Profile Management
 </examples>
 ```
 
-### Tips
-- Place best example last (recency bias)
+- Place the best example last (recency bias)
 - Cover edge cases in examples
 - Keep examples diverse but relevant
 
 ## Output Format Control
 
-Be explicit about expected response format.
+Specify the expected response format explicitly.
 
 ### For Code
 
 ```xml
 <output_format>
-Output ONLY a single code block.
+Output only a single code block.
 Start with triple backticks and the language name.
 End with triple backticks on its own line.
 No explanations before or after the code.
@@ -158,7 +135,7 @@ No explanations before or after the code.
 
 ```xml
 <output_format>
-Respond with ONLY a JSON object:
+Respond with only a JSON object:
 {
   "score": <0-100>,
   "passed": <true|false>,
@@ -170,7 +147,7 @@ No markdown, no explanation, just valid JSON.
 
 ## Role Prompting
 
-Assigning a role improves domain-specific accuracy.
+Assigning a role improves domain-specific accuracy (single most powerful system prompt technique per Anthropic):
 
 ```xml
 <role>
@@ -182,20 +159,16 @@ writing Gherkin acceptance criteria. You prioritize:
 </role>
 ```
 
-## Avoid Over-Engineering
+## Scope Limiting
 
-Claude 4.x tends to add unnecessary complexity.
-
-### Add This Constraint
+Claude 4.x tends to add unnecessary complexity. Include a scope constraint for focused tasks:
 
 ```
-Avoid over-engineering. Only make changes directly requested.
+Implement only what is directly requested.
 Keep solutions simple and focused.
-
-Do not:
-- Add features not asked for
-- Create abstractions for one-time operations
-- Add "nice to have" error handling for impossible scenarios
+- Do not add unrequested features
+- Do not create abstractions for one-time operations
+- Do not add error handling for scenarios outside the described scope
 ```
 
 ## Extended Thinking
@@ -209,22 +182,11 @@ For complex reasoning, use graduated triggers:
 | `think harder` | High complexity |
 | `ultrathink` | Maximum depth |
 
-### When to Use
+Use for: complex math, multi-step coding, architectural decisions, intricate debugging.
 
-- Complex mathematical problems
-- Multi-step coding tasks
-- Architectural decisions
-- Debugging intricate issues
-
-### When to Skip
-
-- Simple, direct tasks
-- Format conversion
-- Straightforward edits
+Skip for: simple tasks, format conversion, straightforward edits.
 
 ## Prompt Template
-
-Complete template incorporating all rules:
 
 ```xml
 <role>
@@ -246,7 +208,7 @@ Complete template incorporating all rules:
 </instructions>
 
 <constraints>
-- [Rule with explanation of WHY]
+- [Rule with explanation of why]
 - [Another rule with context]
 </constraints>
 
@@ -263,7 +225,7 @@ Complete template incorporating all rules:
 
 ## References
 
-Based on research from:
+Based on:
 - Anthropic Claude documentation
 - LLM prompt engineering best practices (2025-2026)
 - Empirical testing with Claude 4.x models

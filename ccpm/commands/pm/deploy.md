@@ -16,7 +16,7 @@ Deploy project to Kubernetes. Optionally builds images first via `/pm:build-depl
 test -f .claude/scopes/$ARGUMENTS.md || echo "❌ Scope not found: $ARGUMENTS"
 ```
 
-## Instructions
+<instructions>
 
 ### 1. Load Configuration
 
@@ -115,7 +115,9 @@ kubectl get pods -n {namespace}
 kubectl get services -n {namespace}
 ```
 
-## Output
+</instructions>
+
+<output_format>
 
 ### Success
 ```
@@ -149,6 +151,8 @@ Events:
 To retry: /pm:deploy {scope}
 To skip build: /pm:deploy {scope} --skip-build
 ```
+
+</output_format>
 
 ## Scope Configuration Reference
 

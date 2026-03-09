@@ -25,6 +25,8 @@ Analyze synthetic feedback from all personas to identify patterns, prioritize is
 
 ---
 
+<instructions>
+
 ## Process
 
 ### Step 1: Initialize and Validate
@@ -538,16 +540,18 @@ Next Steps:
 2. Generate remediation PRDs: /pm:generate-remediation {session-name}
 ```
 
+</instructions>
+
 ---
 
-## Important Rules
+## Analysis Rules
 
-1. **Quantitative + Qualitative** - Use both metrics and quotes
-2. **RICE prioritization** - Score all issues consistently
-3. **Pattern recognition** - Group similar issues together
-4. **Actionable output** - Every issue should have a clear fix
-5. **Preserve strengths** - Note what's working well
-6. **Journey mapping** - Track issues back to specific journeys
+1. Use both metrics and verbatim quotes (quantitative + qualitative)
+2. Score all issues with RICE for consistent prioritization
+3. Group similar issues together (pattern recognition reduces redundancy)
+4. Each issue should have a clear suggested fix (actionable output)
+5. Note features that are working well (preserve strengths)
+6. Track each issue back to specific journeys (journey mapping)
 
 ---
 

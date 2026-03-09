@@ -1070,15 +1070,15 @@ Next Steps:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Query database** - Don't parse conversation, use SQL
-2. **Only confirmed data** - Filter by `status = 'confirmed'`
-3. **Generate tech ops** - Create `03_technical_ops.md`
-4. **Generate test plan** - Create `08_test_plan.md`
-5. **Derive NFRs** - Infer from cross-cutting concerns and scale
-6. **Identify gaps** - Check for missing data
-7. **Link files** - Reference related files in scope document
+1. Query database — use SQL, not conversation parsing
+2. Filter by `status = 'confirmed'` for confirmed data only
+3. Create `03_technical_ops.md` from journey steps
+4. Create `08_test_plan.md` from features and journeys
+5. Derive NFRs from cross-cutting concerns and scale
+6. Check for missing data gaps
+7. Reference related files in scope document
 
 ---
 

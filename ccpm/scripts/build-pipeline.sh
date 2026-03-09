@@ -150,13 +150,13 @@ Focus areas:
 4. **Open Source Tools**: What tools support this step?
 5. **Integration Pattern**: How to integrate into a bash pipeline (feature_interrogate.sh)
 
-Output Format Requirements:
-- Include specific prompt templates that can be used directly
-- Include validation checklists with pass/fail criteria
-- Include accuracy measurement approach
-- Include sample outputs
+Output:
+- Specific prompt templates usable directly
+- Validation checklists with pass/fail criteria
+- Accuracy measurement approach
+- Sample outputs
 
-Write comprehensive findings that can be directly used to implement this step."
+Write comprehensive findings directly usable to implement this step."
 
   # Run research via Claude
   if command -v claude &> /dev/null; then
@@ -215,11 +215,11 @@ $(cat "$research_file" | head -500)
 $current_structure
 
 ## Requirements
-1. The step must integrate with the existing pipeline flow
-2. Must include validation with accuracy threshold of ${ACCURACY_THRESHOLDS[$step]}%
-3. Must output artifacts to the session directory
-4. Must handle errors gracefully
-5. Must be testable independently
+1. Integrate with the existing pipeline flow
+2. Include validation with accuracy threshold of ${ACCURACY_THRESHOLDS[$step]}%
+3. Output artifacts to the session directory
+4. Handle errors gracefully
+5. Be testable independently
 
 ## Output Format
 Create a detailed implementation plan with:
@@ -325,7 +325,7 @@ step_${step}_$(echo "$step_name" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')() {
 }
 \`\`\`
 
-Also provide the exact location where this function should be inserted in feature_interrogate.sh (line number or after which function)."
+Include the exact insertion location in feature_interrogate.sh (line number or after which function)."
 
   if command -v claude &> /dev/null; then
     log "Running claude for code generation..."
@@ -434,12 +434,12 @@ Schema: users table, profiles table"
 $(cat "$code_file")
 
 ## Requirements
-- Must show step header
-- Must call Claude with appropriate prompt
-- Must save output to session directory
-- Must validate output
-- Must return accuracy score
-- Must handle errors
+- Show step header
+- Call Claude with appropriate prompt
+- Save output to session directory
+- Validate output
+- Return accuracy score
+- Handle errors
 
 ## Evaluation Criteria
 1. Completeness (0-25): Does it have all required sections?
@@ -559,7 +559,7 @@ $current_code
 </current_code>
 
 <syntax_rules>
-Bash heredocs MUST be properly closed or the script will fail to parse. Every heredoc delimiter must have a matching closing delimiter on its own line.
+Bash heredocs require a matching closing delimiter on its own line (missing delimiter causes parse failure).
 
 When writing heredocs with special characters, use these patterns:
 

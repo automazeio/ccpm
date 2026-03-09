@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "pre-tool-use": {
+      "Bash": {
+        "enabled": true,
+        "script": ".claude/hooks/bash-worktree-fix.sh",
+        "description": "Automatically prepends worktree path to Bash commands when in a worktree",
+        "apply_to_subagents": true
+      }
+    }
+  }
+}

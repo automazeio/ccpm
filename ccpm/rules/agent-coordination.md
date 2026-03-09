@@ -4,10 +4,10 @@ Rules for multiple agents working in parallel within the same epic worktree.
 
 ## Parallel Execution Principles
 
-1. **File-level parallelism** - Agents working on different files never conflict
-2. **Explicit coordination** - When same file needed, coordinate explicitly
-3. **Fail fast** - Surface conflicts immediately, don't try to be clever
-4. **Human resolution** - Conflicts are resolved by humans, not agents
+1. **File-level parallelism** — Agents working on different files never conflict
+2. **Explicit coordination** — When the same file is needed, coordinate explicitly
+3. **Fail fast** — Surface conflicts immediately rather than attempting clever workarounds
+4. **Human resolution** — Conflicts are resolved by humans, not agents
 
 ## Work Stream Assignment
 
@@ -23,17 +23,16 @@ Stream B: API Layer
   Agent: api-specialist
 ```
 
-Agents should only modify files in their assigned patterns.
+Modify only files in your assigned patterns.
 
 ## File Access Coordination
 
 ### Check Before Modify
 Before modifying a shared file:
 ```bash
-# Check if file is being modified
+# Check if file is being modified by another agent
 git status {file}
 
-# If modified by another agent, wait
 if [[ $(git status --porcelain {file}) ]]; then
   echo "Waiting for {file} to be available..."
   sleep 30
@@ -44,11 +43,11 @@ fi
 ### Atomic Commits
 Make commits atomic and focused:
 ```bash
-# Good - Single purpose commit
+# Good - single purpose commit
 git add src/api/users.ts src/api/users.test.ts
 git commit -m "Issue #1234: Add user CRUD endpoints"
 
-# Bad - Mixed concerns
+# Bad - mixed concerns
 git add src/api/* src/db/* src/ui/*
 git commit -m "Issue #1234: Multiple changes"
 ```
@@ -56,17 +55,16 @@ git commit -m "Issue #1234: Multiple changes"
 ## Communication Between Agents
 
 ### Through Commits
-Agents see each other's work through commits:
 ```bash
-# Agent checks what others have done
+# Check what others have done
 git log --oneline -10
 
-# Agent pulls latest changes
+# Pull latest changes
 git pull origin epic/{name}
 ```
 
 ### Through Progress Files
-Each stream maintains progress:
+Each stream maintains a progress file:
 ```markdown
 # .claude/epics/{epic}/updates/{issue}/stream-A.md
 ---
@@ -88,9 +86,8 @@ status: in_progress
 ```
 
 ### Through Analysis Files
-The analysis file is the contract:
+The analysis file is the contract between streams:
 ```yaml
-# Agents read this to understand boundaries
 Stream A:
   Files: src/db/*  # Agent A only touches these
 Stream B:
@@ -101,41 +98,38 @@ Stream B:
 
 ### Conflict Detection
 ```bash
-# If commit fails due to conflict
 git commit -m "Issue #1234: Update"
 # Error: conflicts exist
 
-# Agent should report and wait
-echo "❌ Conflict detected in {files}"
+# Report and wait — do not attempt automatic resolution
+echo "Conflict detected in {files}"
 echo "Human intervention needed"
 ```
 
 ### Conflict Resolution
-Always defer to humans:
 1. Agent detects conflict
 2. Agent reports issue
 3. Agent pauses work
 4. Human resolves
 5. Agent continues
 
-Never attempt automatic merge resolution.
+Defer all merge conflict resolution to humans.
 
 ## Synchronization Points
 
 ### Natural Sync Points
 - After each commit
-- Before starting new file
+- Before starting a new file
 - When switching work streams
 - Every 30 minutes of work
 
 ### Explicit Sync
 ```bash
-# Pull latest changes
 git pull --rebase origin epic/{name}
 
-# If conflicts, stop and report
+# Stop and report if sync fails
 if [[ $? -ne 0 ]]; then
-  echo "❌ Sync failed - human help needed"
+  echo "Sync failed - human help needed"
   exit 1
 fi
 ```
@@ -143,16 +137,14 @@ fi
 ## Agent Communication Protocol
 
 ### Status Updates
-Agents should update their status regularly:
 ```bash
-# Update progress file every significant step
-echo "✅ Completed: Database schema" >> stream-A.md
+# Update progress file at each significant step
+echo "Completed: Database schema" >> stream-A.md
 git add stream-A.md
 git commit -m "Progress: Stream A - schema complete"
 ```
 
 ### Coordination Requests
-When agents need to coordinate:
 ```markdown
 # In stream-A.md
 ## Coordination Needed
@@ -179,8 +171,7 @@ When touching shared resources:
 git add src/types/index.ts
 git commit -m "Issue #1234: Update type definitions"
 
-# Agent B waits, then proceeds
-# (After A's commit)
+# Agent B pulls, then proceeds
 git pull
 git add src/api/users.ts
 git commit -m "Issue #1235: Use new types"
@@ -188,12 +179,12 @@ git commit -m "Issue #1235: Use new types"
 
 ## Best Practices
 
-1. **Commit early and often** - Smaller commits = fewer conflicts
-2. **Stay in your lane** - Only modify assigned files
-3. **Communicate changes** - Update progress files
-4. **Pull frequently** - Stay synchronized with other agents
-5. **Fail loudly** - Report issues immediately
-6. **Never force** - No `--force` flags ever
+1. **Commit early and often** — Smaller commits mean fewer conflicts
+2. **Stay in your lane** — Modify only assigned files
+3. **Communicate changes** — Update progress files
+4. **Pull frequently** — Stay synchronized with other agents
+5. **Fail loudly** — Report issues immediately
+6. **No force flags** — Avoid `--force` in all git operations
 
 ## Common Patterns
 

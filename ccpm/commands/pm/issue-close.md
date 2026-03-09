@@ -95,8 +95,8 @@ fi
 Next: Run /pm:next for next priority task
 ```
 
-## Important Notes
+## Notes
 
-Follow `/rules/frontmatter-operations.md` for updates.
-Follow `/rules/github-operations.md` for GitHub commands.
-Always sync local state before GitHub.
+- Follow `/rules/frontmatter-operations.md` for updates
+- Follow `/rules/github-operations.md` for GitHub commands
+- Update local state before GitHub

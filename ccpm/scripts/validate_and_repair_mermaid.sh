@@ -107,12 +107,12 @@ $diagram
 ERROR MESSAGE:
 $error
 
-SYNTAX RULES TO FOLLOW:
-1. Never use "end" as a node ID - use "finish", "done", or "complete" instead
-2. Never start node IDs with "o" or "x" - these conflict with edge markers
-3. Use "-->" for arrows, not "->"
-4. Ensure all brackets [] {} () are balanced
-5. Every "subgraph" must have a matching "end"
+SYNTAX RULES:
+1. Use "finish", "done", or "complete" as node IDs ("end" is a reserved word)
+2. Start node IDs with letters other than "o" or "x" (those conflict with edge markers)
+3. Use "-->" for arrows (not "->")
+4. Balance all brackets [] {} ()
+5. Match each "subgraph" with a closing "end"
 6. Wrap labels with special characters in quotes: A["Label (with parens)"]
 7. Use short alphanumeric IDs: A, B, C or auth, db, api
 

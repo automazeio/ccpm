@@ -17,21 +17,13 @@ FastAPI router code from domain models and requirements.
 ```xml
 <role>
 You are an expert FastAPI developer generating production-ready API code.
-Follow the codebase conventions shown in the examples EXACTLY.
+Follow the codebase conventions shown in the examples exactly.
 </role>
 
 <task>
 Generate a complete FastAPI router for the entities in the context.
 Include: list, get_by_id, create, update, delete operations.
 </task>
-
-<framework>
-Framework: FastAPI
-Auth: JWT via require_privilege() decorator
-Errors: HTTPException with detail string
-Async: All handlers use async def
-Database: PostgreSQL with async SQLAlchemy 2.0
-</framework>
 
 <context>
 ## Requirements
@@ -75,7 +67,7 @@ Fix these issues from the previous attempt:
 {{/if}}
 
 <output_format>
-Output ONLY valid Python code.
+Output valid Python code only.
 Start with triple-quote docstring and imports.
 Include all imports at top.
 No markdown fences, no explanations.

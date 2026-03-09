@@ -29,3 +29,41 @@ S27,https://ragents.readthedocs.io/en/latest/agents/decision-tree/,RAGents Decis
 S28,https://huggingface.co/nvidia/prompt-task-and-complexity-classifier,NVIDIA Prompt Classifier,Tool Docs,B,SQ3 SQ7,2026-01-21
 S29,https://homepages.inf.ed.ac.uk/csutton/publications/naturalize.pdf,Naturalize Paper,Academic Paper,A,SQ3,2026-01-21
 S30,https://arxiv.org/html/2512.18925v1,Developer Context for AI Assistants,Academic Paper,A,SQ3,2026-01-21
+S31,https://arxiv.org/abs/2601.15778,Agentic Confidence Calibration (HTC),Academic Paper,A,SQ7 SQ4,2026-01-24
+S32,https://cursor.com/blog/scaling-agents,Cursor Multi-Agent Coordination,Official Blog,A,SQ1 SQ8,2026-01-24
+S33,https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent,GitHub Copilot Coding Agent,Official Docs,A,SQ1 SQ2,2026-01-24
+S34,https://github.blog/changelog/2026-01-14-github-copilot-cli-enhanced-agents-context-management-and-new-ways-to-install/,GitHub Copilot CLI Jan 2026,Official Changelog,A,SQ1 SQ2,2026-01-24
+S35,https://www.deloitte.com/us/en/insights/topics/technology-management/tech-trends/2026/agentic-ai-strategy.html,Deloitte Agentic AI Strategy 2026,Industry Report,A,SQ4 SQ6,2026-01-24
+S36,https://www.adopt.ai/glossary/agent-fallback-mechanisms,Agent Fallback Mechanisms,Industry Guide,B,SQ4 SQ7,2026-01-24
+S37,https://dev.to/alessandro_pignati/why-your-llm-needs-runtime-guardrails-the-developers-guide-to-californias-2026-ai-laws-4fon,California AI Laws Guide,Developer Guide,B,SQ4,2026-01-24
+S38,https://modelcontextprotocol.io/specification/2025-11-25,MCP Specification,Official Spec,A,SQ4,2026-01-24
+S39,https://www.redhat.com/en/blog/model-context-protocol-mcp-understanding-security-risks-and-controls,MCP Security Risks (Red Hat),Vendor Analysis,B,SQ4,2026-01-24
+S40,https://www.faros.ai/blog/best-ai-coding-agents-2026,Best AI Coding Agents 2026,Industry Analysis,B,SQ1,2026-01-24
+S41,https://www.apticode.in/blogs/cursor-ai-agent-mode-shift-autocomplete-autonomous-coding,Cursor Agent Mode Analysis,Blog,B,SQ1,2026-01-24
+S42,https://www.anthropic.com/engineering/claude-code-best-practices,Claude Code Best Practices,Official Docs,A,SQ1 SQ2,2026-01-24
+S43,https://angelo-lima.fr/en/claude-code-cicd-headless-en/,Claude Code CI/CD Headless,Tutorial,B,SQ2,2026-01-24
+S44,https://www.cncf.io/blog/2026/01/23/the-autonomous-enterprise-and-the-four-pillars-of-platform-control-2026-forecast/,CNCF Platform Control 2026,Industry Analysis,A,SQ6,2026-01-24
+S45,https://code.claude.com/docs/en/headless,Claude Code Agent SDK Headless Docs,Official Docs,A,SQ1 SQ2,2026-03-01
+S46,https://github.blog/changelog/2026-02-13-github-agentic-workflows-are-now-in-technical-preview/,GitHub Agentic Workflows Preview,Official Changelog,A,SQ2 SQ8,2026-03-01
+S47,https://github.blog/ai-and-ml/automate-repository-tasks-with-github-agentic-workflows/,GitHub Agentic Workflows Blog,Official Blog,A,SQ2 SQ8,2026-03-01
+S48,https://airia.com/agent-constraints-a-technical-deep-dive-into-policy-based-ai-agent-governance/,Airia Policy-Based Governance,Technical Deep Dive,B,SQ4 SQ6,2026-03-01
+S49,https://vadim.blog/verification-gate-research-to-practice,Verification Gate Pattern,Practitioner Blog,B,SQ1 SQ4,2026-03-01
+S50,https://docs.temporal.io/ai-cookbook/human-in-the-loop-python,Temporal HITL Pattern,Official Docs,B,SQ2 SQ4,2026-03-01
+S51,https://northflank.com/blog/how-to-sandbox-ai-agents,AI Agent Sandboxing Guide,Technical Guide,B,SQ4,2026-03-01
+S52,https://docs.renovatebot.com/key-concepts/automerge/,Renovate Automerge Docs,Official Docs,A,SQ2 SQ3,2026-03-01
+S53,https://www.permit.io/blog/human-in-the-loop-for-ai-agents-best-practices-frameworks-use-cases-and-demo,HITL Best Practices,Industry Guide,B,SQ4,2026-03-01
+S54,https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns,Microsoft Agent Orchestration Patterns,Architecture Guide,A,SQ1 SQ8,2026-03-01
+S55,https://arxiv.org/pdf/2602.06948,Agentic Overconfidence Paper,Academic Paper,A,SQ7,2026-03-01
+S56,https://air-governance-framework.finos.org/mitigations/mi-18_agent-authority-least-privilege-framework.html,FINOS Agent Least Privilege,Governance Framework,B,SQ4,2026-03-01
+S57,https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/gensec05-bp01.html,AWS Well-Architected Agentic Security,Official Docs,A,SQ4,2026-03-01
+S58,https://www.infoq.com/articles/building-ai-agent-gateway-mcp/,AI Agent Gateway MCP+OPA,Technical Article,B,SQ4 SQ8,2026-03-01
+S59,https://fortune.com/2026/01/23/cursor-built-web-browser-with-swarm-ai-agents-powered-openai/,Fortune Cursor Browser Experiment,News Report,C,SQ1,2026-03-01
+S60,https://blog.promptlayer.com/claude-dangerously-skip-permissions/,Claude --dangerously-skip-permissions Analysis,Blog,C,SQ2,2026-03-01
+S61,https://dev.to/mikelane/building-guardrails-for-ai-coding-assistants-a-pretooluse-hook-system-for-claude-code-ilj,Claude Code Hooks Guardrails Guide,Developer Guide,C,SQ4,2026-03-01
+S62,https://github.blog/changelog/2026-02-26-claude-and-codex-now-available-for-copilot-business-pro-users/,Claude and Codex on Agent HQ,Official Changelog,A,SQ1,2026-03-01
+S63,https://github.blog/changelog/2026-02-25-github-copilot-cli-is-now-generally-available/,GitHub Copilot CLI GA,Official Changelog,A,SQ1 SQ2,2026-03-01
+S64,https://langwatch.ai/changelog/introducing-simulation-based-agent-testing,LangWatch Simulation Testing,Product Announcement,C,SQ5 SQ8,2026-03-01
+S65,https://www.gartner.com/en/newsroom/press-releases/2025-08-26-gartner-predicts-40-percent-of-enterprise-apps-will-feature-task-specific-ai-agents-by-2026-up-from-less-than-5-percent-in-2025,Gartner AI Agent Prediction,Press Release,A,SQ1,2026-03-01
+S66,https://www.unite.ai/agentic-sre-how-self-healing-infrastructure-is-redefining-enterprise-aiops-in-2026/,Unite.AI Agentic SRE,Industry Analysis,C,SQ6,2026-03-01
+S67,https://www.loginradius.com/blog/engineering/limiting-data-exposure-and-blast-radius-for-ai-agents,LoginRadius Blast Radius Containment,Technical Blog,C,SQ4,2026-03-01
+S68,https://bytebridge.medium.com/from-human-in-the-loop-to-human-on-the-loop-evolving-ai-agent-autonomy-c0ae62c3bf91,ByteBridge HITL to HOTL,Blog Analysis,C,SQ8,2026-03-01

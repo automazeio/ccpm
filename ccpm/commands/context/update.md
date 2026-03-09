@@ -8,13 +8,12 @@ This command updates the project context documentation in `.claude/context/` to 
 
 ## Required Rules
 
-**IMPORTANT:** Before executing this command, read and follow:
+Read and follow before executing:
 - `.claude/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding.
 
 ### 1. Context Validation
 - Run: `ls -la .claude/context/ 2>/dev/null`
@@ -217,13 +216,13 @@ Use these commands to detect changes:
 - New untracked files: `git ls-files --others --exclude-standard | head -10`
 - Dependency changes: Check package.json, requirements.txt, pyproject.toml, composer.json, Gemfile, Cargo.toml, go.mod, pom.xml, build.gradle, build.gradle.kts, *.sln, *.csproj, Package.swift, pubspec.yaml, CMakeLists.txt, etc.
 
-## Important Notes
+## Notes
 
-- **Only update files with actual changes** - preserve accurate timestamps
-- **Always use real datetime** from system clock for `last_updated`
-- **Make surgical updates** - don't regenerate entire files
-- **Validate each update** - ensure files remain valid
-- **Provide detailed summary** - show what changed and what didn't
-- **Handle errors gracefully** - don't corrupt existing context
+- Update only files with actual changes (preserves accurate timestamps)
+- Use real datetime from system clock for `last_updated`
+- Make surgical updates — do not regenerate entire files
+- Validate each update to ensure files remain valid
+- Show what changed and what was skipped in the summary
+- Preserve existing context when updates fail — do not leave corrupted files
 
 $ARGUMENTS

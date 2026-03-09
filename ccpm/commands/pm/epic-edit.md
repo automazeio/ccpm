@@ -11,7 +11,7 @@ Edit epic details after creation.
 /pm:epic-edit <epic_name>
 ```
 
-## Instructions
+<instructions>
 
 ### 1. Read Current Epic
 
@@ -53,14 +53,16 @@ gh issue edit {issue_number} --body-file .claude/epics/$ARGUMENTS/epic.md
 ```
 ✅ Updated epic: $ARGUMENTS
   Changes made to: {sections_edited}
-  
+
 {If GitHub updated}: GitHub issue updated ✅
 
 View epic: /pm:epic-show $ARGUMENTS
 ```
 
-## Important Notes
+</instructions>
 
-Preserve frontmatter history (created, github URL, etc.).
-Don't change task files when editing epic.
-Follow `/rules/frontmatter-operations.md`.
+## Rules
+
+- Preserve frontmatter history (created, github URL, etc.).
+- Do not modify task files when editing the epic.
+- Follow `/rules/frontmatter-operations.md`.

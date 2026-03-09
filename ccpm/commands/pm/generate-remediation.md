@@ -572,14 +572,14 @@ Next Steps:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Evidence-based** - Every PRD cites user feedback
-2. **Prioritized** - Critical bugs always come first
-3. **Testable** - Clear acceptance criteria
-4. **Traceable** - Link back to source issues and personas
-5. **Scoped** - Don't exceed max PRDs per run
-6. **Actionable** - Include implementation guidance
+1. Cite user feedback as evidence in every PRD
+2. Place critical bugs first regardless of RICE score
+3. Write clear, testable acceptance criteria
+4. Link each PRD back to source issues and personas
+5. Stop at the max PRD limit per run
+6. Include implementation guidance in each PRD
 
 ---
 

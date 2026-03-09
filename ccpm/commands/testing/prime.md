@@ -8,8 +8,7 @@ This command prepares the testing environment by detecting the test framework, v
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding.
 
 ### 1. Test Framework Detection
 
@@ -492,13 +491,13 @@ If successful, save configuration for future sessions:
 - Include all discovered settings
 - Update on subsequent runs if changes detected
 
-## Important Notes
+## Notes
 
-- **Always detect** rather than assume test framework
-- **Validate dependencies** before claiming ready
-- **Configure for debugging** - verbose output is critical
-- **No mocking** - use real services for accurate testing
-- **Sequential execution** - avoid parallel test issues
-- **Store configuration** for consistent future runs
+- Detect the test framework rather than assuming
+- Validate dependencies before claiming ready
+- Configure for verbose output (needed for debugging)
+- Use real services — no mocking
+- Run tests sequentially to avoid parallel test issues
+- Store configuration for consistent future runs
 
 $ARGUMENTS

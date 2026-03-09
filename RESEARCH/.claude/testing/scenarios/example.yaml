@@ -1,0 +1,199 @@
+# example.yaml - Schema Documentation for E2E Test Scenarios
+#
+# This file documents the complete schema for scenario files.
+# Copy this file and modify it to create new test scenarios.
+#
+# File location: .claude/testing/scenarios/<scenario-name>.yaml
+
+# ============================================================================
+# METADATA SECTION (required)
+# ============================================================================
+# Describes the scenario and application being tested
+
+metadata:
+  # Unique identifier for the scenario (used for file/directory naming)
+  # Format: lowercase-with-hyphens, no spaces
+  name: "example-application"
+
+  # Human-readable description of the application
+  # This is used in reports and logs
+  description: "Brief description of what the application does"
+
+  # Application type category
+  # Common types: productivity, e-commerce, saas-b2b, saas-b2c, internal-tool
+  type: "productivity"
+
+  # Expected duration for the full pipeline to run
+  # Format: Nm (minutes) or Ns (seconds)
+  # Used for timeout estimation and reporting
+  expected_duration: "15m"
+
+
+# ============================================================================
+# INTERROGATION SECTION (required)
+# ============================================================================
+# Predefined Q&A responses that will be fed to the interrogation phase.
+# These simulate user responses to the system's questions.
+
+interrogation:
+  responses:
+    # Each response maps a question pattern to an answer
+    # The question_pattern is used for matching (substring match)
+
+    - question_pattern: "What type of application"
+      answer: "A brief description of the application type and purpose"
+
+    - question_pattern: "primary users"
+      answer: |
+        List the main user personas:
+        - User type 1 and what they do
+        - User type 2 and what they do
+        - User type 3 and what they do
+
+    - question_pattern: "key features"
+      answer: |
+        Core features of the application:
+        - Feature 1
+        - Feature 2
+        - Feature 3
+        - Feature 4
+
+    - question_pattern: "technical requirements"
+      answer: |
+        Technical stack and requirements:
+        - Frontend: Angular
+        - API: GraphQL
+        - Backend: Python/FastAPI
+        - Database: PostgreSQL
+
+    - question_pattern: "integrations"
+      answer: |
+        External services and integrations:
+        - Integration 1: Purpose
+        - Integration 2: Purpose
+
+    - question_pattern: "scale"
+      answer: |
+        Expected scale and performance requirements:
+        - Number of users
+        - Data volume
+        - Performance targets
+
+    - question_pattern: "deployment"
+      answer: |
+        Deployment requirements:
+        - Hosting environment
+        - CI/CD requirements
+        - Environment setup
+
+    - question_pattern: "compliance"
+      answer: |
+        Compliance and security requirements:
+        - Regulatory requirements
+        - Security standards
+        - Audit requirements
+
+
+# ============================================================================
+# CREDENTIALS SECTION (optional)
+# ============================================================================
+# Mock credentials for external integrations.
+# These are used to create a test .env file.
+# IMPORTANT: These are MOCK values for testing only - never use real credentials!
+
+credentials:
+  integrations:
+    # Each integration has a type, purpose, and key-value pairs
+    - type: "example_service"
+      purpose: "What this integration is used for"
+      values:
+        api_key: "test_api_key_123"
+        api_secret: "test_api_secret_456"
+        endpoint: "https://test.example.com/api"
+
+    # Add more integrations as needed
+    - type: "another_service"
+      purpose: "Another integration purpose"
+      values:
+        token: "test_token_abc"
+
+
+# ============================================================================
+# EXPECTED SECTION (required)
+# ============================================================================
+# Defines the expected outputs for verification.
+# The test will fail if these expectations are not met.
+
+expected:
+  # List of scope files that should be generated
+  # These files should exist in .claude/scopes/<scenario-name>/
+  scope_files:
+    - "00_scope_document.md"
+    - "01_features.md"
+    - "02_user_journeys.md"
+    - "03_integrations.md"
+    - "04_technical_architecture.md"
+    - "05_data_model.md"
+    - "06_security_requirements.md"
+    - "07_roadmap.md"
+
+  # Feature extraction expectations
+  features:
+    # Minimum number of features that should be extracted
+    min_count: 5
+
+    # Features that MUST be present (case-insensitive substring match)
+    must_include:
+      - "feature-keyword-1"
+      - "feature-keyword-2"
+
+  # PRD generation expectations
+  prds:
+    # Minimum number of PRDs to generate
+    min_count: 8
+
+    # Maximum number of PRDs (to catch runaway generation)
+    max_count: 25
+
+  # User journey expectations
+  journeys:
+    # Minimum number of user journeys to extract
+    min_count: 3
+
+    # Journeys that MUST be present (case-insensitive substring match)
+    must_include:
+      - "journey-keyword-1"
+      - "journey-keyword-2"
+
+
+# ============================================================================
+# TIPS FOR WRITING SCENARIOS
+# ============================================================================
+#
+# 1. Start Simple
+#    - Begin with a minimal scenario and add complexity gradually
+#    - The simple-crud.yaml scenario is a good starting point
+#
+# 2. Be Specific in Responses
+#    - Provide detailed, realistic responses to interrogation questions
+#    - The more specific the inputs, the better the outputs
+#
+# 3. Match Real Use Cases
+#    - Base scenarios on real applications you want to build
+#    - This makes the tests valuable for validation
+#
+# 4. Calibrate Expectations
+#    - Start with loose expectations and tighten as you understand outputs
+#    - min_count values should be realistic minimums, not targets
+#
+# 5. Use must_include Wisely
+#    - Only require features/journeys that are absolutely essential
+#    - Too many must_include items make tests brittle
+#
+# 6. Mock Credentials Safely
+#    - Always use obviously fake credentials (test_, mock_, etc.)
+#    - Never copy real credentials into scenario files
+#
+# 7. Keep Expected Duration Realistic
+#    - Account for LLM response times
+#    - Complex scenarios take longer than simple ones

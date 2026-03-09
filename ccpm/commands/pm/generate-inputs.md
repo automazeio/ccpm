@@ -16,19 +16,14 @@ Analyzes a script or command to identify input prompts, then researches context 
 | `--dry-run` | false | Show what inputs would be generated without writing file |
 | `--force` | false | Overwrite existing inputs file |
 
-## CRITICAL: Deterministic Input Generation
+## Deterministic Input Generation
 
-**This skill must produce reproducible, testable inputs.**
+This skill produces reproducible, testable inputs.
 
-Do NOT:
-- Guess at input values without evidence
-- Generate random or arbitrary values
-- Auto-fill credentials or passwords (EVER)
-
-DO:
-- Research context from project files before generating
+- Research context from project files before generating values
 - Document reasoning for each generated input
 - Mark uncertain inputs as `deferred: true`
+- Skip credentials and passwords — mark as deferred (auto-filling secrets risks exposure)
 
 ## Quick Check
 
@@ -223,31 +218,25 @@ Suggestions:
 3. Use --dry-run on script if available
 ```
 
-## Anti-Pattern Prevention
+## Required Practices
 
-**FORBIDDEN:**
-- ❌ Auto-filling any credential, API key, or password
-- ❌ Generating inputs without checking project context first
-- ❌ Using "y" for destructive confirmations (delete, format, overwrite)
-- ❌ Generating inputs for GUI-based prompts (not supported)
-- ❌ Guessing values for unknown prompt types
+- Check git config for author/email values
+- Check package.json/setup.py for project metadata
+- Check .env for environment-specific values
+- Mark all credentials as `deferred: true`
+- Log confidence scores for each generated input
+- Include reasoning for every value
+- Use "n" for destructive confirmations (delete, format, overwrite) — safe default
+- Mark unknown prompt types as `deferred: true` rather than guessing
 
-**REQUIRED:**
-- ✅ Check git config for author/email values
-- ✅ Check package.json/setup.py for project metadata
-- ✅ Check .env for environment-specific values
-- ✅ Mark ALL credentials as `deferred: true`
-- ✅ Log confidence scores for each generated input
-- ✅ Include reasoning for every value
+## Rules
 
-## Important Rules
-
-1. **Never auto-fill credentials** - API keys, passwords, tokens always deferred
-2. **Research before generating** - Check project files for context
-3. **Default to safe options** - "n" for destructive, "y" for non-destructive
-4. **Document reasoning** - Every input needs a `reasoning` field
-5. **Validate timestamps** - Check script modification vs inputs file age
-6. **Fail on unknown prompts** - Don't guess, mark as deferred
+1. Mark API keys, passwords, and tokens as deferred — do not auto-fill
+2. Check project files for context before generating values
+3. Use "n" for destructive confirmations, "y" for non-destructive
+4. Include a `reasoning` field for every input
+5. Check script modification date against inputs file age to detect staleness
+6. Mark unknown prompt types as deferred rather than guessing
 
 ## Known Command Database
 

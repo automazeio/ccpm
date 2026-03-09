@@ -4,11 +4,11 @@ Rules for generating valid bash code, especially heredocs.
 
 ## Heredoc Syntax
 
-Heredocs MUST be properly closed or the script will fail to parse. Every delimiter must have a matching closing delimiter on its own line.
+Close every heredoc with a matching delimiter on its own line (scripts fail to parse when delimiters are missing).
 
 ### Pattern 1: Static Content (Quoted Delimiter)
 
-For content that should NOT expand variables or execute commands:
+Use a quoted delimiter when content should not expand variables or execute commands:
 
 ```bash
 cat > file.txt << 'EOF'
@@ -17,11 +17,11 @@ These stay as literal text, not expanded
 EOF
 ```
 
-The single quotes around `'EOF'` prevent all expansion.
+Single quotes around `'EOF'` prevent all expansion.
 
 ### Pattern 2: Dynamic Content (Unquoted Delimiter)
 
-For content where variables SHOULD expand:
+Use an unquoted delimiter when variables should expand:
 
 ```bash
 local name="Alice"
@@ -31,7 +31,7 @@ Generated at: $(date)
 EOF
 ```
 
-Without quotes, `$name` becomes "Alice" and `$(date)` executes.
+Without quotes, `$name` expands to "Alice" and `$(date)` executes.
 
 ### Pattern 3: Split Large Heredocs
 
@@ -59,10 +59,9 @@ FOOTER_EOF
 
 ### Pattern 4: Unique Delimiter Names
 
-Each heredoc in a function needs a unique delimiter name:
+Each heredoc in a function requires a unique delimiter name (reusing the same name in one scope causes parse failures):
 
 ```bash
-# Good - unique names
 cat > a.txt << 'PROMPT_A'
 ...
 PROMPT_A
@@ -103,7 +102,7 @@ content
   EOF  # This won't work!
 ```
 
-The closing delimiter must start at column 1 (or use `<<-` with tabs only).
+The closing delimiter must start at column 1 (use `<<-` with tabs only for indented delimiters).
 
 ## Function Template
 
@@ -114,7 +113,6 @@ my_function() {
   local input="$1"
   local output_file="$2"
 
-  # Validate inputs
   if [[ -z "$input" ]]; then
     echo "Error: input required" >&2
     return 1
@@ -133,7 +131,6 @@ User input: $input
 Generated: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 DYNAMIC_EOF
 
-  # Validate output
   if [[ -f "$output_file" ]]; then
     return 0
   else
@@ -147,7 +144,7 @@ DYNAMIC_EOF
 
 When generating bash code:
 
-1. Output ONLY the code block
+1. Output only the code block
 2. Start with triple backticks and `bash`
 3. End with triple backticks on its own line
 4. No explanations before or after

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finance-personal-frontend
+  namespace: finance-personal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: finance-personal-frontend
+  template:
+    metadata:
+      labels:
+        app: finance-personal-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ubuntu.desmana-truck.ts.net:30500/finance-personal-frontend:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5

@@ -64,7 +64,7 @@ Recalculate epic progress with this task now open again.
 Start work with: /pm:issue-start $ARGUMENTS
 ```
 
-## Important Notes
+## Notes
 
-Preserve work history in progress files.
-Don't delete previous progress, just reset status.
+- Preserve work history in progress files
+- Reset status to open without deleting previous progress

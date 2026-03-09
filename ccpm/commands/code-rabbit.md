@@ -111,10 +111,9 @@ For each suggestion, consider:
 
 Only apply if all answers are "yes" or the benefit clearly outweighs risks.
 
-## Important Notes
+## Notes
 
-- CodeRabbit is helpful but lacks context
-- Trust your understanding of the codebase over generic suggestions
-- Explain decisions briefly to maintain audit trail
+- CodeRabbit lacks full codebase context — use your understanding of the codebase to evaluate suggestions
+- Explain accept/ignore decisions briefly to maintain audit trail
 - Batch related changes for efficiency
 - Use parallel agents for multi-file reviews to save time

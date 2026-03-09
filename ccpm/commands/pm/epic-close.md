@@ -11,7 +11,7 @@ Mark an epic as complete when all tasks are done.
 /pm:epic-close <epic_name>
 ```
 
-## Instructions
+<instructions>
 
 ### 1. Verify All Tasks Complete
 
@@ -56,14 +56,16 @@ If yes:
 ✅ Epic closed: $ARGUMENTS
   Tasks completed: {count}
   Duration: {days_from_created_to_completed}
-  
+
 {If archived}: Archived to .claude/epics/.archived/
 
 Next epic: Run /pm:next to see priority work
 ```
 
-## Important Notes
+</instructions>
 
-Only close epics with all tasks complete.
-Preserve all data when archiving.
-Update related PRD status.
+## Rules
+
+- Close only epics with all tasks complete.
+- Preserve all data when archiving.
+- Update related PRD status on close.

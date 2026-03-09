@@ -248,10 +248,10 @@ Next step:
   .claude/scripts/prd-scope.sh {scope-name} --decompose
 ```
 
-### Important Rules
+### Rules
 
-1. **All 12 sections required** - Don't merge partial discovery
-2. **Extract, don't copy** - Merge intelligently, remove Q&A format
-3. **Flag unknowns** - These need attention before decomposition
-4. **Create summary** - Executive summary is critical for next phases
-5. **Set complete flag** - Mark `discovery_complete: true`
+1. All 12 sections must be present before merging
+2. Extract and synthesize — remove Q&A format
+3. Flag all unknowns; they need resolution before decomposition
+4. Generate the executive summary (required for downstream phases)
+5. Set `discovery_complete: true` in the output file

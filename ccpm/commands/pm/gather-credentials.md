@@ -147,7 +147,7 @@ Store final confirmed list of integrations.
 
 ### Step 3.5: Collect Purpose for Each Integration
 
-**CRITICAL: For each confirmed integration, ask about its purpose.**
+For each confirmed integration, ask about its purpose.
 
 Use the AskUserQuestion tool for each integration:
 
@@ -200,7 +200,7 @@ For sensitive credentials, note that the user should enter the value carefully a
 
 **For each credential collected:**
 - Validate against pattern if defined
-- Store in memory (never log sensitive values)
+- Store in memory; log only masked representations of sensitive values
 
 **For unknown integrations (not in mapping):**
 
@@ -302,7 +302,7 @@ fi
 
 ### Step 7: Save to Database (Encrypted)
 
-**CRITICAL: Store credentials in PostgreSQL with encryption.**
+Store credentials in PostgreSQL with encryption.
 
 For each integration, create an `IntegrationCredential` record:
 
@@ -448,18 +448,18 @@ Next Steps:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Never log sensitive values** - Only show masked output
-2. **Validate patterns immediately** - Fail fast on invalid input
-3. **Allow defer option** - Users can collect some credentials later
-4. **Check .gitignore** - Ensure .env is protected
-5. **Support custom integrations** - Not everything is in the mapping
-6. **Preserve existing .env** - Merge new credentials, don't overwrite
-7. **Interactive confirmation** - Always confirm detected integrations
-8. **Always collect purpose** - Ask what each integration is used for
-9. **Store in database with encryption** - Use CredentialRepository for encrypted storage
-10. **Dual storage** - Both .env file and database for flexibility
+1. Log only masked output for sensitive values
+2. Validate patterns on input — fail fast on invalid format
+3. Offer a defer option for credentials to collect later
+4. Verify .env is in .gitignore before writing
+5. Support custom integrations not in the mapping
+6. Merge into existing .env — do not overwrite
+7. Confirm detected integrations interactively before collecting
+8. Ask purpose for each integration
+9. Store in database using CredentialRepository (AES-256-GCM encryption)
+10. Write both .env file and database record for flexibility
 
 ---
 

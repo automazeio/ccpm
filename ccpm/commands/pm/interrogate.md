@@ -523,7 +523,7 @@ If conversation.md exists when starting, check the `Phase:` header:
 
 ## Writing Rules
 
-**CRITICAL: Write to conversation.md after EVERY exchange.**
+Write to conversation.md after every exchange.
 
 Output file: `.claude/interrogations/{session-name}/conversation.md`
 
@@ -537,16 +537,16 @@ Format:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Refine first** - Run /dr-refine before /dr-full to clarify scope
-2. **Research populates** - /dr-full discovers features and journeys
-3. **Single confirmation** - Present all features+journeys at once
-4. **Brief questions** - Infrastructure questions are quick selections
-5. **Store in database** - All data goes to database tables
-6. **Record everything** - Every exchange goes to conversation.md
-7. **Auto-generate tech ops** - Technical operations derived from journeys
-8. **Trust defaults** - If user says "looks good", confirm everything
+1. Run /dr-refine before /dr-full to clarify scope
+2. Use /dr-full to discover features and journeys
+3. Present all features and journeys at once for a single confirmation round
+4. Keep infrastructure questions as quick selections, not deep interrogation
+5. Store all data in database tables
+6. Write every exchange to conversation.md
+7. Derive technical operations from journeys
+8. Confirm everything when user says "looks good" or equivalent
 
 ---
 

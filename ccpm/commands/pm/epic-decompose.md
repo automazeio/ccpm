@@ -13,33 +13,32 @@ Break epic into concrete, actionable tasks.
 
 ## Required Rules
 
-**IMPORTANT:** Before executing this command, read and follow:
+Before executing this command, read and follow:
 - `.claude/rules/datetime.md` - For getting real current date/time
 
 ## Preflight Checklist
 
-Before proceeding, complete these validation steps.
-Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
+Complete these validation steps silently before proceeding. Do not narrate preflight progress to the user.
 
 1. **Verify epic exists:**
    - Check if `.claude/epics/$ARGUMENTS/epic.md` exists
-   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /pm:prd-parse $ARGUMENTS"
+   - If not found: "❌ Epic not found: $ARGUMENTS. First create it with: /pm:prd-parse $ARGUMENTS"
    - Stop execution if epic doesn't exist
 
 2. **Check for existing tasks:**
    - Check if any numbered task files (001.md, 002.md, etc.) already exist in `.claude/epics/$ARGUMENTS/`
    - If tasks exist, list them and ask: "⚠️ Found {count} existing tasks. Delete and recreate all tasks? (yes/no)"
-   - Only proceed with explicit 'yes' confirmation
+   - Proceed only with explicit 'yes' confirmation
    - If user says no, suggest: "View existing tasks with: /pm:epic-show $ARGUMENTS"
 
 3. **Validate epic frontmatter:**
    - Verify epic has valid frontmatter with: name, status, created, prd
-   - If invalid, tell user: "❌ Invalid epic frontmatter. Please check: .claude/epics/$ARGUMENTS/epic.md"
+   - If invalid: "❌ Invalid epic frontmatter. Please check: .claude/epics/$ARGUMENTS/epic.md"
 
 4. **Check epic status:**
    - If epic status is already "completed", warn user: "⚠️ Epic is marked as completed. Are you sure you want to decompose it again?"
 
-## Instructions
+<instructions>
 
 You are decomposing an epic into specific, actionable tasks for: **$ARGUMENTS**
 
@@ -53,7 +52,7 @@ You are decomposing an epic into specific, actionable tasks for: **$ARGUMENTS**
 Determine if tasks can be created in parallel:
 - If tasks are mostly independent: Create in parallel using Task agents
 - If tasks have complex dependencies: Create sequentially
-- For best results: Group independent tasks for parallel creation
+- Group independent tasks for parallel creation
 
 ### 3. Parallel Task Creation (When Possible)
 
@@ -126,22 +125,22 @@ Clear, concise description of what needs to be done
 - [ ] Deployed to staging
 ```
 
-### 3. Task Naming Convention
+### 5. Task Naming Convention
 Save tasks as: `.claude/epics/$ARGUMENTS/{task_number}.md`
 - Use sequential numbering: 001.md, 002.md, etc.
 - Keep task titles short but descriptive
 
-### 4. Frontmatter Guidelines
+### 6. Frontmatter Guidelines
 - **name**: Use a descriptive task title (without "Task:" prefix)
-- **status**: Always start with "open" for new tasks
-- **created**: Get REAL current datetime by running: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+- **status**: Set to "open" for new tasks
+- **created**: Get real current datetime by running: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 - **updated**: Use the same real datetime as created for new tasks
 - **github**: Leave placeholder text - will be updated during sync
 - **depends_on**: List task numbers that must complete before this can start (e.g., [001, 002])
 - **parallel**: Set to true if this can run alongside other tasks without conflicts
 - **conflicts_with**: List task numbers that modify the same files (helps coordination)
 
-### 5. Task Types to Consider
+### 7. Task Types to Consider
 - **Setup tasks**: Environment, dependencies, scaffolding
 - **Data tasks**: Models, schemas, migrations
 - **API tasks**: Endpoints, services, integration
@@ -150,10 +149,10 @@ Save tasks as: `.claude/epics/$ARGUMENTS/{task_number}.md`
 - **Documentation tasks**: README, API docs
 - **Deployment tasks**: CI/CD, infrastructure
 
-### 6. Parallelization
+### 8. Parallelization
 Mark tasks with `parallel: true` if they can be worked on simultaneously without conflicts.
 
-### 7. Execution Strategy
+### 9. Execution Strategy
 
 Choose based on task count and complexity:
 
@@ -178,14 +177,14 @@ Spawning 3 agents for parallel task creation:
 - Agent 3: Creating tasks 007-009 (UI layer)
 ```
 
-### 8. Task Dependency Validation
+### 10. Task Dependency Validation
 
 When creating tasks with dependencies:
-- Ensure referenced dependencies exist (e.g., if Task 003 depends on Task 002, verify 002 was created)
+- Verify referenced dependencies exist (e.g., if Task 003 depends on Task 002, verify 002 was created)
 - Check for circular dependencies (Task A → Task B → Task A)
 - If dependency issues found, warn but continue: "⚠️ Task dependency warning: {details}"
 
-### 9. Update Epic with Task Summary
+### 11. Update Epic with Task Summary
 After creating all tasks, update the epic file by adding this section:
 ```markdown
 ## Tasks Created
@@ -201,7 +200,7 @@ Estimated total effort: {sum of hours}
 
 Also update the epic's frontmatter progress if needed (still 0% until tasks actually start).
 
-### 9. Quality Validation
+### 12. Quality Validation
 
 Before finalizing tasks, verify:
 - [ ] All tasks have clear acceptance criteria
@@ -210,7 +209,7 @@ Before finalizing tasks, verify:
 - [ ] Parallel tasks don't conflict with each other
 - [ ] Combined tasks cover all epic requirements
 
-### 10. Post-Decomposition
+### 13. Post-Decomposition
 
 After successfully creating tasks:
 1. Confirm: "✅ Created {count} tasks for epic: $ARGUMENTS"
@@ -220,11 +219,13 @@ After successfully creating tasks:
    - Total estimated effort
 3. Suggest next step: "Ready to sync to GitHub? Run: /pm:epic-sync $ARGUMENTS"
 
+</instructions>
+
 ## Error Recovery
 
 If any step fails:
 - If task creation partially completes, list which tasks were created
 - Provide option to clean up partial tasks
-- Never leave the epic in an inconsistent state
+- Leave the epic in a consistent state — partial task lists are acceptable, inconsistent frontmatter is not
 
-Aim for tasks that can be completed in 1-3 days each. Break down larger tasks into smaller, manageable pieces for the "$ARGUMENTS" epic.
+Target tasks that can be completed in 1-3 days each. Break down larger tasks into smaller, manageable pieces for the "$ARGUMENTS" epic.

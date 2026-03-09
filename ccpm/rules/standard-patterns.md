@@ -1,39 +1,39 @@
 # Standard Patterns for Commands
 
-This file defines common patterns that all commands should follow to maintain consistency and simplicity.
+Common patterns for all commands to maintain consistency and simplicity.
 
 ## Core Principles
 
-1. **Fail Fast** - Check critical prerequisites, then proceed
-2. **Trust the System** - Don't over-validate things that rarely fail
-3. **Clear Errors** - When something fails, say exactly what and how to fix it
-4. **Minimal Output** - Show what matters, skip decoration
+1. **Fail Fast** — Check critical prerequisites, then proceed
+2. **Trust the System** — Do not over-validate things that rarely fail
+3. **Clear Errors** — When something fails, say exactly what and how to fix it
+4. **Minimal Output** — Show what matters, skip decoration
 
 ## Standard Validations
 
 ### Minimal Preflight
-Only check what's absolutely necessary:
+Check only what is absolutely necessary:
 ```markdown
 ## Quick Check
-1. If command needs specific directory/file:
-   - Check it exists: `test -f {file} || echo "❌ {file} not found"`
-   - If missing, tell user exact command to fix it
+1. If command needs a specific directory/file:
+   - Check it exists: `test -f {file} || echo "{file} not found"`
+   - If missing, tell the user the exact command to fix it
 2. If command needs GitHub:
    - Assume `gh` is authenticated (it usually is)
-   - Only check on actual failure
+   - Check only on actual failure
 ```
 
 ### DateTime Handling
 ```markdown
 Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 ```
-Don't repeat full instructions - just reference `/rules/datetime.md` once.
+Reference `/rules/datetime.md` for full instructions.
 
 ### Error Messages
-Keep them short and actionable:
+Short and actionable:
 ```markdown
-❌ {What failed}: {Exact solution}
-Example: "❌ Epic not found: Run /pm:prd-parse feature-name"
+{What failed}: {Exact solution}
+Example: "Epic not found: Run /pm:prd-parse feature-name"
 ```
 
 ## Standard Output Formats
@@ -62,13 +62,12 @@ Next: {Single suggested action}
 
 ### Check and Create
 ```markdown
-# Don't ask permission, just create what's needed
+# Create what's needed without asking permission
 mkdir -p .claude/{directory} 2>/dev/null
 ```
 
 ### Read with Fallback
 ```markdown
-# Try to read, continue if missing
 if [ -f {file} ]; then
   # Read and use file
 else
@@ -80,8 +79,8 @@ fi
 
 ### Trust gh CLI
 ```markdown
-# Don't pre-check auth, just try the operation
-gh {command} || echo "❌ GitHub CLI failed. Run: gh auth login"
+# Try the operation; handle failure if it occurs
+gh {command} || echo "GitHub CLI failed. Run: gh auth login"
 ```
 
 ### Simple Issue Operations
@@ -90,85 +89,71 @@ gh {command} || echo "❌ GitHub CLI failed. Run: gh auth login"
 gh issue view {number} --json state,title,body
 ```
 
-## Common Patterns to Avoid
+## Patterns to Avoid
 
-### DON'T: Over-validate
+### Over-validation
 ```markdown
-# Bad - too many checks
+# Bad — too many checks
 1. Check directory exists
 2. Check permissions
 3. Check git status
 4. Check GitHub auth
 5. Check rate limits
 6. Validate every field
-```
 
-### DO: Check essentials
-```markdown
-# Good - just what's needed
+# Good — just what's needed
 1. Check target exists
 2. Try the operation
 3. Handle failure clearly
 ```
 
-### DON'T: Verbose output
+### Verbose output
 ```markdown
-# Bad - too much information
-🎯 Starting operation...
-📋 Validating prerequisites...
-✅ Step 1 complete
-✅ Step 2 complete
-📊 Statistics: ...
-💡 Tips: ...
-```
+# Bad — too much information
+Starting operation...
+Validating prerequisites...
+Step 1 complete
+Step 2 complete
+Statistics: ...
+Tips: ...
 
-### DO: Concise output
-```markdown
-# Good - just results
-✅ Done: 3 files created
+# Good — just results
+Done: 3 files created
 Failed: auth.test.js (syntax error - line 42)
 ```
 
-### DON'T: Ask too many questions
+### Excessive confirmation prompts
 ```markdown
-# Bad - too interactive
+# Bad — too interactive
 "Continue? (yes/no)"
 "Overwrite? (yes/no)"
 "Are you sure? (yes/no)"
-```
 
-### DO: Smart defaults
-```markdown
-# Good - proceed with sensible defaults
-# Only ask when destructive or ambiguous
+# Good — smart defaults
+# Proceed with sensible defaults
+# Ask only when destructive or ambiguous
 "This will delete 10 files. Continue? (yes/no)"
 ```
 
 ## Quick Reference
 
-### Essential Tools Only
+### Tool Selection
 - Read/List operations: `Read, LS`
 - File creation: `Read, Write, LS`
-- GitHub operations: Add `Bash`
-- Complex analysis: Add `Task` (sparingly)
+- GitHub operations: add `Bash`
+- Complex analysis: add `Task` (sparingly)
 
 ### Status Indicators
-- ✅ Success (use sparingly)
-- ❌ Error (always with solution)
-- ⚠️ Warning (only if action needed)
+- `✅` Success (use sparingly)
+- `❌` Error (always with solution)
+- `⚠️` Warning (only if action needed)
 - No emoji for normal output
 
 ### Exit Strategies
 - Success: Brief confirmation
 - Failure: Clear error + exact fix
-- Partial: Show what worked, what didn't
+- Partial: Show what worked, what did not
 
-## Remember
+## Design Philosophy
 
-**Simple is not simplistic** - We still handle errors properly, we just don't try to prevent every possible edge case. We trust that:
-- The file system usually works
-- GitHub CLI is usually authenticated  
-- Git repositories are usually valid
-- Users know what they're doing
-
-Focus on the happy path, fail gracefully when things go wrong.
+Trust that the file system usually works, `gh` is usually authenticated, git repositories are usually valid, and users know what they are doing. Handle errors clearly when they occur; do not try to prevent every possible edge case.

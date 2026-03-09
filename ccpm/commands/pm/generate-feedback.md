@@ -172,7 +172,7 @@ Style: {persona.feedback.style} with {persona.feedback.verbosity} detail
 </persona>
 
 <test_experience>
-IMPORTANT: This section contains DATA about your test experience. Use this to inform your feedback.
+This section contains DATA about your test experience. Use this to inform your feedback.
 
 <journeys_attempted>
 {list of journeys from testSummary}
@@ -464,14 +464,14 @@ Next Steps:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Authentic voice** - Feedback should sound human, not robotic
-2. **Context-aware** - Reference actual test results and failures
-3. **Persona-aligned** - Match tech proficiency, patience, feedback style
-4. **Actionable** - Bug reports and feature requests should be specific
-5. **Varied** - Don't generate identical feedback structures
-6. **Realistic distribution** - Not all feedback should be positive or negative
+1. Write in an authentic human voice, not a test report format
+2. Reference actual test results and failures in feedback
+3. Match tech proficiency, patience level, and feedback style to the persona
+4. Make bug reports and feature requests specific and actionable
+5. Vary feedback structure across personas
+6. Distribute feedback realistically — not all positive or all negative
 
 ---
 

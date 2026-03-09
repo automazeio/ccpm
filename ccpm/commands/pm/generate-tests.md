@@ -476,14 +476,14 @@ Next Steps:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Page Object Model** - All interactions through page objects
-2. **Persona awareness** - Tests adapt to persona characteristics
-3. **Step isolation** - Use `test.step()` for journey steps
-4. **Data cleanup** - Always cleanup test data after tests
-5. **Timeout variance** - Adjust timeouts based on persona patience
-6. **Error testing** - Include tests for common persona mistakes
+1. Route all interactions through page objects
+2. Adapt test behavior to persona characteristics (patience, tech proficiency, device)
+3. Use `test.step()` for each journey step
+4. Clean up test data after each test in `afterEach`
+5. Set timeouts based on persona patience level
+6. Include tests for common mistakes listed in each persona
 
 ---
 

@@ -315,10 +315,10 @@ NEW_STRING: |
 </output_format>
 
 <constraints>
-- Do NOT repeat actions from attempted_fixes that FAILED
+- Skip actions already in attempted_fixes with FAILED status
 - Prefer DIAGNOSTIC actions until confidence > 70%
-- Each action must have clear expected outcomes for BOTH success and failure
-- OLD_STRING must match EXACTLY what exists in the file
+- Each action must have clear expected outcomes for both success and failure
+- OLD_STRING must match exactly what exists in the file
 </constraints>
 DIAGNOSIS_EOF
 )"
@@ -386,7 +386,7 @@ REFLECTION_EOF
 claude --dangerously-skip-permissions --print "$(cat <<'NOVEL_EOF'
 <role>
 Your proposed action was blocked because it's too similar to a previous failed attempt.
-You must generate a GENUINELY DIFFERENT approach.
+Generate a genuinely different approach.
 </role>
 
 <blocked_reason>
@@ -1463,19 +1463,19 @@ Respond with ONLY this JSON object, no other text:
 
 ---
 
-## CRITICAL: Execution Model
+## Execution Model
 
-### What the Agent MUST Do
+### Agent Steps
 
 1. **Generate the troubleshoot script** using the Write tool
-2. **Execute as background task** - use `run_in_background: true` in Bash tool
-3. **Actively monitor output** - read execution log every 30-60 seconds
-4. **Identify failure points** - distinguish between:
-   - Target code bugs (expected - script will fix)
-   - Script bugs (unexpected - agent must fix directly)
+2. **Execute as background task** — use `run_in_background: true` in Bash tool
+3. **Monitor output** — read execution log every 30-60 seconds
+4. **Identify failure points** — distinguish between:
+   - Target code bugs (expected — script will fix)
+   - Script bugs (unexpected — fix directly)
    - Infrastructure issues (permissions, missing tools, etc.)
-5. **Fix script bugs directly** - if the troubleshoot script has bad logic, bad regex, broken heredocs, broken parsing, etc., the agent fixes them immediately using Edit tool
-6. **Resume/re-run after fixes** - after fixing script bugs, re-run the script
+5. **Fix script bugs directly** — if the troubleshoot script has bad logic, bad regex, broken heredocs, or broken parsing, fix using Edit tool
+6. **Resume/re-run after fixes** — re-run the script after fixing script bugs
 
 ### What the Agent Must NOT Do
 

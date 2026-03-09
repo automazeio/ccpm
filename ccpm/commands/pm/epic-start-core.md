@@ -33,9 +33,9 @@ Launch parallel agents to work on epic tasks in a shared branch.
    ```bash
    git status --porcelain
    ```
-   If output is not empty: "❌ You have uncommitted changes. Please commit or stash them before starting an epic"
+   If output is not empty: "❌ Commit or stash changes before starting an epic"
 
-## Instructions
+<instructions>
 
 ### 1. Create or Enter Branch
 
@@ -44,7 +44,7 @@ Follow `/rules/branch-operations.md`:
 ```bash
 # Check for uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
-  echo "❌ You have uncommitted changes. Please commit or stash them before starting an epic."
+  echo "❌ You have uncommitted changes. Commit or stash them before starting an epic."
   exit 1
 fi
 
@@ -214,7 +214,9 @@ As agents complete streams:
 - Launch new agents for newly-ready work
 - Update execution-status.md
 
-## Output Format
+</instructions>
+
+<output_format>
 
 ```
 🚀 Epic Execution Started: $ARGUMENTS
@@ -237,7 +239,9 @@ Blocked Issues (2):
   - #1237: Integration (depends on #1235, #1236)
 ```
 
-**DO NOT suggest next steps or mention other commands.**
+**Do not suggest next steps or mention other commands.**
+
+</output_format>
 
 ## Error Handling
 
@@ -253,7 +257,7 @@ Continue with other agents? (yes/no)
 
 If uncommitted changes are found:
 ```
-❌ You have uncommitted changes. Please commit or stash them before starting an epic.
+❌ You have uncommitted changes. Commit or stash them before starting an epic.
 
 To commit changes:
   git add .
@@ -277,11 +281,11 @@ Or: Check existing branches with: git branch -a
 
 Agents can deploy after completing their work if the epic's scope has deploy enabled.
 
-### When Agents Should Deploy
+### When Agents Deploy
 
-1. **After completing a task** that changes runtime code (not just tests)
-2. **When testing requires a running app** (E2E, integration tests)
-3. **When explicitly instructed** in the task/issue
+- After completing a task that changes runtime code (not just tests)
+- When testing requires a running app (E2E, integration tests)
+- When explicitly instructed in the task/issue
 
 ### How Agents Deploy
 
@@ -297,8 +301,8 @@ After completing your changes, if they affect runtime code:
 ### Deploy Coordination
 
 When multiple agents are working:
-- Only ONE agent should deploy at a time
-- Use the execution-status.md to coordinate:
+- One agent deploys at a time (coordinate via execution-status.md)
+- Use the deploy lock format:
   ```markdown
   ## Deploy Lock
   - Locked by: Agent-{id}
@@ -308,11 +312,11 @@ When multiple agents are working:
 - Other agents wait for deploy to complete before deploying
 - Lock is released after `kubectl wait` succeeds
 
-## Important Notes
+## Rules
 
 - Follow `/rules/branch-operations.md` for git operations
 - Follow `/rules/agent-coordination.md` for parallel work
 - Agents work in the SAME branch (not separate branches)
-- Maximum parallel agents should be reasonable (e.g., 5-10)
-- Monitor system resources if launching many agents
-- When deploy is enabled, agents can call `/pm:deploy` after completing work
+- Keep concurrent agent count reasonable (5-10 max)
+- Monitor system resources when launching many agents
+- When deploy is enabled, agents call `/pm:deploy` after completing work

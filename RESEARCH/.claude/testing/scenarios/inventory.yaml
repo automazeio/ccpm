@@ -1,0 +1,142 @@
+# inventory.yaml - Small Business Inventory Management System Scenario
+# A more comprehensive scenario for testing full pipeline with integrations
+
+metadata:
+  name: "inventory-management"
+  description: "Small business inventory tracking system for retail stores"
+  type: "e-commerce"
+  expected_duration: "20m"
+
+# Predefined responses for interrogation Q&A
+interrogation:
+  responses:
+    - question_pattern: "What type of application"
+      answer: "A small business inventory management system for tracking products, stock levels, and purchase orders"
+
+    - question_pattern: "primary users"
+      answer: |
+        - Store managers who oversee inventory operations
+        - Warehouse staff who handle stock movements
+        - Purchasing managers who create purchase orders
+        - Store owners who view reports and analytics
+
+    - question_pattern: "key features"
+      answer: |
+        - Product catalog management with categories and variants
+        - Real-time stock level tracking
+        - Low stock alerts and notifications
+        - Barcode/QR code scanning for quick product lookup
+        - Purchase order management and tracking
+        - Supplier management
+        - Stock count and reconciliation workflows
+        - Shipment receiving and verification
+        - Reorder point configuration
+        - Stock movement history
+        - Multi-location support (optional)
+        - Inventory reports and analytics
+        - Integration with accounting software (QuickBooks)
+        - Integration with e-commerce (Shopify)
+
+    - question_pattern: "technical requirements"
+      answer: |
+        - Angular frontend with responsive design for tablets
+        - GraphQL API for flexible querying
+        - Python backend with FastAPI
+        - PostgreSQL database with proper indexing
+        - Redis for caching and real-time features
+        - JWT authentication with role-based access
+        - Barcode scanning via device camera
+
+    - question_pattern: "integrations"
+      answer: |
+        - QuickBooks for accounting and invoicing
+        - Shopify for e-commerce synchronization
+        - Email/SMS for notifications
+        - Label printing services
+
+    - question_pattern: "scale"
+      answer: |
+        - Support up to 10,000 products
+        - Up to 50 concurrent users
+        - Multi-tenant architecture for future SaaS model
+        - Data retention for 5 years
+
+    - question_pattern: "deployment"
+      answer: |
+        - Kubernetes deployment
+        - CI/CD pipeline with GitHub Actions
+        - Staging and production environments
+        - Automated backups and disaster recovery
+
+    - question_pattern: "compliance"
+      answer: |
+        - Audit logging for all changes
+        - Data export capabilities for compliance
+        - Role-based access control
+
+# Mock credentials for integrations
+credentials:
+  integrations:
+    - type: "quickbooks"
+      purpose: "Accounting and invoicing sync"
+      values:
+        client_id: "test_qb_client_id_12345"
+        client_secret: "test_qb_client_secret_67890"
+        realm_id: "test_realm_123456789"
+        refresh_token: "test_refresh_token_abcdef"
+
+    - type: "shopify"
+      purpose: "E-commerce product and order sync"
+      values:
+        store_url: "https://test-inventory-store.myshopify.com"
+        api_key: "test_shopify_api_key_xyz123"
+        api_secret: "test_shopify_api_secret_abc789"
+        access_token: "test_shopify_access_token_def456"
+
+    - type: "twilio"
+      purpose: "SMS notifications for low stock alerts"
+      values:
+        account_sid: "test_twilio_sid_AC123456"
+        auth_token: "test_twilio_auth_token_789"
+        from_number: "+15551234567"
+
+    - type: "sendgrid"
+      purpose: "Email notifications and reports"
+      values:
+        api_key: "SG.test_sendgrid_api_key_abc123xyz"
+
+# Expected outputs for verification
+expected:
+  scope_files:
+    - "00_scope_document.md"
+    - "01_features.md"
+    - "02_user_journeys.md"
+    - "03_integrations.md"
+    - "04_technical_architecture.md"
+    - "05_data_model.md"
+    - "06_security_requirements.md"
+    - "07_roadmap.md"
+
+  features:
+    min_count: 10
+    must_include:
+      - "product-catalog"
+      - "stock"
+      - "barcode"
+      - "purchase-order"
+      - "alert"
+      - "supplier"
+      - "report"
+
+  prds:
+    min_count: 12
+    max_count: 30
+
+  journeys:
+    min_count: 5
+    must_include:
+      - "add-product"
+      - "update-stock"
+      - "receive-shipment"
+      - "create-purchase-order"
+      - "view-low-stock"

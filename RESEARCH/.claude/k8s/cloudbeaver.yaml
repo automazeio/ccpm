@@ -1,0 +1,130 @@
+---
+# ConfigMap with PostgreSQL datasource (dynamically generated via sed)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudbeaver-datasources
+data:
+  initial-data-sources.conf: |
+    {
+      "folders": {},
+      "connections": {
+        "postgresql-main": {
+          "id": "postgresql-main",
+          "provider": "postgresql",
+          "driver": "postgres-jdbc",
+          "name": "PostgreSQL - POSTGRES_DB_PLACEHOLDER",
+          "description": "Auto-configured PostgreSQL connection",
+          "saveCredentials": true,
+          "readOnly": false,
+          "configuration": {
+            "host": "POSTGRES_SERVICE_PLACEHOLDER",
+            "port": "5432",
+            "database": "POSTGRES_DB_PLACEHOLDER",
+            "url": "jdbc:postgresql://POSTGRES_SERVICE_PLACEHOLDER:5432/POSTGRES_DB_PLACEHOLDER",
+            "configurationType": "MANUAL",
+            "type": "dev",
+            "auth-model": "native"
+          },
+          "credentials": {
+            "userName": "POSTGRES_USER_PLACEHOLDER",
+            "userPassword": "POSTGRES_PASSWORD_PLACEHOLDER"
+          }
+        }
+      }
+    }
+---
+# PVC for CloudBeaver workspace
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cloudbeaver
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+---
+# CloudBeaver Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudbeaver
+  labels:
+    app: cloudbeaver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudbeaver
+  template:
+    metadata:
+      labels:
+        app: cloudbeaver
+    spec:
+      containers:
+      - name: cloudbeaver
+        image: dbeaver/cloudbeaver:latest
+        ports:
+        - containerPort: 8978
+          name: http
+        env:
+        - name: CB_SERVER_NAME
+          value: "CloudBeaver - POSTGRES_DB_PLACEHOLDER"
+        - name: CB_ADMIN_NAME
+          value: "CLOUDBEAVER_ADMIN_USER_PLACEHOLDER"
+        - name: CB_ADMIN_PASSWORD
+          value: "CLOUDBEAVER_ADMIN_PASSWORD_PLACEHOLDER"
+        - name: CLOUDBEAVER_APP_ANONYMOUS_ACCESS_ENABLED
+          value: "false"
+        volumeMounts:
+        - name: workspace
+          mountPath: /opt/cloudbeaver/workspace
+        - name: datasources-config
+          mountPath: /opt/cloudbeaver/conf/initial-data-sources.conf
+          subPath: initial-data-sources.conf
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8978
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8978
+          initialDelaySeconds: 90
+          periodSeconds: 20
+      volumes:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: cloudbeaver
+      - name: datasources-config
+        configMap:
+          name: cloudbeaver-datasources
+---
+# CloudBeaver Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudbeaver
+  labels:
+    app: cloudbeaver
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8978
+    targetPort: 8978
+    protocol: TCP
+  selector:
+    app: cloudbeaver

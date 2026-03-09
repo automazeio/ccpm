@@ -177,9 +177,9 @@ Sync updates: /pm:issue-sync $ARGUMENTS
 If any step fails, report clearly:
 - "❌ {What failed}: {How to fix}"
 - Continue with what's possible
-- Never leave partial state
+- Restore a clean state before exiting on failure
 
-## Important Notes
+## Notes
 
-Follow `/rules/datetime.md` for timestamps.
-Keep it simple - trust that GitHub and file system work.
+- Follow `/rules/datetime.md` for timestamps
+- Trust GitHub and file system — keep operations simple

@@ -37,7 +37,7 @@ Fill in these fields:
 </task>
 
 <output_format>
-Respond with ONLY valid JSON. No markdown, no explanation.
+Respond with valid JSON only. No markdown, no explanation.
 
 {
   "step_number": {{STEP_NUMBER}},
@@ -65,9 +65,8 @@ Respond with ONLY valid JSON. No markdown, no explanation.
 </output_format>
 
 <constraints>
-- Only include information that can be derived from the provided code
-- If a field cannot be determined, set it to null or empty array
-- Business rules should be concise but complete
-- Validation rules should match Pydantic validators
-- Use actual class/method names from the code
+- Derive all information from the provided code (set fields to null or empty array when not determinable)
+- Business rules are concise but complete
+- Validation rules match Pydantic validators
+- Use actual class and method names from the code
 </constraints>

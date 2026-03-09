@@ -768,15 +768,15 @@ Next Steps (with sections):
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Walking skeleton first** - Always start with Phase 0 to prove architecture
-2. **Vertical slices** - Each feature should work end-to-end (UI → API → DB)
+1. **Walking skeleton first** - Start with Phase 0 to prove architecture
+2. **Vertical slices** - Each feature works end-to-end (UI → API → DB)
 3. **RICE for ordering** - Use quantitative scoring, not gut feel
-4. **Respect dependencies** - Never schedule a feature before its dependencies
+4. **Dependency ordering** - Schedule features after their dependencies
 5. **Exit criteria required** - Every phase needs measurable completion criteria
-6. **No time estimates** - Use effort sizes (S/M/L) not calendar dates
-7. **Must Have = MVP** - If it's not Must Have, it's not MVP
+6. **Effort sizes only** - Use S/M/L sizing, not calendar dates
+7. **Must Have = MVP** - Anything not Must Have is not MVP
 8. **Defer wisely** - Could Have items are explicitly post-MVP
 
 ### Section Roadmap Rules (when --sections enabled)
@@ -784,9 +784,9 @@ Next Steps (with sections):
 9. **Infrastructure first** - Infrastructure section always Phase 0
 10. **Data before ML/AI** - ML/AI requires data foundation
 11. **API contract-first** - Use SS dependencies when contracts exist
-12. **Cross-section dependencies explicit** - Always document cross-section deps
+12. **Cross-section dependencies** - Document all cross-section deps explicitly
 13. **Critical path awareness** - Know which sections block others
-14. **Parallelization opportunities** - Identify SS/parallel work to reduce timeline
+14. **Parallelization** - Identify SS/parallel work to reduce timeline
 15. **Section-appropriate phases** - Each section may have different phase distributions
 
 ---

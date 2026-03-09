@@ -258,12 +258,12 @@ Next steps:
 
 ## Security Guardrails
 
-1. **Never hardcode credentials** - Always read from environment variables
-2. **User approval required** - Always ask before browser automation
-3. **Prefer API over browser** - Let research findings decide the approach
-4. **Mask credentials in output** - Show only last 4 characters
-5. **Local execution only** - Playwright runs on user's machine, not remote
-6. **No credential logging** - Never write full credentials to logs or transcripts
+1. Read credentials from environment variables — do not hardcode values
+2. Ask for user approval before browser automation
+3. Let research findings decide the approach; prefer API over browser when both are viable
+4. Mask credentials in output — show only last 4 characters
+5. Run Playwright on the user's machine only (local execution)
+6. Write only masked credential representations to logs or transcripts
 
 ## Error Handling
 

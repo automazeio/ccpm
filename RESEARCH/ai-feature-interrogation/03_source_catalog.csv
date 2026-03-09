@@ -1,0 +1,24 @@
+source_id,url,title,quality_grade,date_accessed,relevance,notes
+S01,https://arxiv.org/pdf/2507.02564,Automating Requirements Elicitation Interviews with LLMs (LLMREI),A,2026-02-02,High,Academic research on LLM-based interview automation
+S02,https://githubnext.com/projects/copilot-workspace,GitHub Copilot Workspace,A,2026-02-02,High,Official GitHub tool documentation
+S03,https://github.com/githubnext/copilot-workspace-user-manual/blob/main/overview.md,Copilot Workspace User Manual,A,2026-02-02,High,Detailed workflow steps
+S04,https://learn.microsoft.com/en-us/azure/ai-services/language-service/conversational-language-understanding/concepts/multi-turn-conversations,Microsoft CLU Slot Filling,B,2026-02-02,High,Enterprise dialogue patterns
+S05,https://www.nngroup.com/articles/the-funnel-technique-in-qualitative-user-research/,NN/g Funnel Technique,A,2026-02-02,High,Authoritative UX research methodology
+S06,https://www.interaction-design.org/literature/article/laddering-questions-drilling-down-deep-and-moving-sideways-in-ux-research,IxDF Laddering Questions,B,2026-02-02,High,UX research questioning technique
+S07,https://www.atlassian.com/agile/project-management/definition-of-ready,Atlassian Definition of Ready,B,2026-02-02,Medium,Industry standard Agile practices
+S08,https://www.boost.co.nz/blog/2022/07/definition-of-ready-agile-user-stories,Definition of Ready for User Stories,C,2026-02-02,Medium,Practical DoR guidance
+S09,https://www.dandoescode.com/blog/efficient-vibe-coding-with-clarifying-questions,Dan Does Code - Clarifying Questions,B,2026-02-02,High,"Golden prompt" pattern discovered
+S10,https://www.augmentcode.com/tools/ai-coding-assistants-for-large-codebases-a-complete-guide,Augment Code Large Codebase Guide,B,2026-02-02,High,Context engine architecture
+S11,https://www.qodo.ai/blog/introducing-qodo-aware-deep-codebase-intelligence-for-enterprise-development/,Qodo Context Engine,B,2026-02-02,Medium,Agentic context engineering
+S12,https://medium.com/@vrknetha/the-ultimate-guide-to-ai-powered-development-with-cursor-from-chaos-to-clean-code-fc679973bbc4,Cursor AI Development Guide,C,2026-02-02,High,Cursor planning workflow
+S13,https://cursor.com/blog/plan-mode,Cursor Plan Mode,A,2026-02-02,High,Official Cursor documentation
+S14,https://www.requiment.com/requirements-gathering-template-checklist/,Requirements Gathering Checklist,B,2026-02-02,High,14-category requirements framework
+S15,https://medium.com/agile-true-north/the-3-templates-that-make-writing-acceptance-criteria-actually-easy-fe219a5bcad3,3 Acceptance Criteria Templates,C,2026-02-02,High,Rule vs scenario-oriented formats
+S16,https://www.altexsoft.com/blog/acceptance-criteria-purposes-formats-and-best-practices/,Acceptance Criteria Best Practices,B,2026-02-02,High,Given-When-Then patterns
+S17,https://www.perforce.com/blog/alm/what-are-non-functional-requirements-examples,Non-Functional Requirements Examples,B,2026-02-02,Medium,NFR categories and checklist
+S18,https://addyosmani.com/blog/ai-coding-workflow/,Addy Osmani LLM Coding Workflow,B,2026-02-02,High,Q&A strategy pattern
+S19,https://www.bridging-the-gap.com/what-questions-do-i-ask-during-requirements-elicitation/,Bridging the Gap - Elicitation Questions,C,2026-02-02,Medium,5 Whys technique reference
+S20,https://www.gitloop.com/,GitLoop AI Codebase Assistant,C,2026-02-02,Medium,Pattern learning from PRs
+S21,https://full.cx/blog/definition-of-ready-invest-principles,Definition of Ready INVEST,C,2026-02-02,High,INVEST criteria detailed
+S22,https://agilealliance.org/glossary/invest/,Agile Alliance INVEST,A,2026-02-02,High,Authoritative INVEST definition
+S23,https://www.scrumexpert.com/knowledge/agile-requirements-a-definition-of-ready-checklist/,Scrum Expert DoR Checklist,C,2026-02-02,Medium,Practical DoR examples

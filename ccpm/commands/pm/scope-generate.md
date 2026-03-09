@@ -207,10 +207,10 @@ Saved to: .claude/scopes/{scope-name}/prds/{prd-name}.md
 Remaining PRDs to generate: {count}
 ```
 
-### Important Rules
+### Rules
 
-1. **Don't invent requirements** - Only include what's in decomposition + discovery
-2. **Keep it focused** - This PRD only covers its assigned scope
-3. **Reference other PRDs** - For out-of-scope items, mention which PRD handles them
-4. **Be specific** - Acceptance criteria must be testable
-5. **Use real datetime** - Always get current time from system
+1. Include only requirements from decomposition + discovery — do not invent
+2. Cover only the assigned scope for this PRD
+3. For out-of-scope items, reference which PRD handles them
+4. Write acceptance criteria that are testable
+5. Get current time from system (`date -u +"%Y-%m-%dT%H:%M:%SZ"`)

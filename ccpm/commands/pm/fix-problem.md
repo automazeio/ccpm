@@ -147,9 +147,8 @@ Task tool parameters:
     </task>
 
     <security_constraints>
-    CRITICAL: Never auto-fill credentials, secrets, or API keys.
-    Mark any credential fields as deferred with source: "user_required".
-    This protects against accidentally exposing or guessing sensitive values.
+    Mark credential fields as deferred with source: "user_required".
+    Do not auto-fill credentials, secrets, or API keys — guessing sensitive values risks exposure.
     </security_constraints>
 
     <output_format>
@@ -635,43 +634,35 @@ Classify errors to determine retry strategy:
 `.claude/fixes/{command_hash}/state.json`
 ```
 
-## Anti-Pattern Prevention
+## Required Practices
 
-**FORBIDDEN:**
-- ❌ Retrying without changing anything between attempts
-- ❌ Applying the same fix twice
-- ❌ Ignoring circuit breaker state (continuing after OPEN)
-- ❌ Modifying files without git safety (stash first)
-- ❌ Running indefinitely on transient errors without backoff
-- ❌ Auto-filling credentials when spawning generate-inputs
-- ❌ Skipping verification between attempts
+- Apply a different approach on each retry attempt
+- Re-analyze error each retry (it may have changed)
+- Respect circuit breaker threshold — stop when OPEN
+- Stash or stage changes before modifying files
+- Apply exponential backoff between retries on transient errors
+- Mark credentials as deferred when spawning generate-inputs
+- Verify fix was applied before starting next attempt
+- Persist state after each attempt for resumability
+- Log all attempts to state file
 
-**REQUIRED:**
-- ✅ Fresh error analysis each retry (error may have changed)
-- ✅ Different approach each retry attempt
-- ✅ Respect circuit breaker threshold
-- ✅ Persist state after each attempt for resumability
-- ✅ Verify fix was applied before next attempt
-- ✅ Wait with exponential backoff between retries
-- ✅ Log all attempts to state file
-
-## Important Rules
+## Rules
 
 ### Both Modes
-1. **Never ask humans** - Answer ALL questions using tools
-2. **Classify errors first** - Determine if retry is appropriate
-3. **Vary approaches** - Each retry must try something meaningfully different
-4. **Document everything** - Full audit trail of context gathered
-5. **Fail gracefully** - If max retries fail, escalate with complete context
-6. **Idempotent operations** - Changes should be safe to retry
-7. **Git safety** - Consider `git stash` before making changes
+1. Answer all questions using tools, not the user
+2. Classify errors before deciding to retry
+3. Try something meaningfully different on each retry
+4. Maintain a full audit trail in state file
+5. Escalate with complete context when max retries are exhausted
+6. Keep operations idempotent so they're safe to retry
+7. Consider `git stash` before modifying files
 
-### Command Mode Specific
-8. **Respect circuit breaker** - Stop when same error repeats N times
-9. **Honor timeouts** - Kill command if exceeds timeout, classify as timeout error
-10. **Persist state** - Write state.json after each attempt for resumability
-11. **Fresh context each retry** - Error may have changed, re-analyze each time
-12. **Exponential backoff** - Wait between retries to allow transient issues to resolve
+### Command Mode
+8. Stop when circuit breaker opens (same error N times)
+9. Kill command when it exceeds timeout; classify exit code 124 as timeout error
+10. Write state.json after each attempt for resumability
+11. Re-analyze error on each retry — it may have changed
+12. Wait with exponential backoff between retries to allow transient issues to resolve
 
 ## Integration with Pipeline
 

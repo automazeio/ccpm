@@ -435,14 +435,14 @@ Next Steps:
 
 ---
 
-## Important Rules
+## Rules
 
-1. **Interview-style personas** - Include behavioral details, not just demographics
-2. **Journey alignment** - Every persona must map to at least one journey
-3. **Diversity** - Vary age, tech proficiency, patience, device preference
-4. **Realistic test data** - Generate domain-appropriate seed data
-5. **Feedback personality** - Each persona has distinct feedback tendencies
-6. **Idempotent** - Running again overwrites with fresh personas
+1. Include behavioral details in personas, not just demographics
+2. Map every persona to at least one journey
+3. Vary age, tech proficiency, patience, and device preference
+4. Generate domain-appropriate seed data
+5. Give each persona distinct feedback tendencies
+6. Running again overwrites with fresh personas (idempotent)
 
 ---
 

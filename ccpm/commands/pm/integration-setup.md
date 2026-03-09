@@ -89,9 +89,8 @@ Please enter your {credential.description}:
 (Format: {credential.format})
 ```
 
-**Important:**
-- Don't echo back sensitive credentials
-- Validate format if pattern is provided
+- Do not echo back sensitive credentials
+- Validate format if a pattern is defined
 - Store securely
 
 ### Step 6: Validate Credentials

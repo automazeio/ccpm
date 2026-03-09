@@ -35,7 +35,7 @@ Decompose a roadmap item (epic/initiative) into independent, well-bounded PRDs w
 
 ## Required Rules
 
-**IMPORTANT:** Before executing this command, read and follow:
+Before executing this command, read and follow:
 - `.claude/rules/datetime.md` - For getting real current date/time
 - `.claude/rules/frontmatter-operations.md` - For frontmatter handling
 
@@ -60,6 +60,8 @@ Decompose a roadmap item (epic/initiative) into independent, well-bounded PRDs w
 
 4. **Check output directory:**
    - Ensure `$OPTIONS.output-dir` exists or can be created
+
+<instructions>
 
 ## Execution Steps
 
@@ -110,12 +112,12 @@ Goals: {goals}
 Constraints: {constraints}
 Strategy: {selected_strategy}
 
-## Decomposition Rules (CRITICAL)
+## Decomposition Rules
 1. Each PRD must deliver STANDALONE USER VALUE
 2. Use VERTICAL SLICES (touch all layers: UI → API → Data)
 3. Target {min_prds} to {max_prds} PRDs
 
-## Anti-Patterns to AVOID
+## Anti-Patterns to Avoid
 - ❌ Splitting by technical component (frontend/backend/database)
 - ❌ Splitting by process step without independent value
 - ❌ Separating happy path from error handling
@@ -457,7 +459,9 @@ If confidence < `$OPTIONS.confidence-threshold` OR `$OPTIONS.review` is "true":
 - Mark all PRDs as `review_required: true`
 - Output warning with issues
 
-## Output Format
+</instructions>
+
+<output_format>
 
 ### Success
 
@@ -510,6 +514,8 @@ Suggestions:
 - {suggestion 2}
 ```
 
+</output_format>
+
 ## Examples
 
 ### Basic Usage
@@ -560,23 +566,23 @@ Suggestions:
 - `/pm:epic-start` - Begin work on decomposed epic
 - `/pm:issue-sync` - Sync PRDs to GitHub issues
 
-## IMPORTANT
+## Quality Criteria
 
-- Each PRD must deliver **standalone user value** - this is the primary quality criterion
-- Prefer **vertical slices** that touch all system layers over horizontal decomposition
-- Target **3-7 PRDs** for most epics - fewer for focused features, more for large initiatives
-- Always validate INVEST scores and address HIGH severity anti-patterns before proceeding
-- Human review is **mandatory** when confidence < 0.7
-- **Section assignments** are automatic but can be overridden in PRD frontmatter
-- **Vertical slices typically span sections** - a login feature touches backend, frontend, and security
+- Each PRD delivers **standalone user value** — this is the primary quality criterion.
+- Prefer **vertical slices** that touch all system layers over horizontal decomposition.
+- Target **3-7 PRDs** for most epics — fewer for focused features, more for large initiatives.
+- Validate INVEST scores and address HIGH severity anti-patterns before proceeding.
+- Human review is required when confidence < 0.7.
+- **Section assignments** are automatic but can be overridden in PRD frontmatter.
+- **Vertical slices typically span sections** — a login feature touches backend, frontend, and security.
 
 ## Section Assignment Notes
 
-- Sections are assigned automatically based on keyword analysis
-- PRDs can belong to **multiple sections** (e.g., `[backend, frontend, security]`)
-- The **primary_section** is used for roadmap scheduling and critical path calculation
-- Use `/pm:roadmap-generate --sections` to visualize cross-section dependencies
-- Section assignments enable parallel work streams when dependencies allow
+- Sections are assigned automatically based on keyword analysis.
+- PRDs can belong to **multiple sections** (e.g., `[backend, frontend, security]`).
+- The **primary_section** is used for roadmap scheduling and critical path calculation.
+- Use `/pm:roadmap-generate --sections` to visualize cross-section dependencies.
+- Section assignments enable parallel work streams when dependencies allow.
 
 **Section Taxonomy:** See `templates/roadmap/section-taxonomy.yaml`
 **Section Detector:** See `scripts/section-detector.sh`

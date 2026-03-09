@@ -184,10 +184,9 @@ These items from discovery are intentionally out of scope:
 
 Before finishing, verify:
 - [ ] Every requirement from discovery is assigned to a PRD
-- [ ] No circular dependencies exist
-- [ ] Each PRD has clear boundaries (in/out of scope)
+- [ ] Dependencies form a valid DAG (no circular dependencies)
+- [ ] Each PRD has explicit in/out of scope boundaries
 - [ ] PRDs are properly numbered (continuing from existing)
-- [ ] Dependencies form a valid DAG (directed acyclic graph)
 - [ ] Coverage check accounts for all discovery items
 
 ### Red Flags to Fix
