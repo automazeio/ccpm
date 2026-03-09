@@ -1,6 +1,6 @@
 # Build Deployment
 
-Build container images and push to registry using nerdctl/containerd.
+Build container images and push to registry using Docker.
 
 ## Usage
 ```
@@ -13,7 +13,7 @@ Build container images and push to registry using nerdctl/containerd.
 test -f .claude/scopes/$ARGUMENTS.md || echo "❌ Scope not found: $ARGUMENTS"
 ```
 
-## Instructions
+<instructions>
 
 ### 1. Load Configuration
 
@@ -23,7 +23,7 @@ Read from `.claude/scopes/$ARGUMENTS.md`:
 deploy:
   enabled: true
   work_dir: /path/to/project
-  registry: ubuntu.desmana-truck.ts.net:30500
+  registry: localhost:30500
   images:
     - name: app-frontend
       dockerfile: frontend/Dockerfile
@@ -52,13 +52,11 @@ For each image in the config:
 ```bash
 cd {work_dir}
 
-# Build with nerdctl
-sudo nerdctl build \
+docker build \
   -t {registry}/{name}:latest \
   -f {dockerfile} \
   {context}
 
-# Check exit code
 if [ $? -ne 0 ]; then
   echo "❌ Build failed: {name}"
   exit 1
@@ -67,35 +65,10 @@ fi
 echo "✅ Built: {registry}/{name}:latest"
 ```
 
-### 3. Configure Containerd for HTTP Registry
-
-Before pushing, ensure containerd is configured for the insecure (HTTP) registry:
+### 3. Push Each Image
 
 ```bash
-# Extract registry host from full registry URL
-REGISTRY_HOST="{registry}"
-
-# Create containerd host configuration directory
-sudo mkdir -p /etc/containerd/certs.d/${REGISTRY_HOST}
-
-# Create hosts.toml for plain HTTP access
-sudo tee /etc/containerd/certs.d/${REGISTRY_HOST}/hosts.toml > /dev/null << 'EOF'
-[host."http://${REGISTRY_HOST}"]
-  skip_verify = true
-  plain_http = true
-EOF
-
-echo "✅ Configured containerd for HTTP registry: ${REGISTRY_HOST}"
-```
-
-**Note:** This step is idempotent - safe to run multiple times.
-
-### 4. Push Each Image
-
-```bash
-# Push with insecure-registry flag (HTTP registry)
-# The hosts.toml config ensures plain HTTP is used
-sudo nerdctl push --insecure-registry {registry}/{name}:latest
+docker push {registry}/{name}:latest
 
 if [ $? -ne 0 ]; then
   echo "❌ Push failed: {name}"
@@ -105,14 +78,16 @@ fi
 echo "✅ Pushed: {registry}/{name}:latest"
 ```
 
-### 5. Verify Images in Registry
+### 4. Verify Images in Registry
 
 ```bash
 # Check registry catalog
 curl -s http://{registry}/v2/_catalog | grep {name}
 ```
 
-## Output
+</instructions>
+
+<output_format>
 
 ### Success
 ```
@@ -138,6 +113,8 @@ Last 20 lines:
 To retry: /pm:build-deployment {scope}
 ```
 
+</output_format>
+
 ## Auto-Detection Rules
 
 When `deploy.images` is not specified:
@@ -161,35 +138,31 @@ export BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 ## Notes
 
-- Uses nerdctl (not docker) for builds
-- Uses buildkit via systemd service
-- Always uses `--insecure-registry` for push (HTTP registry)
-- **Configures containerd hosts.toml** for plain HTTP - this is essential for HTTP registries
+- Uses Docker for builds and pushes
+- The local registry at localhost:30500 is HTTP (insecure) — Docker must be configured with `insecure-registries` in `/etc/docker/daemon.json`
 - Images are tagged `:latest` (configurable via TAG env var)
-- This command only builds/pushes - use `/pm:deploy` for K8s deployment
+- This command only builds/pushes — use `/pm:deploy` for K8s deployment
 - Can be called standalone or by `/pm:deploy`
 
 ## Troubleshooting
 
-### Push hangs or shows "waiting"
+### Push fails with "server gave HTTP response to HTTPS client"
 
-If push hangs with all layers showing "waiting", the containerd hosts.toml configuration is likely missing:
+Docker needs the registry listed in insecure-registries:
 
 ```bash
-# Verify the config exists
-cat /etc/containerd/certs.d/{registry}/hosts.toml
+cat /etc/docker/daemon.json
+# Should contain: {"insecure-registries": ["localhost:30500"]}
 
-# Should show:
-# [host."http://{registry}"]
-#   skip_verify = true
-#   plain_http = true
+# After changing daemon.json:
+sudo systemctl restart docker
 ```
 
 ### Registry connection refused
 
-Ensure the registry is reachable:
+Verify the registry is reachable:
 
 ```bash
-curl -s http://{registry}/v2/
+curl -s http://localhost:30500/v2/
 # Should return: {}
 ```
