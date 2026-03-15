@@ -9,14 +9,14 @@
 #   CCPM_REPO_URL=... /pm:ccpm-pull  # Use custom repo
 #
 # Environment variables:
-#   CCPM_REPO_URL   - Git URL for ccpm repo (default: https://github.com/automazeio/ccpm.git)
+#   CCPM_REPO_URL   - Git URL for ccpm repo (default: git@github.com:Titan-Cloud-Compute/ccpm.git)
 #   CCPM_BRANCH     - Branch to track (default: main)
 #   CCPM_LEGACY     - Set to "1" to use file-copy mode instead of submodules
 
 set -e
 
 # Configuration
-CCPM_REPO_URL="${CCPM_REPO_URL:-https://github.com/automazeio/ccpm.git}"
+CCPM_REPO_URL="${CCPM_REPO_URL:-git@github.com:Titan-Cloud-Compute/ccpm.git}"
 CCPM_BRANCH="${CCPM_BRANCH:-main}"
 SUBMODULE_PATH=".claude/ccpm"
 
