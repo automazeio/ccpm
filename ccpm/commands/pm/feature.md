@@ -131,8 +131,8 @@ ACCEPTANCE=$(sed -n '/^## Acceptance Criteria/,/^---/p' "$ARGUMENTS" | sed '1d;$
 ```bash
 # Update checklist_item with feature session
 if [ -n "$CHECKLIST_ITEM_ID" ]; then
-  PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-    psql -U postgres -d cattle_erp -c "
+  PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+    psql -U planning -d planning -c "
   UPDATE checklist_item SET
     feature_session = '$SESSION_NAME',
     status = 'in_progress',

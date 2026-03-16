@@ -59,8 +59,8 @@ Phase: context
 Create database record:
 ```bash
 # Insert into PostgreSQL via kubectl
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 INSERT INTO checklist (session_name, title, phase)
 VALUES ('$SESSION_NAME', 'Sprint: $SESSION_NAME', 'context')
 ON CONFLICT (session_name) DO UPDATE SET updated_at = NOW();
@@ -139,8 +139,8 @@ options:
 
 Record context to database:
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 UPDATE checklist SET
   team_context = '{\"capacity\": \"$CAPACITY\", \"duration\": \"$DURATION\"}',
   sprint_context = '{\"goal\": \"$GOAL\", \"constraints\": $CONSTRAINTS}',
@@ -207,8 +207,8 @@ After gathering W-Framework answers, insert into database:
 
 ```bash
 # Get next item number
-ITEM_NUM=$(PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -t -c "
+ITEM_NUM=$(PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -t -c "
 SELECT COALESCE(MAX(item_number), 0) + 1
 FROM checklist_item ci
 JOIN checklist c ON ci.checklist_id = c.id
@@ -216,8 +216,8 @@ WHERE c.session_name = '$SESSION_NAME';
 ")
 
 # Insert item
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 INSERT INTO checklist_item (
   checklist_id,
   item_number,
@@ -333,8 +333,8 @@ options:
 ### Update Database
 
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 UPDATE checklist_item SET
   invest_independent = $I_SCORE,
   invest_negotiable = $N_SCORE,
@@ -410,8 +410,8 @@ options:
 
 ```bash
 # Insert split child
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 INSERT INTO checklist_item (
   checklist_id,
   item_number,
@@ -494,8 +494,8 @@ options:
 ### Update Database
 
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 UPDATE checklist_item SET
   priority = '$PRIORITY',
   priority_rationale = '$RATIONALE',
@@ -512,8 +512,8 @@ WHERE id = $ITEM_ID;
 ### Update Session Status
 
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 UPDATE checklist SET
   phase = 'complete',
   completed_at = NOW(),
@@ -525,8 +525,8 @@ WHERE session_name = '$SESSION_NAME';
 ### Query Final Checklist
 
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 SELECT
   ci.item_number,
   ci.title,
@@ -605,8 +605,8 @@ After any checklist item status changes to `completed`:
 
 ```bash
 # Check if completed item is a spike with a parent feature
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -t -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -t -c "
 SELECT
   ci.id,
   ci.title,
@@ -686,8 +686,8 @@ This runs in the main conversation, allowing user to:
 
 3. **Link checklist item to feature session:**
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 UPDATE checklist_item SET
   notes = COALESCE(notes, '') || E'\n\n[Feature Session: $FEATURE_SESSION_NAME]',
   status = 'in_progress',
@@ -739,8 +739,8 @@ Task:
 When implementation completes (either path), update the parent checklist item:
 
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 UPDATE checklist_item SET
   status = 'completed',
   completed_at = NOW(),
@@ -842,8 +842,8 @@ Generate markdown checklist file for external use.
 
 Show all planning sessions from database:
 ```bash
-PGPASSWORD=upj3RsNuqy kubectl exec -n cattle-erp postgresql-cattle-erp-0 -- \
-  psql -U postgres -d cattle_erp -c "
+PGPASSWORD=planning123 kubectl exec -n planning postgresql-planning-0 -- \
+  psql -U planning -d planning -c "
 SELECT session_name, title, phase, total_items, invest_pass_rate, created_at
 FROM checklist
 ORDER BY created_at DESC
@@ -858,7 +858,7 @@ LIMIT 10;
 ### Database Connection Failed
 ```
 ❌ Cannot connect to PostgreSQL
-Fix: Ensure kubectl access to cattle-erp namespace
+Fix: Ensure kubectl access to planning namespace
 ```
 
 ### Session Already Exists
