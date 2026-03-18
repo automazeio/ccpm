@@ -1,4 +1,4 @@
-# CCPM _ The Project Manager Agent
+# CCPM – The Project Manager Agent
 
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-4b3baf)](https://agentskills.io)
 &nbsp;
