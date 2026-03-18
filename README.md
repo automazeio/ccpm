@@ -375,7 +375,16 @@ Teams using this system report:
 - **75% reduction** in bug rates — due to detailed task breakdown before coding
 - **Up to 3× faster** feature delivery
 
-In structured evals, agents using CCPM completed PM workflows correctly **100% of the time** vs **27.7% without the skill** — across PRD creation, parallel issue execution, and standup reporting.
+### Benchmark
+
+In structured evals comparing CCPM-equipped agents vs baseline (no skill):
+
+| Scenario | With CCPM | Without |
+|---|---|---|
+| PRD creation (brainstorm-first, correct paths) | ✅ 4/4 | ❌ 2/4 |
+| Issue execution (analysis + worktree checks) | ✅ 4/4 | ❌ 0/4 |
+| Standup (runs script, real data) | ✅ 3/3 | ❌ 1/3 |
+| **Overall** | **100%** | **27.7%** |
 
 ---
 
