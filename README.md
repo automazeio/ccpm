@@ -1,4 +1,4 @@
-# CCPM — Claude Code Project Manager
+# CCPM _ The Project Manager Agent
 
 [![Agent Skills](https://img.shields.io/badge/Agent_Skills-compatible-4b3baf)](https://agentskills.io)
 &nbsp;
@@ -12,11 +12,16 @@
 &nbsp;
 [![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm.svg?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
 
-### Spec-driven development for AI agents — ship ~~faster~~ _better_ using PRDs, GitHub issues, and multiple agents running in parallel.
+### Spec-driven development for AI agents – ship ~~faster~~ _better_ using PRDs, GitHub issues, and multiple agents running in parallel.
 
 Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your AI agent a structured PM brain: turn ideas into PRDs, PRDs into epics, epics into GitHub issues, and issues into production code — with full traceability at every step.
 
-Works with any [Agent Skills–compatible](https://agentskills.io) harness: **Factory, Claude Code, Amp, OpenCode, Codex, Cursor, and more.**
+---
+
+> [!IMPORTANT]
+> 📢 **CCPM is now an AGENT SKILL!** It works with any [Agent Skills–compatible](https://agentskills.io) harness that supports skills: **Claude Code, Codex, OpenCode, Factory, Amp, Cursor, and more.**
+
+---
 
 ![CCPM](screenshot.webp)
 
@@ -37,7 +42,12 @@ Works with any [Agent Skills–compatible](https://agentskills.io) harness: **Fa
 - [Proven Results](#proven-results)
 - [Local vs Remote](#local-vs-remote)
 - [Technical Notes](#technical-notes)
-- [Support This Project](#support-this-project)
+- [Who's Behind this Project](#whos-behind-this-project)
+
+---
+
+> [!NOTE]
+> Check out **[proof](https://github.com/automazeio/proof)** to get your agents capture visual proof of work of terminal output, browser interactions, and mobile simulator recordings.
 
 ---
 
@@ -394,7 +404,7 @@ In structured evals, agents using CCPM completed PM workflows correctly **100% o
 
 ---
 
-## Support This Project
+## Who's behind this project
 
 CCPM was developed at [Automaze](https://automaze.io) **for developers who ship, by developers who ship**.
 
