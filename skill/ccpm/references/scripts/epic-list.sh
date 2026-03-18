@@ -31,7 +31,7 @@ for dir in .claude/epics/*/; do
   [ -z "$p" ] && p="0%"
 
   # Count tasks
-  t=$(ls "$dir"[0-9]*.md 2>/dev/null | wc -l)
+  t=$(ls "$dir"/[0-9]*.md 2>/dev/null | wc -l)
 
   # Format output with GitHub issue number if available
   if [ -n "$g" ]; then

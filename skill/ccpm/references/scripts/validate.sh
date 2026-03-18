@@ -42,7 +42,13 @@ echo "🔗 Reference Check:"
 for task_file in .claude/epics/*/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
-  deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//' | sed 's/,/ /g')
+  deps_line=$(grep "^depends_on:" "$task_file" | head -1)
+  if [ -n "$deps_line" ]; then
+    deps=$(echo "$deps_line" | sed 's/^depends_on: *//' | sed 's/^\[//' | sed 's/\]$//' | sed 's/,/ /g' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+    [ -z "$deps" ] && deps=""
+  else
+    deps=""
+  fi
   if [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
     epic_dir=$(dirname "$task_file")
     for dep in $deps; do
@@ -54,7 +60,9 @@ for task_file in .claude/epics/*/[0-9]*.md; do
   fi
 done
 
-[ $warnings -eq 0 ] && [ $errors -eq 0 ] && echo "  ✅ All references valid"
+if [ $warnings -eq 0 ] && [ $errors -eq 0 ]; then
+  echo "  ✅ All references valid"
+fi
 
 # Check frontmatter
 echo ""

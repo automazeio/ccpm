@@ -14,15 +14,23 @@ for epic_dir in .claude/epics/*/; do
   [ -d "$epic_dir" ] || continue
   epic_name=$(basename "$epic_dir")
 
-  for task_file in "$epic_dir"[0-9]*.md; do
+  for task_file in "$epic_dir"/[0-9]*.md; do
     [ -f "$task_file" ] || continue
 
     # Check if task is open
     status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
-    [ "$status" != "open" ] && [ -n "$status" ] && continue
+    if [ "$status" != "open" ] && [ -n "$status" ]; then
+      continue
+    fi
 
     # Check dependencies
-    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//')
+    deps_line=$(grep "^depends_on:" "$task_file" | head -1)
+    if [ -n "$deps_line" ]; then
+      deps=$(echo "$deps_line" | sed 's/^depends_on: *//' | sed 's/^\[//' | sed 's/\]$//' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+      [ -z "$deps" ] && deps=""
+    else
+      deps=""
+    fi
 
     # If no dependencies or empty, task is available
     if [ -z "$deps" ] || [ "$deps" = "depends_on:" ]; then
