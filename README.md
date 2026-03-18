@@ -1,5 +1,9 @@
 # Claude Code PM
 
+> [!WARNING]
+> **This branch (v1) is archived.** It contains the original Claude Code slash command system (`/pm:*`) and is no longer actively maintained.
+> For the current skill-based version that works with any Agent Skills–compatible harness (Factory, Claude Code, Amp, Cursor, OpenCode, and more), see the **[main branch](https://github.com/automazeio/ccpm)**.
+
 [![Automaze](https://img.shields.io/badge/By-automaze.io-4b3baf)](https://automaze.io)
 &nbsp;
 [![Claude Code](https://img.shields.io/badge/+-Claude%20Code-d97757)](https://github.com/automazeio/ccpm/blob/main/README.md)
