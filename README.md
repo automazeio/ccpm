@@ -206,6 +206,23 @@ In your project root, add a `skills/` directory and symlink or copy the skill:
 ln -s /path/to/ccpm/skill/ccpm .claude/skills/ccpm
 ```
 
+### Hermes Agent (bridge mode)
+
+CCPM's scripts expect a `.claude/` project layout. In Hermes, you can keep state under `.hermes/ccpm/` and create a compatibility bridge:
+
+```bash
+# from your project root
+/path/to/ccpm/skill/ccpm/references/scripts/hermes-bridge.sh
+```
+
+That creates `.hermes/ccpm/{prds,epics,rules,...}` and a symlink:
+
+```bash
+.claude -> .hermes/ccpm
+```
+
+Then install the skill in your Hermes skills path as usual.
+
 ### Any other Agent Skills–compatible harness
 
 Point it at `skill/ccpm/`. It follows the [agentskills.io](https://agentskills.io) standard and works out of the box.
