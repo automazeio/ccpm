@@ -22,11 +22,14 @@ echo ""
 # Check for orphaned files
 echo "🗂️ Data Integrity:"
 
-# Check epics have epic.md files
+# Check epics have epic.md files (ignore archive buckets)
 for epic_dir in .claude/epics/*/; do
   [ -d "$epic_dir" ] || continue
+  epic_name=$(basename "$epic_dir")
+  [ "$epic_name" = "archived" ] && continue
+  [ "$epic_name" = "archive" ] && continue
   if [ ! -f "$epic_dir/epic.md" ]; then
-    echo "  ⚠️ Missing epic.md in $(basename "$epic_dir")"
+    echo "  ⚠️ Missing epic.md in $epic_name"
     ((warnings++))
   fi
 done
