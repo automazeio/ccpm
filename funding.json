@@ -1,0 +1,64 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.1.0",
+  "entity": {
+    "type": "organisation",
+    "role": "owner",
+    "name": "Automaze Ltd",
+    "email": "ran@automaze.io",
+    "description": "Automaze Ltd is a UK software company founded by Ran Aroussi, the creator of yfinance and QuantStats. We work as a technical partner for startups and businesses, and we publish open-source tools for AI-assisted software development, the most widely used of which is CCPM.\n\nThis application asks for support to put CCPM on a steady, funded maintenance footing, with dedicated maintainer time, a public plan and regular releases.",
+    "webpageUrl": {
+      "url": "https://automaze.io",
+      "wellKnown": "https://automaze.io/.well-known/funding-manifest-urls"
+    }
+  },
+  "projects": [
+    {
+      "guid": "ccpm",
+      "name": "CCPM",
+      "description": "CCPM is an open-source, spec-driven project management workflow for AI coding agents. It turns an idea into a PRD, the PRD into an epic, and the epic into GitHub issues, then lets several agents work on those issues in parallel in separate git worktrees, with traceability back to the spec at every step. It started as a set of Claude Code commands and is now packaged as an Agent Skill that works with Claude Code, Codex, OpenCode, Factory, Amp, Cursor and other compatible tools.\n\nAs of October 2026: about 8,400 GitHub stars, 860 forks and 9 contributors since August 2025, MIT licensed, with 4 open issues and 2 open pull requests.\n\nTo be open about it: the last commit was in March 2026. Development slowed while the team was busy with other work, even though people keep adopting CCPM. This request is to make sure it stays dependable.\n\nMaintenance plan (plan: ccpm-maintenance, USD 25,000 per year):\n- The Automaze team maintains CCPM 1 to 2 days a week, led by Ran Aroussi.\n- Every new issue and pull request gets a first response within 7 days; the current backlog is cleared in the first month.\n- Versioned, tagged releases with release notes, at least quarterly.\n- CI that runs the skill's evaluation scenarios and checks its shell scripts on every pull request.\n- Compatibility checks against the main agent tools as they change (Claude Code, Codex, Cursor and others).\n- Security hardening: review of the scripts that call git and the GitHub CLI, least-privilege token guidance, and a security policy.\n- Better docs: quick start, troubleshooting and examples, plus a short public status update each quarter.",
+      "webpageUrl": {
+        "url": "https://github.com/automazeio/ccpm"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/automazeio/ccpm"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "artificial-intelligence",
+        "developer-tools",
+        "productivity",
+        "software-engineering",
+        "project-management",
+        "ai-agents",
+        "github"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "automaze-bank",
+        "type": "bank",
+        "address": "",
+        "description": "Direct bank transfer in USD to Automaze Ltd's Wise USD business account. Account details are shared privately by email with funders."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "ccpm-maintenance",
+        "status": "active",
+        "name": "CCPM maintenance plan",
+        "description": "For the CCPM project. Pays for a named maintainer's protected monthly time, a 7-day first-response target on issues and pull requests, quarterly tagged releases, CI with evaluation runs, compatibility checks across agent tools, security hardening and docs.",
+        "amount": 25000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": [
+          "automaze-bank"
+        ]
+      }
+    ]
+  }
+}
