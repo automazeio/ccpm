@@ -12,6 +12,8 @@
 &nbsp;
 [![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm.svg?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
 
+**Supported by [Neon](https://neon.com)** <a href="https://neon.com"><img src="docs/assets/neon-logo.svg" alt="Neon" height="56"></a>
+
 ### Spec-driven development for AI agents – ship ~~faster~~ _better_ using PRDs, GitHub issues, and multiple agents running in parallel.
 
 Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your AI agent a structured PM brain: turn ideas into PRDs, PRDs into epics, epics into GitHub issues, and issues into production code — with full traceability at every step.
@@ -151,7 +153,7 @@ Reality: a single "Implement user authentication" issue is actually:
 - **Agent 4**: UI components and forms
 - **Agent 5**: Test suites and documentation
 
-All running **simultaneously** in the same worktree. They share that worktree, so they also share one database unless you give each writer its own. See [Using CCPM with a database](docs/using-ccpm-with-a-database.md).
+All running **simultaneously** in the same worktree. They share that worktree, so they also share one database unless you give each writer its own. See [Using CCPM with a database](docs/guides/using-ccpm-with-a-database.md).
 
 ### The Math of Velocity
 
@@ -301,7 +303,8 @@ skill/ccpm/
         ├── standup.sh
         ├── epic-list.sh
         ├── search.sh
-        └── ...               # 14 scripts total
+        ├── neon-branch.sh    # optional Neon branch + worktree env
+        └── ...               # 15 scripts total
 ```
 
 Your project files live in `.claude/` in your project root:
@@ -416,9 +419,9 @@ In structured evals comparing CCPM-equipped agents vs baseline (no skill):
 
 ## Using CCPM with a database
 
-Git worktrees keep parallel agents off the same files. Those agents still share one database until you give each writer its own. [Using CCPM with a database](docs/using-ccpm-with-a-database.md) walks through that, with [Neon](https://neon.com) Postgres branches as the worked example (one database branch per epic, and one per parallel writer).
+Git worktrees keep parallel agents off the same files. Those agents still share one database until you give each writer its own. [Using CCPM with a database](docs/guides/using-ccpm-with-a-database.md) walks through that, with [Neon](https://neon.com) as the worked example.
 
-<!-- TODO: add the Neon logo from the Neon brand kit once the asset is in this repo. Use a local file. Do not hotlink a logo URL. -->
+`neon-branch.sh` creates the Neon branch, writes `DATABASE_URL` into the epic worktree, and deletes the branch when the epic merges. It does nothing when Neon is not configured.
 
 ---
 

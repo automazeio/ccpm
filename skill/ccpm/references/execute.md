@@ -85,6 +85,10 @@ parallelization_factor: <1.0-5.0>
 2. Find local task file (as above).
 3. Check for analysis file: `.claude/epics/*/<N>-analysis.md` — if missing, run analysis first (or do both in sequence: analyze then start).
 4. Verify epic worktree exists: `git worktree list | grep "epic-<name>"` — if not: "❌ No worktree. Sync the epic first."
+5. If this issue writes to the database, give it a Neon child branch. No-op when Neon is not configured. Load `../epic-<name>/.env.issue-<N>` for this agent only. Do not commit it, and do not copy it over the shared worktree `.env`.
+```bash
+bash <skill_path>/references/scripts/neon-branch.sh create <epic_name> --issue <N>
+```
 
 ### Process
 

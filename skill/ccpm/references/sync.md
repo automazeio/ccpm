@@ -92,7 +92,13 @@ rm <file>.bak
 ```bash
 git checkout main && git pull origin main
 git worktree add ../epic-<name> -b epic/<name>
+
+# Optional Neon branch. Exits 0 when the Neon CLI or NEON_PROJECT_ID is missing.
+# Stop if this exits non-zero.
+bash <skill_path>/references/scripts/neon-branch.sh create <name>
 ```
+
+`<skill_path>` is the directory that contains this skill's `SKILL.md`.
 
 **Step 6 — Create github-mapping.md:**
 ```markdown
@@ -176,6 +182,10 @@ sed -i "s/- \[ \] #<N>/- [x] #<N>/" /tmp/epic-body.md
 gh issue edit <epic_N> --body-file /tmp/epic-body.md
 ```
 5. Recalculate and update epic progress: `progress = closed_tasks / total_tasks * 100`
+6. If this issue had its own Neon branch, delete just that child. No-op when Neon is not configured:
+```bash
+bash <skill_path>/references/scripts/neon-branch.sh cleanup <epic_name> --issue <N>
+```
 
 ---
 
@@ -199,6 +209,10 @@ cd ../epic-<name>
 git checkout main && git pull origin main
 git merge epic/<name> --no-ff -m "Merge epic: <name>"
 git push origin main
+
+# Delete Neon branches for this epic (children first). No-op when Neon is not configured.
+# Stop if this exits non-zero.
+bash <skill_path>/references/scripts/neon-branch.sh cleanup <name>
 
 # Cleanup
 git worktree remove ../epic-<name>

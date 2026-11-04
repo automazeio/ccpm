@@ -62,6 +62,8 @@ For deterministic operations — anything that reads and reports without needing
 | What's next | `bash references/scripts/next.sh` |
 | What's blocked | `bash references/scripts/blocked.sh` |
 | Validate project state | `bash references/scripts/validate.sh` |
+| Neon branch for an epic (optional) | `bash references/scripts/neon-branch.sh create <epic>` |
+| Remove that Neon branch on merge | `bash references/scripts/neon-branch.sh cleanup <epic>` |
 
 Use the LLM for work that requires reasoning: writing PRDs, analyzing parallelism, launching agents, synthesizing updates.
 
