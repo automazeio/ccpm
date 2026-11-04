@@ -12,7 +12,8 @@
 &nbsp;
 [![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm.svg?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
 
-**Supported by [Neon](https://neon.com)** <a href="https://neon.com"><img src="docs/assets/neon-logo.svg" alt="Neon" height="56"></a>
+<a href="https://neon.com"><img src="docs/assets/neon-logo.svg" alt="Neon" height="32"></a><br> **Supported by [Neon](https://neon.com)**
+
 
 ### Spec-driven development for AI agents – ship ~~faster~~ _better_ using PRDs, GitHub issues, and multiple agents running in parallel.
 
