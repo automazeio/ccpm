@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 echo "Getting epics..."
 echo ""
 echo ""
@@ -18,6 +19,7 @@ completed_epics=""
 # Process all epics
 for dir in .claude/epics/*/; do
   [ -d "$dir" ] || continue
+  is_archive_dir "$dir" && continue
   [ -f "$dir/epic.md" ] || continue
 
   # Extract metadata
@@ -31,7 +33,8 @@ for dir in .claude/epics/*/; do
   [ -z "$p" ] && p="0%"
 
   # Count tasks
-  t=$(ls "$dir"/[0-9]*.md 2>/dev/null | wc -l)
+  t=0
+  for f in "$dir"*.md; do is_task_file "$f" && ((t++)); done
 
   # Format output with GitHub issue number if available
   if [ -n "$g" ]; then
@@ -86,8 +89,11 @@ fi
 # Summary
 echo ""
 echo "📊 Summary"
-total=$(ls -d .claude/epics/*/ 2>/dev/null | wc -l)
-tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+total=0
+for dir in .claude/epics/*/; do
+  [ -d "$dir" ] && ! is_archive_dir "$dir" && ((total++))
+done
+tasks=$(list_task_files | grep -c .)
 echo "   Total epics: $total"
 echo "   Total tasks: $tasks"
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 epic_name="$1"
 
@@ -49,15 +50,15 @@ task_count=0
 open_count=0
 closed_count=0
 
-for task_file in "$epic_dir"/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
+for task_file in "$epic_dir"/*.md; do
+  is_task_file "$task_file" || continue
 
   task_num=$(basename "$task_file" .md)
   task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
   task_status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
   parallel=$(grep "^parallel:" "$task_file" | head -1 | sed 's/^parallel: *//')
 
-  if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
+  if is_done_status "$task_status"; then
     echo "  ✅ #$task_num - $task_name"
     ((closed_count++))
   else

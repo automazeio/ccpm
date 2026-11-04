@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 query="$1"
 
@@ -51,7 +52,7 @@ fi
 # Search in Tasks
 if [ -d ".claude/epics" ]; then
   echo "📝 Tasks:"
-  results=$(find .claude/epics -name "[0-9]*.md" -exec grep -l -i "$query" {} \; 2>/dev/null | head -10)
+  results=$(list_task_files | while IFS= read -r f; do grep -l -i -- "$query" "$f"; done | head -10)
   if [ -n "$results" ]; then
     for file in $results; do
       epic_name=$(basename $(dirname "$file"))
