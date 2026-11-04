@@ -100,6 +100,18 @@ mkdir -p .claude/epics/<epic>/updates/<N>
 current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 ```
 
+Create `.claude/epics/<epic>/updates/<N>/progress.md` (issue sync and `in-progress.sh` read this file):
+```markdown
+---
+issue: <N>
+started: <datetime>
+last_sync: <datetime>
+completion: 0%
+---
+```
+
+Set `status: in-progress` and `updated: <datetime>` in the task file `.claude/epics/<epic>/<N>.md`.
+
 Create `.claude/epics/<epic>/updates/<N>/stream-<X>.md` for each stream:
 ```markdown
 ---
@@ -184,21 +196,21 @@ Sync updates: "sync issue <N>"
 
 ### Process
 
-**Step 1 — Read all task files** in `.claude/epics/<name>/`. Parse frontmatter for `status`, `depends_on`, `parallel`.
+**Step 1 — Read all task files** in `.claude/epics/<name>/` (only `<N>.md`, not `<N>-analysis.md`). Parse frontmatter for `status`, `depends_on`, `parallel`, `conflicts_with`.
 
 **Step 2 — Categorize tasks:**
-- Ready: status=open, no unmet depends_on
-- Blocked: has unmet depends_on
+- Ready: status=open, every `depends_on` task is closed
+- Blocked: has a `depends_on` task that is not closed
 - In Progress: already has an execution file
 - Complete: status=closed
 
 **Step 3 — Analyze any ready tasks** that don't have an analysis file yet (run issue analysis inline).
 
-**Step 4 — Launch agents** for all ready tasks following the same per-issue agent launch pattern above.
+**Step 4 — Launch agents** for all ready tasks following the same per-issue agent launch pattern above. Never run two tasks at the same time if one lists the other in `conflicts_with`, or if either has `parallel: false`. Queue the second one until the first is closed.
 
 **Step 5 — Create/update** `.claude/epics/<name>/execution-status.md` with all active agents and queued issues.
 
-**Step 6 — As agents complete**, check if blocked issues are now unblocked and launch those agents.
+**Step 6 — As agents complete**, check if blocked or queued issues are now free to start and launch those agents. `bash <skill_path>/references/scripts/next.sh` lists them.
 
 ---
 

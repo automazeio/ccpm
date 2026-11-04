@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
 echo "Getting status..."
 echo ""
@@ -45,17 +46,15 @@ else
   closed=0
   blocked=0
 
-  # Use find to safely iterate over task files
-  for task_file in "$epic_dir"/[0-9]*.md; do
-    [ -f "$task_file" ] || continue
+  for task_file in "$epic_dir"/*.md; do
+    is_task_file "$task_file" || continue
     ((total++))
 
-    task_status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
-    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//')
+    task_status=$(frontmatter_field "$task_file" status)
 
-    if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
+    if is_done_status "$task_status"; then
       ((closed++))
-    elif [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
+    elif [ -n "$(unmet_deps "$task_file")" ]; then
       ((blocked++))
     else
       ((open++))

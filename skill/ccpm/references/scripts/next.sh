@@ -1,4 +1,6 @@
 #!/bin/bash
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+
 echo "Getting status..."
 echo ""
 echo ""
@@ -7,45 +9,42 @@ echo "📋 Next Available Tasks"
 echo "======================="
 echo ""
 
-# Find tasks that are open and have no dependencies or whose dependencies are closed
+# A task is ready when it is open, all its dependencies are closed,
+# and no task it conflicts with is in progress.
 found=0
 
-for epic_dir in .claude/epics/*/; do
-  [ -d "$epic_dir" ] || continue
-  epic_name=$(basename "$epic_dir")
+while IFS= read -r task_file; do
+  [ -n "$task_file" ] || continue
 
-  for task_file in "$epic_dir"/[0-9]*.md; do
-    [ -f "$task_file" ] || continue
+  status=$(frontmatter_field "$task_file" status)
+  if [ "$status" != "open" ] && [ -n "$status" ]; then
+    continue
+  fi
 
-    # Check if task is open
-    status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
-    if [ "$status" != "open" ] && [ -n "$status" ]; then
-      continue
-    fi
+  [ -n "$(unmet_deps "$task_file")" ] && continue
 
-    # Check dependencies
-    deps_line=$(grep "^depends_on:" "$task_file" | head -1)
-    if [ -n "$deps_line" ]; then
-      deps=$(echo "$deps_line" | sed 's/^depends_on: *//' | sed 's/^\[//' | sed 's/\]$//' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-      [ -z "$deps" ] && deps=""
-    else
-      deps=""
-    fi
+  task_name=$(frontmatter_field "$task_file" name)
+  task_num=$(basename "$task_file" .md)
+  epic_name=$(basename "$(dirname "$task_file")")
+  parallel=$(frontmatter_field "$task_file" parallel)
+  conflicts=$(active_conflicts "$task_file")
 
-    # If no dependencies or empty, task is available
-    if [ -z "$deps" ] || [ "$deps" = "depends_on:" ]; then
-      task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
-      task_num=$(basename "$task_file" .md)
-      parallel=$(grep "^parallel:" "$task_file" | head -1 | sed 's/^parallel: *//')
+  if [ -n "$conflicts" ]; then
+    echo "⚠️ Ready but conflicts with work in progress: #$task_num - $task_name"
+    echo "   Epic: $epic_name"
+    echo "   Wait for: $(echo "$conflicts" | sed 's/[^ ]*/#&/g')"
+    echo ""
+    continue
+  fi
 
-      echo "✅ Ready: #$task_num - $task_name"
-      echo "   Epic: $epic_name"
-      [ "$parallel" = "true" ] && echo "   🔄 Can run in parallel"
-      echo ""
-      ((found++))
-    fi
-  done
-done
+  echo "✅ Ready: #$task_num - $task_name"
+  echo "   Epic: $epic_name"
+  [ "$parallel" = "true" ] && echo "   🔄 Can run in parallel"
+  all_conflicts=$(frontmatter_list "$task_file" conflicts_with)
+  [ -n "$all_conflicts" ] && echo "   ⚠️ Do not run at the same time as: $(echo "$all_conflicts" | sed 's/[^ ]*/#&/g')"
+  echo ""
+  ((found++))
+done < <(list_task_files)
 
 if [ $found -eq 0 ]; then
   echo "No available tasks found."

@@ -30,43 +30,64 @@ REPO=$(echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||')
 
 ### Process
 
-**Step 1 — Create epic issue:**
+Strip frontmatter with this `awk` command. Do not use `sed '1,/^---$/d; 1,/^---$/d'`: on GNU sed it deletes the whole file and the issue is created with an empty body.
 
-Strip frontmatter from epic.md, then:
 ```bash
-sed '1,/^---$/d; 1,/^---$/d' .claude/epics/<name>/epic.md > /tmp/epic-body.md
-epic_number=$(gh issue create \
-  --repo "$REPO" \
-  --title "Epic: <name>" \
-  --body-file /tmp/epic-body.md \
-  --label "epic,epic:<name>,feature" \
-  --json number -q .number)
+strip_frontmatter() { awk 'NR==1 && $0!="---" {fm=2} fm<2 && $0=="---" {fm++; next} fm>=2' "$1"; }
 ```
 
-**Step 2 — Create task sub-issues:**
+`gh issue create` has no `--json` flag. It prints the new issue URL, so take the number from the end of it.
 
-Check if `gh-sub-issue` extension is available:
+**Step 1 — Create epic issue:**
+
 ```bash
+body_file=$(mktemp)
+strip_frontmatter .claude/epics/<name>/epic.md > "$body_file"
+epic_url=$(gh issue create \
+  --repo "$REPO" \
+  --title "Epic: <name>" \
+  --body-file "$body_file" \
+  --label "epic,epic:<name>,feature")
+epic_number=$(echo "$epic_url" | grep -oE '[0-9]+$')
+rm -f "$body_file"
+```
+
+Write `github: $epic_url` into epic.md right away (see Step 4), so an interrupted sync does not create the epic twice.
+
+**Step 2 — Create task issues:**
+
+Skip any task file that already has a `github:` URL — it was synced before. This makes a re-run after an interruption safe.
+
+Check if the `gh-sub-issue` extension is available:
+```bash
+use_subissues=false
 if gh extension list | grep -q "yahsan2/gh-sub-issue"; then
   use_subissues=true
 fi
 ```
 
 For <5 tasks: create sequentially.
-For ≥5 tasks: use parallel Task agents (3-4 tasks per batch).
+For ≥5 tasks: use parallel Task agents (3-4 tasks per batch). Each agent must use its own temp file (`mktemp`), never a shared path like `/tmp/task-body.md`.
 
 Per task:
 ```bash
-sed '1,/^---$/d; 1,/^---$/d' <task_file> > /tmp/task-body.md
-task_number=$(gh issue create \
+body_file=$(mktemp)
+strip_frontmatter <task_file> > "$body_file"
+task_url=$(gh issue create \
   --repo "$REPO" \
   --title "<task_name>" \
-  --body-file /tmp/task-body.md \
-  --label "task,epic:<name>" \
-  --json number -q .number)
-# or with sub-issues:
-# gh sub-issue create --parent $epic_number ...
+  --body-file "$body_file" \
+  --label "task,epic:<name>")
+task_number=$(echo "$task_url" | grep -oE '[0-9]+$')
+rm -f "$body_file"
+
+# Link the task to the epic as a sub-issue
+if [ "$use_subissues" = true ]; then
+  gh sub-issue add "$epic_number" "$task_number" --repo "$REPO"
+fi
 ```
+
+Right after each issue is created, write `github: $task_url` into that task file (see Step 4). Do not wait for the whole batch.
 
 **Step 3 — Rename task files and update references:**
 
@@ -101,6 +122,8 @@ bash <skill_path>/references/scripts/neon-branch.sh create <name>
 `<skill_path>` is the directory that contains this skill's `SKILL.md`.
 
 **Step 6 — Create github-mapping.md:**
+
+This is a generated index, so it has no frontmatter. `validate.sh` does not check it.
 ```markdown
 # GitHub Issue Mapping
 Epic: #<N> - https://github.com/<repo>/issues/<N>
@@ -288,13 +311,15 @@ Save to `.claude/epics/<same_epic_as_original>/bug-<original_N>-<slug>.md`
 
 **Step 3 — Create a linked GitHub issue:**
 ```bash
-gh issue create \
+bug_url=$(gh issue create \
   --repo "$REPO" \
   --title "Bug: <short description>" \
-  --body "$(cat /tmp/bug-body.md)" \
-  --label "bug,epic:<epic_name>" \
-  --json number -q .number
+  --body-file "$body_file" \
+  --label "bug,epic:<epic_name>")
+bug_number=$(echo "$bug_url" | grep -oE '[0-9]+$')
 ```
+
+`$body_file` is the bug task body without frontmatter (use `strip_frontmatter` and `mktemp` as in Epic Sync).
 
 The issue body should open with `Fixes / follow-up to #<original_N>` so GitHub auto-links them.
 
