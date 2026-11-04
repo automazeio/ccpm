@@ -142,6 +142,7 @@ grep 'github:' <file> | grep -oE '[0-9]+$'
   ```
 - Commit format inside epics: `Issue #<N>: <description>`
 - Never use `--force` in any git operation
+- Optional database branch, after the worktree exists: `bash references/scripts/neon-branch.sh create <name>`. On merge: `bash references/scripts/neon-branch.sh cleanup <name>`. Exits 0 with a message when the Neon CLI or `NEON_PROJECT_ID` is missing. Never commit the env file it writes.
 
 ---
 
