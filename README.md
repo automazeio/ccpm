@@ -42,6 +42,7 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your
 - [Proven Results](#proven-results)
 - [Local vs Remote](#local-vs-remote)
 - [Technical Notes](#technical-notes)
+- [Using CCPM with a database](#using-ccpm-with-a-database)
 - [Who's Behind this Project](#whos-behind-this-project)
 
 ---
@@ -150,7 +151,7 @@ Reality: a single "Implement user authentication" issue is actually:
 - **Agent 4**: UI components and forms
 - **Agent 5**: Test suites and documentation
 
-All running **simultaneously** in the same worktree.
+All running **simultaneously** in the same worktree. They share that worktree, so they also share one database unless you give each writer its own. See [Using CCPM with a database](docs/using-ccpm-with-a-database.md).
 
 ### The Math of Velocity
 
@@ -410,6 +411,14 @@ In structured evals comparing CCPM-equipped agents vs baseline (no skill):
 **Design decisions** — intentionally avoids GitHub Projects API complexity. All operations work on local files first for speed. GitHub sync is explicit and controlled. Worktrees provide clean git isolation for parallel work.
 
 **Looking for v1?** — The original `/pm:*` Claude Code slash command system is preserved on the [`v1` branch](https://github.com/automazeio/ccpm/tree/v1).
+
+---
+
+## Using CCPM with a database
+
+Git worktrees keep parallel agents off the same files. Those agents still share one database until you give each writer its own. [Using CCPM with a database](docs/using-ccpm-with-a-database.md) walks through that, with [Neon](https://neon.com) Postgres branches as the worked example (one database branch per epic, and one per parallel writer).
+
+<!-- TODO: add the Neon logo from the Neon brand kit once the asset is in this repo. Use a local file. Do not hotlink a logo URL. -->
 
 ---
 
